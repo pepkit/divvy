@@ -1,6 +1,6 @@
 # divvy python package
 
-[![Documentation Status](http://readthedocs.org/projects/divvy/badge/?version=latest)](http://divvy.readthedocs.io/en/latest/?badge=latest) [![Build Status](https://travis-ci.org/pepkit/divvy.svg?branch=master)](https://travis-ci.org/pepkit/divvy) [![PEP compatible](http://pepkit.github.io/img/PEP-compatible-green.svg)](http://pepkit.github.io)
+[![Build Status](https://travis-ci.org/pepkit/divvy.svg?branch=master)](https://travis-ci.org/pepkit/divvy) [![PEP compatible](http://pepkit.github.io/img/PEP-compatible-green.svg)](http://pepkit.github.io)
 
 `divvy` is the official python package for reading **Portable Environment Configuration** files (**PEC**s) in `python`. 
 
