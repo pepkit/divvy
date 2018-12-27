@@ -37,11 +37,7 @@ if not logging.getLogger().handlers:
 
 def setup_divvy_logger(level, additional_locations=None, devmode=False):
     """
-    Establish a logger for a pe.
-
-    This configures a logger to provide information about pep models.
-    Verbosity, destination(s) for messages, and message text format are
-    controlled by the arguments' values. This is also used by the test suite.
+    Establish project logger..
 
     :param int | str level: logging level
     :param tuple(str | FileIO[str]) additional_locations: supplementary
@@ -55,10 +51,10 @@ def setup_divvy_logger(level, additional_locations=None, devmode=False):
     fmt = DEV_LOGGING_FMT if devmode else DEFAULT_LOGGING_FMT
 
     # Establish the logger.
-    LOOPER_LOGGER = logging.getLogger("divvy")
+    logger = logging.getLogger("divvy")
     # First remove any previously-added handlers
-    LOOPER_LOGGER.handlers = []
-    LOOPER_LOGGER.propagate = False
+    logger.handlers = []
+    logger.propagate = False
 
     # Handle int- or text-specific logging level.
     try:
@@ -67,12 +63,12 @@ def setup_divvy_logger(level, additional_locations=None, devmode=False):
         level = level.upper()
 
     try:
-        LOOPER_LOGGER.setLevel(level)
+        logger.setLevel(level)
     except Exception:
         logging.error("Can't set logging level to %s; instead using: '%s'",
                       str(level), str(LOGGING_LEVEL))
         level = LOGGING_LEVEL
-        LOOPER_LOGGER.setLevel(level)
+        logger.setLevel(level)
 
     # Process any additional locations.
     locations_exception = None
@@ -114,6 +110,6 @@ def setup_divvy_logger(level, additional_locations=None, devmode=False):
 
         handler.setLevel(level)
         handler.setFormatter(formatter)
-        LOOPER_LOGGER.addHandler(handler)
+        logger.addHandler(handler)
 
-    return LOOPER_LOGGER
+    return logger
