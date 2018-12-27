@@ -47,21 +47,21 @@ def get_static(name, condition=None):
 # scripts removed (TO remove this)
 scripts = None
 
-with open("peppy/_version.py", 'r') as versionfile:
+with open("divvy/_version.py", 'r') as versionfile:
     version = versionfile.readline().split()[-1].strip("\"'\n")
 
 # Handle the pypi README formatting.
 try:
     import pypandoc
     long_description = pypandoc.convert_file('README.md', 'rst')
-except(IOError, ImportError):
+except(IOError, ImportError, OSError):
     long_description = open('README.md').read()
 
 setup(
-    name="peppy",
-    packages=["peppy"],
+    name="divvy",
+    packages=["divvy"],
     version=version,
-    description="A python-based project metadata manager for portable encapsulated projects",
+    description="A python-based configuration manager for portable environment configurations",
     long_description=long_description,
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -71,8 +71,8 @@ setup(
         "Topic :: Scientific/Engineering :: Bio-Informatics"
     ],
     keywords="project, metadata, bioinformatics, sequencing, ngs, workflow",
-    url='https://github.com/pepkit/peppy/',
-    author=u"Nathan Sheffield, Vince Reuter, Andre Rendeiro",
+    url='https://github.com/pepkit/divvy/',
+    author=u"Nathan Sheffield, Vince Reuter",
     license="BSD2",
     scripts=scripts,
     include_package_data=True,

@@ -6,20 +6,66 @@ import yaml
 
 from .attribute_dict import AttributeDict
 
+from .const import \
+    COMPUTE_SETTINGS_VARNAME, \
+    DEFAULT_COMPUTE_RESOURCES_NAME
+
 _LOGGER = logging.getLogger(__name__)
 
 class ComputingConfiguration(AttributeDict):
-	"""Representation of common computing configuration file"""
+    """Representation of common computing configuration file"""
 
-	def __init__(self, cfg):
-		self.cfg = cfg
+    def __init__(self, cfg, default_compute=None, compute_env_file=None,
+                 no_environment_exception=None, no_compute_exception=None):
+        self.cfg = cfg
+        self.environment, self.environment_file = None, None
+
+        try:
+            self.update_environment(
+                default_compute or self.default_compute_envfile)
+        except Exception as e:
+            _LOGGER.error("Can't load environment config file '%s'",
+                          str(default_compute))
+            _LOGGER.error(str(type(e).__name__) + str(e))
+
+        self._handle_missing_env_attrs(
+            default_compute, when_missing=no_environment_exception)
+
+        # Load settings from environment yaml for local compute infrastructure.
+        compute_env_file = compute_env_file or os.getenv(self.compute_env_var)
+        if compute_env_file:
+            if os.path.isfile(compute_env_file):
+                self.update_environment(compute_env_file)
+            else:
+                _LOGGER.warning("Compute env path isn't a file: {}".
+                             format(compute_env_file))
+        else:
+            _LOGGER.info("No compute env file was provided and {} is unset; "
+                         "using default".format(self.compute_env_var))
+
+        # Initialize default compute settings.
+        _LOGGER.debug("Establishing project compute settings")
+        self.compute = None
+        self.set_compute(DEFAULT_COMPUTE_RESOURCES_NAME)
+
+        # Either warn or raise exception if the compute is null.
+        if self.compute is None:
+            message = "Failed to establish project compute settings"
+            if no_compute_exception:
+                no_compute_exception(message)
+            else:
+                _LOGGER.warning(message)
+        else:
+            _LOGGER.debug("Compute: %s", str(self.compute))
+
+
 
     def set_compute(self, setting):
         """
         Set the compute attributes according to the
         specified settings in the environment file.
 
-        :param str setting:	name for non-resource compute bundle, the name of
+        :param str setting: name for non-resource compute bundle, the name of
             a subsection in an environment configuration file
         :return bool: success flag for attempt to establish compute settings
         """
@@ -88,3 +134,37 @@ class ComputingConfiguration(AttributeDict):
                 self.environment.add_entries(env_settings)
 
         self.environment_file = env_settings_file
+
+
+    def _handle_missing_env_attrs(self, env_settings_file, when_missing):
+        """ Default environment settings aren't required; warn, though. """
+        missing_env_attrs = \
+            [attr for attr in ["environment", "environment_file"]
+             if not hasattr(self, attr) or getattr(self, attr) is None]
+        if not missing_env_attrs:
+            return
+        message = "'{}' lacks environment attributes: {}". \
+            format(env_settings_file, missing_env_attrs)
+        if when_missing is None:
+            _LOGGER.warning(message)
+        else:
+            when_missing(message)
+
+
+    @property
+    def compute_env_var(self):
+        """
+        Environment variable through which to access compute settings.
+
+        :return str: name of the environment variable to pointing to
+            compute settings
+        """
+        return COMPUTE_SETTINGS_VARNAME
+
+
+    @property
+    def default_compute_envfile(self):
+        """ Path to default compute environment settings file. """
+        return os.path.join(
+            self.templates_folder, "default_compute_settings.yaml")
+
