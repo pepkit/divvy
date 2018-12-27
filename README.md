@@ -10,6 +10,14 @@ Links to complete documentation:
 * Reference documentation for standard **PEP** format is at [pepkit.github.io](https://pepkit.github.io/).
 * Example PEPs for testing `divvy` are in the [pepenv repository](https://github.com/pepkit/pepenv).
 
+# Quick start
+
+```
+import divvy
+dcc = divvy.ComputingConfiguration(os.path.expandvars("$PEPENV"))
+dcc.set_compute("default")
+```
+
 # Motivation
 
 Originally, [looper](http://looper.readthedocs.io/) was programmed to read a `PEPENV` file, which configured shared computing resources. This capability has utility outside of `looper`, so the `divvy` package was created to abstract all the functionality originally in `PEPENV`. `Divvy` enables any third-party python package (including `looper`) to have direct access to standardized computing configuration files.
