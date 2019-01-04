@@ -13,9 +13,10 @@ Links to complete documentation:
 # Quick start
 
 ```
-import divvy
+import divvy, os
+divvy.setup_divvy_logger("DEBUG", devmode=True)
 dcc = divvy.ComputingConfiguration(os.path.expandvars("$PEPENV"))
-dcc.set_compute("default")
+dcc.activate_compute_package("default")
 ```
 
 # Motivation
