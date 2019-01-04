@@ -93,7 +93,7 @@ class ComputingConfiguration(AttributeDict):
         """
 
         # Hope that environment & environment compute are present.
-        _LOGGER.debug("Activating compute package '{}'".format(package_name))
+        _LOGGER.info("Activating compute package '{}'".format(package_name))
 
         if package_name and self.compute_packages and package_name in self.compute_packages:
             # Augment compute, creating it if needed.
@@ -117,7 +117,7 @@ class ComputingConfiguration(AttributeDict):
                 else:
                     return True
 
-                return True
+            return True
 
         else:
             # Scenario in which environment and environment compute are
