@@ -113,3 +113,7 @@ def setup_divvy_logger(level, additional_locations=None, devmode=False):
         logger.addHandler(handler)
 
     return logger
+
+
+# Default
+setup_divvy_logger("INFO")
