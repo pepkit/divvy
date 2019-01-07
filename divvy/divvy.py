@@ -83,13 +83,41 @@ class ComputingConfiguration(AttributeDict):
             _LOGGER.debug("Compute: %s", str(self.compute))
 
 
+    @property
+    def compute_env_var(self):
+        """
+        Environment variable through which to access compute settings.
+        :return str: name of the environment variable to pointing to
+            compute settings
+        """
+        return COMPUTE_SETTINGS_VARNAME
+
+
+    @property
+    def default_config_file(self):
+        """
+        Path to default compute environment settings file.
+        :return str: Path to default compute settings file
+        """
+        return os.path.join(
+            self.templates_folder, "default_compute_settings.yaml")
+
+
+    @property
+    def templates_folder(self):
+        """
+        Path to folder with default submission templates.
+        :return str: path to folder with default submission templates
+        """
+        return os.path.join(os.path.dirname(__file__), "submit_templates")
+
+
     def activate_package(self, package_name):
         """
-        Set the compute attributes according to the
-        specified settings in the environment file.
+        Set compute attributes according to settings in environment file.
 
-        :param str package_name: name for non-resource compute bundle, the name of
-            a subsection in an environment configuration file
+        :param str package_name: name for non-resource compute bundle,
+            the name of a subsection in an environment configuration file
         :return bool: success flag for attempt to establish compute settings
         """
 
@@ -128,27 +156,45 @@ class ComputingConfiguration(AttributeDict):
         return False
 
 
-    def reset_active_settings(self):
-        """
-        Clear out current compute settings.
-        """
-        self.compute = AttributeDict()
-        return True
-
-
     def clean_start(self, package_name):
         """
         Clear settings and then activate the given package.
+
+        :param str package_name: name of the resource package to activate
+        :return bool: success flag
         """
         self.reset_active_settings()
-        self.activate_package(package_name)
+        return self.activate_package(package_name)
+
+
+    def get_active_package(self):
+        """
+        Returns settings for the currently active compute package
+        :return AttributeDict: data defining the active compute package
+        """
+        return self.compute
+
+
+    def list_compute_packages(self):
+        """
+        Returns a list of available compute packages.
+        :return set[str]: names of available compute packages
+        """
+        return set(self.compute_packages.keys())
+
+
+    def reset_active_settings(self):
+        """
+        Clear out current compute settings.
+        :return bool: success flag
+        """
+        self.compute = AttributeDict()
         return True
 
 
     def update_packages(self, config_file):
         """
         Parse data from environment configuration file.
-
         :param str config_file: path to file with
             new environment configuration data
         """
@@ -197,47 +243,3 @@ class ComputingConfiguration(AttributeDict):
             _LOGGER.warning(message)
         else:
             when_missing(message)
-
-
-    def list_compute_packages(self):
-        """
-        Returns a list of available compute packages.
-        """
-        return self.compute_packages.keys()
-
-
-    def get_active_package(self):
-        """
-        Returns settings for the currently active compute package
-        """
-        return self.compute
-
-
-    @property
-    def compute_env_var(self):
-        """
-        Environment variable through which to access compute settings.
-
-        :return str: name of the environment variable to pointing to
-            compute settings
-        """
-        return COMPUTE_SETTINGS_VARNAME
-
-
-    @property
-    def default_config_file(self):
-        """ Path to default compute environment settings file. """
-        return os.path.join(
-            self.templates_folder, "default_compute_settings.yaml")
-
-
-
-    @property
-    def templates_folder(self):
-        """
-        Path to folder with default submission templates.
-
-        :return str: path to folder with default submission templates
-        """
-        return os.path.join(os.path.dirname(__file__), "submit_templates")
-
