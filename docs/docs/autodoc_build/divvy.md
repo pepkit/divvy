@@ -245,24 +245,17 @@ D.values() -> list of D's values
 ## Class ComputingConfiguration
 Representation of divvy computing configuration file
 
-:param config_file: Configuration YAML file specifying computing packages.
-:type config_file: str
-:param no_environment_exception: type of exception to raise if environment
+:param str config_file: YAML file specifying computing package data
+:param type no_env_error: type of exception to raise if environment 
+    settings can't be established, optional; if null (the default), 
+    a warning message will be logged, and no exception will be raised.
+:param type no_compute_exception: type of exception to raise if compute
     settings can't be established, optional; if null (the default),
     a warning message will be logged, and no exception will be raised.
-:type no_environment_exception: type
-:param no_compute_exception: type of exception to raise if compute
-    settings can't be established, optional; if null (the default),
-    a warning message will be logged, and no exception will be raised.
-:type no_compute_exception: type
-:param defer_sample_construction: whether to wait to build this Project's
-    Sample objects until they're needed, optional; by default, the basic
-    Sample is created during Project construction
-:type defer_sample_construction: bool
 ### \_\_init\_\_
 ```py
 
-def __init__(self, config_file=None, no_environment_exception=None, no_compute_exception=None)
+def __init__(self, config_file=None, no_env_error=None, no_compute_exception=None)
 
 ```
 
