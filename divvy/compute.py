@@ -39,18 +39,18 @@ class ComputingConfiguration(AttributeDict):
                 self.config_file = config_file
             else:
                 _LOGGER.error("Config file path isn't a file: {}".
-                                 format(config_file))
+                              format(config_file))
                 raise IOError(config_file)
         else:
             _LOGGER.info("No local config file was provided")
             divcfg_file = os.getenv(self.compute_env_var) or ""
             if os.path.isfile(divcfg_file):
                 _LOGGER.info("Found global config file in {}: {}".
-                    format(self.compute_env_var, divcfg_file))
+                             format(self.compute_env_var, divcfg_file))
                 self.config_file = divcfg_file
             else:
-                _LOGGER.info("No global config file was provided in environment variable {}".
-                    format(self.compute_env_var))
+                _LOGGER.info("No global config file was provided in environment "
+                             "variable {}".format(self.compute_env_var))
                 _LOGGER.info("Using default config file.")
                 self.config_file = self.default_config_file
 
