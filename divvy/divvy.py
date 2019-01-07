@@ -18,20 +18,17 @@ class ComputingConfiguration(AttributeDict):
     """
     Representation of divvy computing configuration file
     
-    :param config_file: Configuration YAML file specifying computing packages.
-    :type config_file: str
-    :param no_environment_exception: type of exception to raise if environment
+    :param str config_file: YAML file specifying computing package data
+    :param type no_env_error: type of exception to raise if environment
         settings can't be established, optional; if null (the default),
         a warning message will be logged, and no exception will be raised.
-    :type no_environment_exception: type
-    :param no_compute_exception: type of exception to raise if compute
+    :param type no_compute_exception: type of exception to raise if compute
         settings can't be established, optional; if null (the default),
         a warning message will be logged, and no exception will be raised.
-    :type no_compute_exception: type
     """
 
     def __init__(self, config_file=None,
-                 no_environment_exception=None, no_compute_exception=None):
+                 no_env_error=None, no_compute_exception=None):
 
         super(ComputingConfiguration, self).__init__()
 
@@ -65,7 +62,7 @@ class ComputingConfiguration(AttributeDict):
             _LOGGER.error(str(type(e).__name__) + str(e))
 
         self._handle_missing_env_attrs(
-            self.config_file, when_missing=no_environment_exception)
+            self.config_file, when_missing=no_env_error)
 
         # Initialize default compute settings.
         _LOGGER.debug("Establishing project compute settings")
