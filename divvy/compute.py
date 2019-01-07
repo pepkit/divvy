@@ -8,6 +8,7 @@ from .attribute_dict import AttributeDict
 from .const import \
     COMPUTE_SETTINGS_VARNAME, \
     DEFAULT_COMPUTE_RESOURCES_NAME
+from .utils import write_submit_script
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -101,6 +102,17 @@ class ComputingConfiguration(AttributeDict):
 
 
     @property
+    def template(self):
+        """
+        Get the currently active submission template.
+
+        :return str: submission script content template for current state
+        """
+        with open(self.compute.submission_template, 'r') as f:
+            return f.read()
+
+
+    @property
     def templates_folder(self):
         """
         Path to folder with default submission templates.
@@ -139,9 +151,6 @@ class ComputingConfiguration(AttributeDict):
                     # Environment and environment compute should at least have been
                     # set as null-valued attributes, so execution here is an error.
                     _LOGGER.error(str(e))
-                    # Compute settings have been established.
-                else:
-                    return True
 
             return True
 
@@ -225,6 +234,17 @@ class ComputingConfiguration(AttributeDict):
 
         _LOGGER.info("Available packages: {}".format(self.list_compute_packages()))
         self.config_file = config_file
+
+
+    def write_script(self, fp, data):
+        """
+        Given currently active settings, write a job(s) submission script.
+
+        :param str fp: Path to file to write as submission script
+        :param Mapping data: KV pair pool with which to populate template fields
+        :return str: Path to the submission script file
+        """
+        return write_submit_script(fp, self.template, data)
 
 
     def _handle_missing_env_attrs(self, config_file, when_missing):
