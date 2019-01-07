@@ -13,7 +13,7 @@ from sys import stdout
 
 from ._version import __version__
 from .attribute_dict import AttributeDict
-from .divvy import ComputingConfiguration
+from .compute import ComputingConfiguration
 
 __classes__ = ["AttributeDict", "ComputingConfiguration"]
 __all__ = __classes__
