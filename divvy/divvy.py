@@ -1,16 +1,18 @@
+""" Computing configuration representation """
 
 import logging
 import os
-import sys
 import yaml
 
 from .attribute_dict import AttributeDict
-
 from .const import \
     COMPUTE_SETTINGS_VARNAME, \
     DEFAULT_COMPUTE_RESOURCES_NAME
 
+
 _LOGGER = logging.getLogger(__name__)
+
+
 
 class ComputingConfiguration(AttributeDict):
     """
@@ -26,14 +28,13 @@ class ComputingConfiguration(AttributeDict):
         settings can't be established, optional; if null (the default),
         a warning message will be logged, and no exception will be raised.
     :type no_compute_exception: type
-    :param defer_sample_construction: whether to wait to build this Project's
-        Sample objects until they're needed, optional; by default, the basic
-        Sample is created during Project construction
-    :type defer_sample_construction: bool
     """
 
     def __init__(self, config_file=None,
                  no_environment_exception=None, no_compute_exception=None):
+
+        super(ComputingConfiguration, self).__init__()
+
         self.compute_packages = None
 
         if config_file:
