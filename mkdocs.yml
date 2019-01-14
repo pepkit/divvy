@@ -8,6 +8,7 @@ nav:
     - Introduction: README.md
   - How-to Guides:
     - Write a DIVCFG file: configuration.md
+    - Configuring containers: containers.md
     - Using divvy interactively: tutorial.md
   - Reference:
     - API: autodoc_build/divvy.md
