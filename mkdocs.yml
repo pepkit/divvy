@@ -1,4 +1,5 @@
 site_name: Divvy
+site_logo: img/logo_divvy_dark.svg
 repo_url: http://github.com/databio/divvy
 
 nav:
