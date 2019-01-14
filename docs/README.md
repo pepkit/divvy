@@ -20,7 +20,7 @@ pip install --user https://github.com/pepkit/divvy/zipball/master
 Update `divvy` with:
 
 ```
-pip install --user --upgrade https://github.com/divvy/caravel/zipball/master
+pip install --user --upgrade https://github.com/pepkit/divvy/zipball/master
 ```
 
 
