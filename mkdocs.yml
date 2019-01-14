@@ -1,0 +1,20 @@
+site_name: Divvy
+repo_url: http://github.com/databio/divvy
+
+nav:
+  - Getting Started: 
+    - Introduction: README.md
+  - How-to Guides:
+    - Writing divvy configuration files: configuration.md
+    - Using divvy interactively: tutorial.md
+  - Reference:
+    - API: autodoc_build/divvy.md
+    - Support: support.md
+    - Contributing: contributing.md
+    - Changelog: changelog.md
+
+theme: databio
+
+plugins:
+  - databio
+  - search
