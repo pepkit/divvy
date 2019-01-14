@@ -20,7 +20,7 @@ class ComputingConfiguration(AttributeDict):
     Representation of divvy computing configuration file
     
     :param str config_file: YAML file specifying computing package data
-    :param type no_env_error: type of exception to raise if environment
+    :param type no_env_error: type of exception to raise if divvy
         settings can't be established, optional; if null (the default),
         a warning message will be logged, and no exception will be raised.
     :param type no_compute_exception: type of exception to raise if compute
@@ -142,15 +142,16 @@ class ComputingConfiguration(AttributeDict):
             self.compute.add_entries(self.compute_packages[package_name])
 
             # Ensure submission template is absolute.
-            if not os.path.isabs(self.compute.submission_template):
-                try:
-                    self.compute.submission_template = os.path.join(
-                        os.path.dirname(self.config_file),
-                        self.compute.submission_template)
-                except AttributeError as e:
-                    # Environment and environment compute should at least have been
-                    # set as null-valued attributes, so execution here is an error.
-                    _LOGGER.error(str(e))
+            # This is handled at update.
+            # if not os.path.isabs(self.compute.submission_template):
+            #     try:
+            #         self.compute.submission_template = os.path.join(
+            #             os.path.dirname(self.config_file),
+            #             self.compute.submission_template)
+            #     except AttributeError as e:
+            #         # Environment and environment compute should at least have been
+            #         # set as null-valued attributes, so execution here is an error.
+            #         _LOGGER.error(str(e))
 
             return True
 
@@ -200,9 +201,9 @@ class ComputingConfiguration(AttributeDict):
 
     def update_packages(self, config_file):
         """
-        Parse data from environment configuration file.
+        Parse data from divvy configuration file.
         :param str config_file: path to file with
-            new environment configuration data
+            new divvy configuration data
         """
 
         with open(config_file, 'r') as f:
@@ -212,7 +213,7 @@ class ComputingConfiguration(AttributeDict):
                           str(env_settings))
 
             # Any compute.submission_template variables should be made
-            # absolute, relative to current environment settings file.
+            # absolute, relative to current divvy configuration file.
             if "compute" in env_settings:
                 _LOGGER.warn("Use 'compute_packages' instead of 'compute'")
                 env_settings["compute_packages"] = env_settings["compute"]
@@ -236,15 +237,27 @@ class ComputingConfiguration(AttributeDict):
         self.config_file = config_file
 
 
-    def write_script(self, fp, data):
+    def write_script(self, output_path, extra_vars=None):
         """
         Given currently active settings, write a job(s) submission script.
 
-        :param str fp: Path to file to write as submission script
-        :param Mapping data: KV pair pool with which to populate template fields
+        :param str output_path: Path to file to write as submission script
+        :param Mapping extra_vars: A list of Dict objects with key-value pairs
+            with which to populate template fields. These will override any
+            values in the currently active compute package.
         :return str: Path to the submission script file
         """
-        return write_submit_script(fp, self.template, data)
+        variables = self.compute
+        
+        if extra_vars:
+            if not isinstance(extra_vars, list):
+                extra_vars = [extra_vars]
+
+            for item in extra_vars:
+                variables.update(item)
+
+        _LOGGER.info("Writing script to {}".format(os.path.abspath(output_path)))
+        return write_submit_script(output_path, self.template, variables)
 
 
     def _handle_missing_env_attrs(self, config_file, when_missing):

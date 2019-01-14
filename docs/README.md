@@ -5,7 +5,7 @@
 [![PEP compatible](http://pepkit.github.io/img/PEP-compatible-green.svg)](http://pepkit.github.io)
 
 
-`divvy` is a python package that provides an API for handling standardized *computing configuration files*. It enables users on different computing systems (laptop, cluster, cloud) to use the same code in any computing environment. It works using a simple configuration file, where you describe variables you need and templates. 
+`divvy` is a simple templating system written in python that allows users to write compute jobs that can be submitted to any computing resource (laptop, cluster, cloud). It works using a simple configuration file, which we call *computing configuration files*, where you specify variables for your computing environment. It uses these variables to populate simple, Jinja-like templates to make computing job submission flexible. 
 
 
 ## Installing
