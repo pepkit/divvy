@@ -11,16 +11,16 @@
 ## Installing
 
 
-Release versions are posted on the GitHub [divvy releases page](https://github.com/pepkit/divvy/releases). You can install the latest release directly from GitHub using pip:
+Release versions are posted on the GitHub [divvy releases page](https://github.com/pepkit/divvy/releases). You can install the latest release directly from PyPI using pip:
 
 ```
-pip install --user https://github.com/pepkit/divvy/zipball/master
+pip install --user divvy
 ```
 
 Update `divvy` with:
 
 ```
-pip install --user --upgrade https://github.com/pepkit/divvy/zipball/master
+pip install --user --upgrade divvy
 ```
 
 
@@ -32,15 +32,6 @@ dcc = divvy.ComputingConfiguration()
 dcc.activate_package("default")
 dcc.compute
 ```
-
-
-
-## Divvy configuration files 
-
-Example divvy configuration files are in the [pepenv repository](https://github.com/pepkit/pepenv).
-
-
-
 
 ## Motivation
 

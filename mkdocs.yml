@@ -15,6 +15,7 @@ nav:
     - Support: support.md
     - Contributing: contributing.md
     - Changelog: changelog.md
+    - DIVCFG examples: http://github.com/pepkit/pepenv
 
 theme: databio
 
