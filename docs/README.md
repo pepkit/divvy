@@ -11,7 +11,7 @@
 ## Installing
 
 
-Release versions are posted on the GitHub [divvy releases page](https://github.com/pepkit/divvy/releases). You can install the latest release directly from PyPI using pip:
+Release versions are posted on the GitHub [divvy releases page](https://github.com/databio/divvy/releases). You can install the latest release directly from PyPI using pip:
 
 ```
 pip install --user divvy
