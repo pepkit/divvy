@@ -32,21 +32,6 @@ if sys.version_info >= (3, ):
     extra["use_2to3"] = True
 extra["install_requires"] = DEPENDENCIES
 
-
-# Additional files to include with package
-def get_static(name, condition=None):
-    static = [os.path.join(name, f) for f in os.listdir(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), name))]
-    if condition is None:
-        return static
-    else:
-        return [i for i in filter(lambda x: eval(condition), static)]
-
-# scripts to be added to the $PATH
-# scripts = get_static("scripts", condition="'.' in x")
-# scripts removed (TO remove this)
-scripts = None
-
 with open("divvy/_version.py", 'r') as versionfile:
     version = versionfile.readline().split()[-1].strip("\"'\n")
 
@@ -76,8 +61,6 @@ setup(
     url='https://github.com/pepkit/divvy/',
     author=u"Nathan Sheffield, Vince Reuter",
     license="BSD2",
-    scripts=scripts,
-    include_package_data=True,
     test_suite="tests",
     tests_require=(["mock", "pytest"]),
     setup_requires=(["pytest-runner"] if {"test", "pytest", "ptr"} & set(sys.argv) else []),
