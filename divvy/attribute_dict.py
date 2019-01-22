@@ -172,7 +172,7 @@ class AttributeDict(MutableMapping):
             try:
                 # Combine AttributeDict instances.
                 self.__dict__[key].add_entries(value)
-            except (AttributeError, KeyError):
+            except KeyError:
                 # Create new AttributeDict, replacing previous value.
                 self.__dict__[key] = AttributeDict(value)
         elif value is not None or \
