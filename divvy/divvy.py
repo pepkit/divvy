@@ -139,7 +139,7 @@ class ComputingConfiguration(AttributeDict):
         """
         Clear settings and then activate the given package.
         """
-        self.reset_active_settings
+        self.reset_active_settings()
         self.activate_package(package_name)
         return True
 
