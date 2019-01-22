@@ -168,13 +168,11 @@ class AttributeDict(MutableMapping):
         elif key == "implied_columns":
             warn_implied_cols()
             key = IMPLICATIONS_DECLARATION
+        # TODO: consider enforcement of type constraint, that value of different
+        # type may not overwrite existing.
         if isinstance(value, Mapping):
-            try:
-                # Combine AttributeDict instances.
-                self.__dict__[key].add_entries(value)
-            except (AttributeError, KeyError):
-                # Create new AttributeDict, replacing previous value.
-                self.__dict__[key] = AttributeDict(value)
+            self.__dict__[key] = value \
+                if isinstance(value, AttributeDict) else AttributeDict(value)
         elif value is not None or \
                 key not in self.__dict__ or self.__dict__["_force_nulls"]:
             self.__dict__[key] = value
