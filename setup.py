@@ -1,9 +1,9 @@
 #! /usr/bin/env python
 
-import os
 from setuptools import setup
 import sys
 
+PACKAGE = "divvy"
 
 # Additional keyword arguments for setup().
 extra = {}
@@ -32,7 +32,7 @@ if sys.version_info >= (3, ):
     extra["use_2to3"] = True
 extra["install_requires"] = DEPENDENCIES
 
-with open("divvy/_version.py", 'r') as versionfile:
+with open("{}/_version.py".format(PACKAGE), 'r') as versionfile:
     version = versionfile.readline().split()[-1].strip("\"'\n")
 
 # Handle the pypi README formatting.
@@ -43,8 +43,8 @@ except(IOError, ImportError, OSError):
     long_description = open('README.md').read()
 
 setup(
-    name="divvy",
-    packages=["divvy"],
+    name=PACKAGE,
+    packages=[PACKAGE],
     version=version,
     description="A python-based configuration manager for portable environment configurations",
     long_description=long_description,
@@ -58,7 +58,7 @@ setup(
         "Topic :: System :: Distributed Computing"
     ],
     keywords="project, metadata, bioinformatics, sequencing, ngs, workflow",
-    url='https://github.com/pepkit/divvy/',
+    url="https://github.com/pepkit/{}/".format(PACKAGE),
     author=u"Nathan Sheffield, Vince Reuter",
     license="BSD2",
     test_suite="tests",
