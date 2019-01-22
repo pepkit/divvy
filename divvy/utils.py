@@ -5,6 +5,7 @@ import contextlib
 import logging
 import os
 import random
+import re
 import string
 import subprocess as sp
 import sys
@@ -357,6 +358,36 @@ def sample_folder(prj, sample):
     """
     return os.path.join(prj.metadata.results_subdir,
                         sample["sample_name"])
+
+
+
+def write_submit_script(fp, content, data):
+    """
+    Write a submission script by populating a template with data.
+
+    :param str fp: Path to the file to which to create/write submissions script.
+    :param str content: Template for submission script, defining keys that 
+        will be filled by given data
+    :param Mapping data: a "pool" from which values are available to replace 
+        keys in the template
+    :return str: Path to the submission script
+    """
+
+    for k, v in data.items():
+        placeholder = "{" + str(k).upper() + "}"
+        content = content.replace(placeholder, str(v))
+
+    keys_left = re.findall(r'!$\{(.+?)\}', content)
+    if len(keys_left) > 0:
+        _LOGGER.warning("> Warning: %d submission template variables are not "
+                        "populated: '%s'", len(keys_left), str(keys_left))
+
+    outdir = os.path.dirname(fp)
+    if outdir and not os.path.isdir(outdir):
+        os.makedirs(outdir)
+    with open(fp, 'w') as f:
+        f.write(content)
+    return fp
 
 
 
