@@ -26,7 +26,7 @@ pip install --user --upgrade divvy
 
 ## Quick start
 
-```
+```{python}
 import divvy
 dcc = divvy.ComputingConfiguration()
 dcc.activate_package("default")
