@@ -13,13 +13,13 @@
 
 Release versions are posted on the GitHub [divvy releases page](https://github.com/databio/divvy/releases). You can install the latest release directly from PyPI using pip:
 
-```
+```{console}
 pip install --user divvy
 ```
 
 Update `divvy` with:
 
-```
+```{console}
 pip install --user --upgrade divvy
 ```
 
