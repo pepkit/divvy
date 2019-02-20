@@ -45,7 +45,6 @@ class ComputingConfiguration(AttMap):
         else:
             _LOGGER.info("No local config file was provided")
             _LOGGER.debug("Checking this set of environment variables: {}".format(self.compute_env_var))
-            print(self.compute_env_var)
             divcfg_env_var, divcfg_file = get_first_env_var(self.compute_env_var) or ["", ""]
             if os.path.isfile(divcfg_file):
                 _LOGGER.info("Found global config file in {}: {}".
