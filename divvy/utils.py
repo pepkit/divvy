@@ -573,7 +573,10 @@ def get_first_env_var(ev_list):
     :return: name and the value of the environment variable
     :rtype: list
     """
-    assert isinstance(ev_list, list), "The arugment has to be a list."
+    if not isinstance(ev_list, list) and isinstance(ev_list, str):
+        ev_list = [ev_list]
+    else:
+        raise TypeError("The argument has to be a lis or string.")
     for ev in ev_list:
         if os.getenv(ev, False):
             return [ev, os.getenv(ev)]
