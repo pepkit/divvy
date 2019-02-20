@@ -5,17 +5,18 @@ import os
 import yaml
 
 from .attribute_dict import AttributeDict
+from attmap import AttMap
 from .const import \
     COMPUTE_SETTINGS_VARNAME, \
     DEFAULT_COMPUTE_RESOURCES_NAME
-from .utils import write_submit_script
+from .utils import write_submit_script, get_first_env_var
 
 
 _LOGGER = logging.getLogger(__name__)
 
 
 
-class ComputingConfiguration(AttributeDict):
+class ComputingConfiguration(AttMap):
     """
     Representation of divvy computing configuration file
     
@@ -44,14 +45,16 @@ class ComputingConfiguration(AttributeDict):
                 raise IOError(config_file)
         else:
             _LOGGER.info("No local config file was provided")
-            divcfg_file = os.getenv(self.compute_env_var) or ""
+            _LOGGER.debug("Checking this set of environment variables: {}".format(self.compute_env_var))
+            print(self.compute_env_var)
+            divcfg_env_var, divcfg_file = get_first_env_var(self.compute_env_var) or ["", ""]
             if os.path.isfile(divcfg_file):
                 _LOGGER.info("Found global config file in {}: {}".
-                             format(self.compute_env_var, divcfg_file))
+                             format(divcfg_env_var, divcfg_file))
                 self.config_file = divcfg_file
             else:
                 _LOGGER.info("No global config file was provided in environment "
-                             "variable {}".format(self.compute_env_var))
+                             "variable(s): {}".format(str(self.compute_env_var)))
                 _LOGGER.info("Using default config file.")
                 self.config_file = self.default_config_file
 
@@ -137,7 +140,7 @@ class ComputingConfiguration(AttributeDict):
             # Augment compute, creating it if needed.
             if self.compute is None:
                 _LOGGER.debug("Creating Project compute")
-                self.compute = AttributeDict()
+                self.compute = AttMap()
                 _LOGGER.debug("Adding entries for package_name '%s'", package_name)
             self.compute.add_entries(self.compute_packages[package_name])
 
@@ -177,7 +180,7 @@ class ComputingConfiguration(AttributeDict):
     def get_active_package(self):
         """
         Returns settings for the currently active compute package
-        :return AttributeDict: data defining the active compute package
+        :return AttMap: data defining the active compute package
         """
         return self.compute
 
@@ -195,7 +198,7 @@ class ComputingConfiguration(AttributeDict):
         Clear out current compute settings.
         :return bool: success flag
         """
-        self.compute = AttributeDict()
+        self.compute = AttMap()
         return True
 
 
@@ -229,7 +232,7 @@ class ComputingConfiguration(AttributeDict):
                                     loaded_packages[key][key2])
 
             if self.compute_packages is None:
-                self.compute_packages = AttributeDict(loaded_packages)
+                self.compute_packages = AttMap(loaded_packages)
             else:
                 self.compute_packages.add_entries(loaded_packages)
 
