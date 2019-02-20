@@ -565,19 +565,20 @@ def is_command_callable(command, name=""):
     return not bool(code)
 
 
-def get_first_env_var(ev_list):
+def get_first_env_var(ev):
     """
     Get the name and value of the first set environment variable
 
-    :param ev_list: a list of the environment variable names
+    :param ev: a list of the environment variable names
     :type: list[str] | str
     :return: name and the value of the environment variable
     :rtype: list
     """
-    if not isinstance(ev_list, list) and isinstance(ev_list, str):
-        ev_list = [ev_list]
-    else:
-        raise TypeError("The argument has to be a lis or string.")
-    for ev in ev_list:
-        if os.getenv(ev, False):
-            return [ev, os.getenv(ev)]
+    if not isinstance(ev, list):
+        if isinstance(ev, str):
+            ev = [ev]
+        else:
+            raise TypeError("The argument has to be a lis or string.")
+    for i in ev:
+        if os.getenv(i, False):
+            return [i, os.getenv(i)]
