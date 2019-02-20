@@ -578,7 +578,7 @@ def get_first_env_var(ev):
         if isinstance(ev, str):
             ev = [ev]
         else:
-            raise TypeError("The argument has to be a lis or string.")
+            raise TypeError("The argument has to be a list or string.")
     for i in ev:
         if os.getenv(i, False):
             return [i, os.getenv(i)]
