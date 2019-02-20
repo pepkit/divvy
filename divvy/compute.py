@@ -4,7 +4,6 @@ import logging
 import os
 import yaml
 
-from .attribute_dict import AttributeDict
 from attmap import AttMap
 from .const import \
     COMPUTE_SETTINGS_VARNAME, \
