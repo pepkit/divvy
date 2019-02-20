@@ -569,7 +569,8 @@ def get_first_env_var(ev_list):
     """
     Get the name and value of the first set environment variable
 
-    :param list[str] ev_list: a list of the environment variable names
+    :param ev_list: a list of the environment variable names
+    :type: list[str] | str
     :return: name and the value of the environment variable
     :rtype: list
     """
