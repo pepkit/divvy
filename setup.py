@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+import os
 from setuptools import setup
 import sys
 
@@ -60,6 +61,8 @@ setup(
     url="https://github.com/pepkit/{}/".format(PACKAGE),
     author=u"Nathan Sheffield, Vince Reuter",
     license="BSD2",
+    package_data={"divvy": [os.path.join("divvy", "*")]},
+    include_package_data=True,
     test_suite="tests",
     tests_require=(["mock", "pytest"]),
     setup_requires=(["pytest-runner"] if {"test", "pytest", "ptr"} & set(sys.argv) else []),
