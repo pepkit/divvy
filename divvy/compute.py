@@ -14,7 +14,6 @@ from .utils import write_submit_script, get_first_env_var
 _LOGGER = logging.getLogger(__name__)
 
 
-
 class ComputingConfiguration(AttMap):
     """
     Representation of divvy computing configuration file
@@ -81,7 +80,6 @@ class ComputingConfiguration(AttMap):
         else:
             _LOGGER.debug("Compute: %s", str(self.compute))
 
-
     @property
     def compute_env_var(self):
         """
@@ -91,7 +89,6 @@ class ComputingConfiguration(AttMap):
         """
         return COMPUTE_SETTINGS_VARNAME
 
-
     @property
     def default_config_file(self):
         """
@@ -100,7 +97,6 @@ class ComputingConfiguration(AttMap):
         """
         return os.path.join(
             self.templates_folder, "default_compute_settings.yaml")
-
 
     @property
     def template(self):
@@ -112,7 +108,6 @@ class ComputingConfiguration(AttMap):
         with open(self.compute.submission_template, 'r') as f:
             return f.read()
 
-
     @property
     def templates_folder(self):
         """
@@ -120,7 +115,6 @@ class ComputingConfiguration(AttMap):
         :return str: path to folder with default submission templates
         """
         return os.path.join(os.path.dirname(__file__), "submit_templates")
-
 
     def activate_package(self, package_name):
         """
@@ -163,7 +157,6 @@ class ComputingConfiguration(AttMap):
 
         return False
 
-
     def clean_start(self, package_name):
         """
         Clear settings and then activate the given package.
@@ -174,7 +167,6 @@ class ComputingConfiguration(AttMap):
         self.reset_active_settings()
         return self.activate_package(package_name)
 
-
     def get_active_package(self):
         """
         Returns settings for the currently active compute package
@@ -182,14 +174,12 @@ class ComputingConfiguration(AttMap):
         """
         return self.compute
 
-
     def list_compute_packages(self):
         """
         Returns a list of available compute packages.
         :return set[str]: names of available compute packages
         """
         return set(self.compute_packages.keys())
-
 
     def reset_active_settings(self):
         """
@@ -199,14 +189,12 @@ class ComputingConfiguration(AttMap):
         self.compute = AttMap()
         return True
 
-
     def update_packages(self, config_file):
         """
         Parse data from divvy configuration file.
         :param str config_file: path to file with
             new divvy configuration data
         """
-
         with open(config_file, 'r') as f:
             _LOGGER.info("Loading divvy config file: %s", config_file)
             env_settings = yaml.load(f)
@@ -233,10 +221,8 @@ class ComputingConfiguration(AttMap):
                 self.compute_packages = AttMap(loaded_packages)
             else:
                 self.compute_packages.add_entries(loaded_packages)
-
         _LOGGER.info("Available packages: {}".format(self.list_compute_packages()))
         self.config_file = config_file
-
 
     def write_script(self, output_path, extra_vars=None):
         """
@@ -249,17 +235,13 @@ class ComputingConfiguration(AttMap):
         :return str: Path to the submission script file
         """
         variables = self.compute
-        
         if extra_vars:
             if not isinstance(extra_vars, list):
                 extra_vars = [extra_vars]
-
             for item in extra_vars:
                 variables.update(item)
-
         _LOGGER.info("Writing script to {}".format(os.path.abspath(output_path)))
         return write_submit_script(output_path, self.template, variables)
-
 
     def _handle_missing_env_attrs(self, config_file, when_missing):
         """ Default environment settings aren't required; warn, though. """
