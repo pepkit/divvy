@@ -13,6 +13,7 @@ from sys import stdout
 
 from ._version import __version__
 from .compute import ComputingConfiguration
+from .utils import write_submit_script
 
 __classes__ = ["ComputingConfiguration"]
 __all__ = __classes__
