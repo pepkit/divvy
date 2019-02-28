@@ -1,6 +1,4 @@
-[logo]: img/logo_divvy.svg
-
-# ![logo][logo] Divvy
+# <img src="img/divvy_logo.svg" class="img-header">
 
 [![PEP compatible](http://pepkit.github.io/img/PEP-compatible-green.svg)](http://pepkit.github.io)
 
