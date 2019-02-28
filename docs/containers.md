@@ -5,11 +5,12 @@ The `DIVCFG` framework is a natural way to run commands in a container. All we n
 
 ## A template for container runs
 
-[The divcfg repository](http://github.com/pepkit/pepenv) includes templates for the following scenarios:
+[The divcfg repository](http://github.com/pepkit/pepenv) includes [templates](https://github.com/pepkit/pepenv/tree/master/templates) for the following scenarios:
 
-- singularity on SLURM: [slurm_singularity_template.sub](templates/slurm_singularity_template.sub)
-- singularity on localhost: [localhost_singularity_template.sub](templates/localhost_singularity_template.sub)
-- docker on localhost: [localhost_singularity_template.sub](templates/localhost_singularity_template.sub)
+- singularity on SLURM
+- singularity on localhost
+- docker on localhost
+- others
 
 If you need a different system, looking at those examples should get you started toward making your own. To take a quick example, using singularity on SLURM combines the basic SLURM script template with these lines to execute the run in container:
 
