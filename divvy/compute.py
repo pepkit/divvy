@@ -4,18 +4,17 @@ import logging
 import os
 import yaml
 
-from .attribute_dict import AttributeDict
+from attmap import AttMap
 from .const import \
     COMPUTE_SETTINGS_VARNAME, \
     DEFAULT_COMPUTE_RESOURCES_NAME
-from .utils import write_submit_script
+from .utils import write_submit_script, get_first_env_var
 
 
 _LOGGER = logging.getLogger(__name__)
 
 
-
-class ComputingConfiguration(AttributeDict):
+class ComputingConfiguration(AttMap):
     """
     Representation of divvy computing configuration file
     
@@ -44,14 +43,15 @@ class ComputingConfiguration(AttributeDict):
                 raise IOError(config_file)
         else:
             _LOGGER.info("No local config file was provided")
-            divcfg_file = os.getenv(self.compute_env_var) or ""
+            _LOGGER.debug("Checking this set of environment variables: {}".format(self.compute_env_var))
+            divcfg_env_var, divcfg_file = get_first_env_var(self.compute_env_var) or ["", ""]
             if os.path.isfile(divcfg_file):
                 _LOGGER.info("Found global config file in {}: {}".
-                             format(self.compute_env_var, divcfg_file))
+                             format(divcfg_env_var, divcfg_file))
                 self.config_file = divcfg_file
             else:
                 _LOGGER.info("No global config file was provided in environment "
-                             "variable {}".format(self.compute_env_var))
+                             "variable(s): {}".format(str(self.compute_env_var)))
                 _LOGGER.info("Using default config file.")
                 self.config_file = self.default_config_file
 
@@ -80,7 +80,6 @@ class ComputingConfiguration(AttributeDict):
         else:
             _LOGGER.debug("Compute: %s", str(self.compute))
 
-
     @property
     def compute_env_var(self):
         """
@@ -90,7 +89,6 @@ class ComputingConfiguration(AttributeDict):
         """
         return COMPUTE_SETTINGS_VARNAME
 
-
     @property
     def default_config_file(self):
         """
@@ -99,7 +97,6 @@ class ComputingConfiguration(AttributeDict):
         """
         return os.path.join(
             self.templates_folder, "default_compute_settings.yaml")
-
 
     @property
     def template(self):
@@ -111,7 +108,6 @@ class ComputingConfiguration(AttributeDict):
         with open(self.compute.submission_template, 'r') as f:
             return f.read()
 
-
     @property
     def templates_folder(self):
         """
@@ -119,7 +115,6 @@ class ComputingConfiguration(AttributeDict):
         :return str: path to folder with default submission templates
         """
         return os.path.join(os.path.dirname(__file__), "submit_templates")
-
 
     def activate_package(self, package_name):
         """
@@ -137,7 +132,7 @@ class ComputingConfiguration(AttributeDict):
             # Augment compute, creating it if needed.
             if self.compute is None:
                 _LOGGER.debug("Creating Project compute")
-                self.compute = AttributeDict()
+                self.compute = AttMap()
                 _LOGGER.debug("Adding entries for package_name '%s'", package_name)
             self.compute.add_entries(self.compute_packages[package_name])
 
@@ -162,7 +157,6 @@ class ComputingConfiguration(AttributeDict):
 
         return False
 
-
     def clean_start(self, package_name):
         """
         Clear settings and then activate the given package.
@@ -173,14 +167,12 @@ class ComputingConfiguration(AttributeDict):
         self.reset_active_settings()
         return self.activate_package(package_name)
 
-
     def get_active_package(self):
         """
         Returns settings for the currently active compute package
-        :return AttributeDict: data defining the active compute package
+        :return AttMap: data defining the active compute package
         """
         return self.compute
-
 
     def list_compute_packages(self):
         """
@@ -189,15 +181,13 @@ class ComputingConfiguration(AttributeDict):
         """
         return set(self.compute_packages.keys())
 
-
     def reset_active_settings(self):
         """
         Clear out current compute settings.
         :return bool: success flag
         """
-        self.compute = AttributeDict()
+        self.compute = AttMap()
         return True
-
 
     def update_packages(self, config_file):
         """
@@ -205,7 +195,6 @@ class ComputingConfiguration(AttributeDict):
         :param str config_file: path to file with
             new divvy configuration data
         """
-
         with open(config_file, 'r') as f:
             _LOGGER.info("Loading divvy config file: %s", config_file)
             env_settings = yaml.load(f)
@@ -229,13 +218,11 @@ class ComputingConfiguration(AttributeDict):
                                     loaded_packages[key][key2])
 
             if self.compute_packages is None:
-                self.compute_packages = AttributeDict(loaded_packages)
+                self.compute_packages = AttMap(loaded_packages)
             else:
                 self.compute_packages.add_entries(loaded_packages)
-
         _LOGGER.info("Available packages: {}".format(self.list_compute_packages()))
         self.config_file = config_file
-
 
     def write_script(self, output_path, extra_vars=None):
         """
@@ -248,17 +235,13 @@ class ComputingConfiguration(AttributeDict):
         :return str: Path to the submission script file
         """
         variables = self.compute
-        
         if extra_vars:
             if not isinstance(extra_vars, list):
                 extra_vars = [extra_vars]
-
             for item in extra_vars:
                 variables.update(item)
-
         _LOGGER.info("Writing script to {}".format(os.path.abspath(output_path)))
         return write_submit_script(output_path, self.template, variables)
-
 
     def _handle_missing_env_attrs(self, config_file, when_missing):
         """ Default environment settings aren't required; warn, though. """

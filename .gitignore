@@ -1,6 +1,9 @@
 # ignore test results
 tests/test/*
 
+# Track submission templates
+!divvy/submit_templates
+
 # toy/experimental files
 *.csv
 *.tsv
