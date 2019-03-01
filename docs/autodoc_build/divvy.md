@@ -1,13 +1,5 @@
 # Package divvy Documentation
 
-Project configuration, particularly for logging.
-
-Project-scope constants may reside here, but more importantly, some setup here
-will provide a logging infrastructure for all of the project's modules.
-Individual modules and classes may provide separate configuration on a more
-local level, but this will at least provide a foundation.
-
-
 ## Class ComputingConfiguration
 Representation of divvy computing configuration file
 Representation of divvy computing configuration file
@@ -174,7 +166,7 @@ D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
 
 If key is not found, d is returned if given, otherwise KeyError is raised.
 ```python
-def pop(self, key, default=<object object at 0x7f5d0764d030>):
+def pop(self, key, default=<object object at 0x7f2dffda3030>):
 ```
 
 
@@ -250,6 +242,21 @@ def write_script(self, output_path, extra_vars=None):
 
 - `output_path` -- `str`:  Path to file to write as submission script
 - `extra_vars` -- `Mapping`:  A list of Dict objects with key-value pairswith which to populate template fields. These will override any values in the currently active compute package.
+
+
+
+
+### write\_submit\_script
+Write a submission script by populating a template with data.
+```python
+def write_submit_script(fp, content, data):
+```
+
+**Parameters:**
+
+- `fp` -- `str`:  Path to the file to which to create/write submissions script.
+- `content` -- `str`:  Template for submission script, defining keys thatwill be filled by given data
+- `data` -- `Mapping`:  a "pool" from which values are available to replacekeys in the template
 
 
 

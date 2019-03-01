@@ -20,6 +20,8 @@ nav:
 theme: databio
 
 plugins:
-  - databio
+  - databio:
+      autodoc_build: "docs/autodoc_build"
+      autodoc_package: "divvy"
+      no_top_level: true
   - search
-
