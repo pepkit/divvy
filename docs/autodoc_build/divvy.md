@@ -54,10 +54,28 @@ def clear(self):
 
 
 
+### compute\_env\_var
+Environment variable through which to access compute settings.
+```python
+def compute_env_var:
+```
+
+
+
+
 ### copy
 Copy self to a new object.
 ```python
 def copy(self):
+```
+
+
+
+
+### default\_config\_file
+Path to default compute environment settings file.
+```python
+def default_config_file:
 ```
 
 
@@ -166,7 +184,7 @@ D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
 
 If key is not found, d is returned if given, otherwise KeyError is raised.
 ```python
-def pop(self, key, default=<object object at 0x7f2dffda3030>):
+def pop(self, key, default=<object object at 0x7fefd2c8d030>):
 ```
 
 
@@ -196,6 +214,24 @@ def reset_active_settings(self):
 D.setdefault(k[,d]) -> D.get(k,d), also set D[k]=d if k not in D
 ```python
 def setdefault(self, key, default=None):
+```
+
+
+
+
+### template
+Get the currently active submission template.
+```python
+def template:
+```
+
+
+
+
+### templates\_folder
+Path to folder with default submission templates.
+```python
+def templates_folder:
 ```
 
 
