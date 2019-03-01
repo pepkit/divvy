@@ -5,12 +5,16 @@ Represents computing configuration objects.
 
 The ComputingConfiguration class provides a computing configuration object
 that is an *in memory* representation of a `divvy` computing configuration
-file.
+file. This object has various functions to allow a user to activate, modify,
+and retrieve computing configuration files, and use these values to populate
+job submission script templates.
 Represents computing configuration objects.
 
 The ComputingConfiguration class provides a computing configuration object
 that is an *in memory* representation of a `divvy` computing configuration
-file.
+file. This object has various functions to allow a user to activate, modify,
+and retrieve computing configuration files, and use these values to populate
+job submission script templates.
 
 **Parameters:**
 
@@ -19,10 +23,11 @@ file.
 
 
 ### activate\_package
-Activates a compute package. This copies the computing attributes from
+Activates a compute package.
 
-the configuration file into the `compute` attribute, where the class
-stores current compute settings.
+This copies the computing attributes from the configuration file into
+the `compute` attribute, where the class stores current compute
+settings.
 ```python
 def activate_package(self, package_name):
 ```
@@ -44,7 +49,7 @@ def add_entries(self, entries):
 
 
 ### clean\_start
-Clear settings and then activate the given package.
+Clear current active settings and then activate the given package.
 ```python
 def clean_start(self, package_name):
 ```
@@ -195,7 +200,7 @@ D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
 
 If key is not found, d is returned if given, otherwise KeyError is raised.
 ```python
-def pop(self, key, default=<object object at 0x7faffdf57030>):
+def pop(self, key, default=<object object at 0x7f45cc70a030>):
 ```
 
 
@@ -263,6 +268,10 @@ def update(*args, **kwds):
 
 ### update\_packages
 Parse data from divvy configuration file.
+
+Given a divvy configuration file, this function will update (not
+overwrite) existing compute packages with existing values. It does not
+affect any currently active settings.
 ```python
 def update_packages(self, config_file):
 ```
@@ -280,7 +289,9 @@ def values(self):
 
 
 ### write\_script
-Given currently active settings, write a job(s) submission script.
+Given currently active settings, populate the active template to write a
+
+ submission script.
 ```python
 def write_script(self, output_path, extra_vars=None):
 ```
