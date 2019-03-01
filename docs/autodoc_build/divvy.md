@@ -1,17 +1,28 @@
 # Package divvy Documentation
 
 ## Class ComputingConfiguration
-Representation of divvy computing configuration file
-Representation of divvy computing configuration file
+Represents computing configuration objects.
+
+The ComputingConfiguration class provides a computing configuration object
+that is an *in memory* representation of a `divvy` computing configuration
+file.
+Represents computing configuration objects.
+
+The ComputingConfiguration class provides a computing configuration object
+that is an *in memory* representation of a `divvy` computing configuration
+file.
 
 **Parameters:**
 
-- `config_file` -- `str`:  YAML file specifying computing package data
+- `config_file` -- `str`:  YAML file specifying computing package data (The`DIVCFG` file).
 - `no_env_error` -- `type`:  type of exception to raise if divvysettings can't be established, optional; if null (the default), a warning message will be logged, and no exception will be raised.
 
 
 ### activate\_package
-Set compute attributes according to settings in environment file.
+Activates a compute package. This copies the computing attributes from
+
+the configuration file into the `compute` attribute, where the class
+stores current compute settings.
 ```python
 def activate_package(self, package_name):
 ```
@@ -54,10 +65,28 @@ def clear(self):
 
 
 
+### compute\_env\_var
+Environment variable through which to access compute settings.
+```python
+def compute_env_var:
+```
+
+
+
+
 ### copy
 Copy self to a new object.
 ```python
 def copy(self):
+```
+
+
+
+
+### default\_config\_file
+Path to default compute environment settings file.
+```python
+def default_config_file:
 ```
 
 
@@ -166,7 +195,7 @@ D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
 
 If key is not found, d is returned if given, otherwise KeyError is raised.
 ```python
-def pop(self, key, default=<object object at 0x7f2dffda3030>):
+def pop(self, key, default=<object object at 0x7faffdf57030>):
 ```
 
 
@@ -196,6 +225,24 @@ def reset_active_settings(self):
 D.setdefault(k[,d]) -> D.get(k,d), also set D[k]=d if k not in D
 ```python
 def setdefault(self, key, default=None):
+```
+
+
+
+
+### template
+Get the currently active submission template.
+```python
+def template:
+```
+
+
+
+
+### templates\_folder
+Path to folder with default submission templates.
+```python
+def templates_folder:
 ```
 
 
