@@ -16,9 +16,16 @@ _LOGGER = logging.getLogger(__name__)
 
 class ComputingConfiguration(AttMap):
     """
-    Representation of divvy computing configuration file
+    Represents computing configuration objects.
+
+    The ComputingConfiguration class provides a computing configuration object
+    that is an *in memory* representation of a `divvy` computing configuration
+    file. This object has various functions to allow a user to activate, modify,
+    and retrieve computing configuration files, and use these values to populate
+    job submission script templates.
     
-    :param str config_file: YAML file specifying computing package data
+    :param str config_file: YAML file specifying computing package data (The
+        `DIVCFG` file).
     :param type no_env_error: type of exception to raise if divvy
         settings can't be established, optional; if null (the default),
         a warning message will be logged, and no exception will be raised.
@@ -84,6 +91,7 @@ class ComputingConfiguration(AttMap):
     def compute_env_var(self):
         """
         Environment variable through which to access compute settings.
+
         :return str: name of the environment variable to pointing to
             compute settings
         """
@@ -93,6 +101,7 @@ class ComputingConfiguration(AttMap):
     def default_config_file(self):
         """
         Path to default compute environment settings file.
+        
         :return str: Path to default compute settings file
         """
         return os.path.join(
@@ -112,13 +121,18 @@ class ComputingConfiguration(AttMap):
     def templates_folder(self):
         """
         Path to folder with default submission templates.
+
         :return str: path to folder with default submission templates
         """
         return os.path.join(os.path.dirname(__file__), "submit_templates")
 
     def activate_package(self, package_name):
         """
-        Set compute attributes according to settings in environment file.
+        Activates a compute package.
+
+        This copies the computing attributes from the configuration file into
+        the `compute` attribute, where the class stores current compute
+        settings.
 
         :param str package_name: name for non-resource compute bundle,
             the name of a subsection in an environment configuration file
@@ -159,7 +173,7 @@ class ComputingConfiguration(AttMap):
 
     def clean_start(self, package_name):
         """
-        Clear settings and then activate the given package.
+        Clear current active settings and then activate the given package.
 
         :param str package_name: name of the resource package to activate
         :return bool: success flag
@@ -170,6 +184,7 @@ class ComputingConfiguration(AttMap):
     def get_active_package(self):
         """
         Returns settings for the currently active compute package
+
         :return AttMap: data defining the active compute package
         """
         return self.compute
@@ -177,6 +192,7 @@ class ComputingConfiguration(AttMap):
     def list_compute_packages(self):
         """
         Returns a list of available compute packages.
+        
         :return set[str]: names of available compute packages
         """
         return set(self.compute_packages.keys())
@@ -184,6 +200,7 @@ class ComputingConfiguration(AttMap):
     def reset_active_settings(self):
         """
         Clear out current compute settings.
+        
         :return bool: success flag
         """
         self.compute = AttMap()
@@ -192,6 +209,11 @@ class ComputingConfiguration(AttMap):
     def update_packages(self, config_file):
         """
         Parse data from divvy configuration file.
+
+        Given a divvy configuration file, this function will update (not
+        overwrite) existing compute packages with existing values. It does not
+        affect any currently active settings.
+        
         :param str config_file: path to file with
             new divvy configuration data
         """
@@ -226,7 +248,8 @@ class ComputingConfiguration(AttMap):
 
     def write_script(self, output_path, extra_vars=None):
         """
-        Given currently active settings, write a job(s) submission script.
+        Given currently active settings, populate the active template to write a
+         submission script.
 
         :param str output_path: Path to file to write as submission script
         :param Mapping extra_vars: A list of Dict objects with key-value pairs
