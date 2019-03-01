@@ -6,10 +6,10 @@ repo_url: http://github.com/databio/divvy
 nav:
   - Getting Started: 
     - Introduction: README.md
+    - Getting started tutorial: tutorial.md
   - How-to Guides:
     - Write a DIVCFG file: configuration.md
     - Configuring containers: containers.md
-    - Using divvy interactively: tutorial.md
   - Reference:
     - API: autodoc_build/divvy.md
     - Support: support.md
