@@ -31,6 +31,8 @@ dcc.activate_package("default")
 dcc.compute
 ```
 
+To begin, check out the [tutorial](/tutorial).
+
 ## Motivation
 
 Originally, [looper](http://looper.readthedocs.io/) was programmed to read a `PEPENV` file, which configured shared computing resources. This capability has utility outside of `looper`, so the `divvy` package was created to abstract all the functionality originally in `PEPENV`. `Divvy` enables any third-party python package (including `looper`) to have direct access to standardized computing configuration files.
