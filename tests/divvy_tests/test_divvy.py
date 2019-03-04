@@ -38,7 +38,7 @@ class ActivatingTests:
     @pytest.mark.parametrize(argnames="package_idx", argvalues=[0, 1])
     def test_activating_some_package(self, dcc, package_idx):
         """ Test if activating the default compute package works for every case """
-        package = dcc.compute_packages.keys()[package_idx]
+        package = list(dcc.compute_packages.keys())[package_idx]
         assert dcc.activate_package(package)
 
     @pytest.mark.parametrize(argnames="package", argvalues=["faulty_package", "another_one", 1])
