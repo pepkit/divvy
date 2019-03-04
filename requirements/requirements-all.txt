@@ -1,4 +1,4 @@
 pandas>=0.20.2
 pyyaml>=3.12
 nbsphinx
-attmap
+attmap>=0.2
