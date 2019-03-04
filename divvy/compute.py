@@ -262,6 +262,7 @@ class ComputingConfiguration(AttMap):
         if extra_vars:
             if not isinstance(extra_vars, list):
                 extra_vars = [extra_vars]
+            extra_vars.reverse()                
             for item in extra_vars:
                 variables.update(item)
         _LOGGER.info("Writing script to {}".format(os.path.abspath(output_path)))
