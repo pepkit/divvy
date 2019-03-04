@@ -1,4 +1,4 @@
-# divvy python package
+# <img src="docs/img/divvy_logo.svg" alt="divvy logo" height="70"/>
 
 [![Build Status](https://travis-ci.org/pepkit/divvy.svg?branch=master)](https://travis-ci.org/pepkit/divvy) [![PEP compatible](http://pepkit.github.io/img/PEP-compatible-green.svg)](http://pepkit.github.io)
 

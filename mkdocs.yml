@@ -1,15 +1,16 @@
 site_name: Divvy
-site_logo: img/logo_divvy_dark.svg
+site_logo: img/divvy_logo_dark.svg
 site_url: http://code.databio.org/divvy/
 repo_url: http://github.com/databio/divvy
 
 nav:
   - Getting Started: 
     - Introduction: README.md
+    - Getting started tutorial: tutorial.md
   - How-to Guides:
     - Write a DIVCFG file: configuration.md
+    - Using divvy with looper: looper.md
     - Configuring containers: containers.md
-    - Using divvy interactively: tutorial.md
   - Reference:
     - API: autodoc_build/divvy.md
     - Support: support.md
@@ -20,5 +21,8 @@ nav:
 theme: databio
 
 plugins:
-  - databio
+  - databio:
+      autodoc_build: "docs/autodoc_build"
+      autodoc_package: "divvy"
+      no_top_level: true
   - search

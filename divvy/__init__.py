@@ -12,11 +12,11 @@ import os
 from sys import stdout
 
 from ._version import __version__
-from .attribute_dict import AttributeDict
 from .compute import ComputingConfiguration
+from .utils import write_submit_script
 
-__classes__ = ["AttributeDict", "ComputingConfiguration"]
-__all__ = __classes__
+__classes__ = ["ComputingConfiguration"]
+__all__ = __classes__ + [write_submit_script.__name__]
 
 LOGGING_LEVEL = "INFO"
 LOGGING_LOCATIONS = (stdout, )
