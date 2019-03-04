@@ -27,13 +27,10 @@ pip install --user --upgrade divvy
 ```{python}
 import divvy
 dcc = divvy.ComputingConfiguration()
-dcc.activate_package("default")
-dcc.compute
+dcc.activate_package("slurm")
+
+# write out a submission script
+dcc.write_script("test_script.sub", {"code": "bowtie2 input.bam output.bam"})
 ```
 
 To begin, check out the [tutorial](/tutorial).
-
-## Motivation
-
-Originally, [looper](http://looper.readthedocs.io/) was programmed to read a `PEPENV` file, which configured shared computing resources. This capability has utility outside of `looper`, so the `divvy` package was created to abstract all the functionality originally in `PEPENV`. `Divvy` enables any third-party python package (including `looper`) to have direct access to standardized computing configuration files.
-
