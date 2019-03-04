@@ -226,7 +226,7 @@ class ComputingConfiguration(AttMap):
             # Any compute.submission_template variables should be made
             # absolute, relative to current divvy configuration file.
             if "compute" in env_settings:
-                _LOGGER.warn("Use 'compute_packages' instead of 'compute'")
+                _LOGGER.warning("Use 'compute_packages' instead of 'compute'")
                 env_settings["compute_packages"] = env_settings["compute"]
 
             loaded_packages = env_settings["compute_packages"]
