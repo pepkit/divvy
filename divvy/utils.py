@@ -351,7 +351,7 @@ def sample_folder(prj, sample):
     """
     Get the path to this Project's root folder for the given Sample.
 
-    :param AttributeDict | Project prj: project with which sample is associated
+    :param AttMap | Project prj: project with which sample is associated
     :param Mapping sample: Sample or sample data for which to get root output
         folder path.
     :return str: this Project's root folder for the given Sample
@@ -563,3 +563,22 @@ def is_command_callable(command, name=""):
         _LOGGER.debug("Command '{0}' is not callable: {1}".
                       format(alias_value, command))
     return not bool(code)
+
+
+def get_first_env_var(ev):
+    """
+    Get the name and value of the first set environment variable
+
+    :param ev: a list of the environment variable names
+    :type: list[str] | str
+    :return: name and the value of the environment variable
+    :rtype: list
+    """
+    if not isinstance(ev, list):
+        if isinstance(ev, str):
+            ev = [ev]
+        else:
+            raise TypeError("The argument has to be a list or string.")
+    for i in ev:
+        if os.getenv(i, False):
+            return [i, os.getenv(i)]

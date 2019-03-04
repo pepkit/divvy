@@ -11,4 +11,3 @@ compute_packages:
   slurm:
     submission_template: slurm_template.sub
     submission_command: sbatch
-    example_variable: blah

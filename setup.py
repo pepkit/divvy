@@ -4,6 +4,7 @@ import os
 from setuptools import setup
 import sys
 
+PACKAGE = "divvy"
 
 # Additional keyword arguments for setup().
 extra = {}
@@ -32,22 +33,7 @@ if sys.version_info >= (3, ):
     extra["use_2to3"] = True
 extra["install_requires"] = DEPENDENCIES
 
-
-# Additional files to include with package
-def get_static(name, condition=None):
-    static = [os.path.join(name, f) for f in os.listdir(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), name))]
-    if condition is None:
-        return static
-    else:
-        return [i for i in filter(lambda x: eval(condition), static)]
-
-# scripts to be added to the $PATH
-# scripts = get_static("scripts", condition="'.' in x")
-# scripts removed (TO remove this)
-scripts = None
-
-with open("divvy/_version.py", 'r') as versionfile:
+with open("{}/_version.py".format(PACKAGE), 'r') as versionfile:
     version = versionfile.readline().split()[-1].strip("\"'\n")
 
 # Handle the pypi README formatting.
@@ -58,8 +44,8 @@ except(IOError, ImportError, OSError):
     long_description = open('README.md').read()
 
 setup(
-    name="divvy",
-    packages=["divvy"],
+    name=PACKAGE,
+    packages=[PACKAGE],
     version=version,
     description="A python-based configuration manager for portable environment configurations",
     long_description=long_description,
@@ -67,16 +53,15 @@ setup(
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: BSD License",
         "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
-        "Topic :: Scientific/Engineering :: Bio-Informatics"
+        "Topic :: System :: Distributed Computing"
     ],
     keywords="project, metadata, bioinformatics, sequencing, ngs, workflow",
-    url='https://github.com/pepkit/divvy/',
+    url="https://github.com/pepkit/{}/".format(PACKAGE),
     author=u"Nathan Sheffield, Vince Reuter",
     license="BSD2",
-    scripts=scripts,
+    package_data={"divvy": [os.path.join("divvy", "*")]},
     include_package_data=True,
     test_suite="tests",
     tests_require=(["mock", "pytest"]),

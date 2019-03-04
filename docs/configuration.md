@@ -1,7 +1,11 @@
 
 # Divvy configuration files
 
-The `DIVCFG` computing environment configuration consists of two components: 1) The `DIVCFG` file itself, and 2) a series of template files.
+## The `$DIVCFG` environment variable
+
+At the heart of `divvy` is a `yaml` configuration file that specifies your available `compute_package`s. Each package represents a computing resource; for example, by default we have 1 package (called `local`) that populates templates to simple run jobs in the local console, and another package (called `slurm`) with a generic template to submit jobs to the SLURM cluster resource manager. You can customize your compute packages as much as you need. 
+
+The file specifying the compute packages is called the `DIVCFG` file. If using `divvy` from within `python`, you can pass a configuration file when you construct a new `ComputingConfiguration` object. If you don't specify one, `divvy` will first look for a file in the `$DIVCFG` environment variable. If it cannot find one there, then it will load a default configuration file with a few basic compute packages.
 
 ## The DIVCFG file
 
@@ -40,7 +44,7 @@ Each compute package specifies a path to a template file (`submission_template`)
 
 ## Template files
 
-Each compute package must point to a template file with the `submission_template` attribute. These template files are typically stored relative to the `DIVCFG` config file. Template files are taken by looper, populated with sample-specific information, and then run as scripts. Here's an example of a generic SLURM template file:
+Each compute package must point to a template file with the `submission_template` attribute. These template files are typically stored relative to the `DIVCFG` config file. Template files are taken by `divvy`, populated with job-specific information, and then run as scripts. Here's an example of a generic SLURM template file:
 
 ```{bash}
 #!/bin/bash
@@ -59,7 +63,7 @@ echo 'Start time:' `date +'%Y-%m-%d %T'`
 srun {CODE}
 ```
 
-Template files use variables (*e.g.* `{VARIABLE}`), which will be populated independently for each sample. The variables specified in these template files (like `{LOGFILE}` or `{CORES}`) are replaced by looper when it creates a job script.
+Template files use variables (*e.g.* `{VARIABLE}`), which will be populated independently for each job.
 
 This `DIVCFG` repository comes with some commonly used templates (in the [templates](/templates) folder):
 
@@ -67,34 +71,5 @@ This `DIVCFG` repository comes with some commonly used templates (in the [templa
   - SGE: [sge_template.sub](/templates/sge_template.sub)
   - localhost (compute locally): [localhost_template.sub](/tempaltes/localhost_template.sub)
 
-Most users will not need to tweak the template files, but if you need to, you can also create your own templates, giving looper ultimate flexibility to work with any compute infrastructure in any environment. To create a custom template, just follow the examples and put together what you need. Then, point to your custom template in the `submission_template` attribute of a compute package in your `DIVCFG` config file. If you make a useful template, please contribute your new templates back to this repository!
+Most users will not need to tweak the template files, but if you need to, you can also create your own templates, giving `divvy` ultimate flexibility to work with any compute infrastructure in any environment. To create a custom template, just follow the examples and put together what you need. Then, point to your custom template in the `submission_template` attribute of a compute package in your `DIVCFG` config file.
 
-### Data sources for populating template variables
-
-What is the source of values used to populate the variables? Well, they are pooled together from several sources. Divvy uses a hierarchical system to collect data values from global and local sources, which enables you to re-use settings across projects and environments. To start, there are a few built-ins:
-
-Built-in variables:
-
-- `{CODE}` is a reserved variable that refers to the actual command string that will run the pipeline. `Looper` will piece together this command individually for each sample
-- `{JOBNAME}` -- automatically produced by `looper` using the `sample_name` and the pipeline name.
-- `{LOGFILE}` -- automatically produced by `looper` using the `sample_name` and the pipeline name.
-
-
-Other variables are not automatically created by `looper` and are specified in a few different places:
-
-*DIVCFG config file*. Variables that describes settings of a **compute environment** should go in the `DIVCFG` file. Any attributes in the activated compute package will be available to populate template variables. For example, the `partition` attribute is specified in many of our default `DIVCFG` files; that attribute is used to populate a template `{PARTITION}` variable. This is what enables pipelines to work in any compute environment, since we have no control over what your partitions are named. You can also use this to change SLURM queues on-the-fly.
-
-*pipeline_interface.yaml*. Variables that are **specific to a pipeline** can be defined in the `pipeline interface` file. Variables in two different sections are available to templates: the `compute` and `resources` sections. The difference between the two is that the `compute` section is common to all samples, while the `resources` section varies based on sample input size. As an example of a variable pulled from the `compute` section, we defined in our `pipeline_interface.yaml` a variable pointing to the singularity or docker image that can be used to run the pipeline, like this:
-
-```
-compute:
-  singularity_image: /absolute/path/to/images/image
-```
-
-Now, this variable will be available for use in a template as `{SINGULARITY_IMAGE}`. This makes sense to put in the `compute` section because it doesn't change for different sizes of input files. This path should probably be absolute, because a relative path will be interpreted as relative to the working directory where your job is executed (*not* relative to the pipeline interface).
-
-The other pipeline interface section that is available to templates is `resources`. This section uses a list of *resource packages* that vary based on sample input size. We use these in existing templates to adjust the amount of resources we need to request from a resource manager like SLURM. For example: `{MEM}`, `{CORES}`, and `{TIME}` are all defined in this section, and they vary for different input file sizes.
-
-[Read more about pipeline_interface.yaml here](http://looper.readthedocs.io/en/latest/pipeline-interface.html).
-
-*project_config.yaml*. Finally, project-level variables can also be populated from the `compute` section of a project config file. We don't recommend using this and it is not yet well documented, but it would enable you to make project-specific compute changes (such as billing a particular project to a particular SLURM resource account).
