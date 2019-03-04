@@ -1,17 +1,27 @@
 # Package divvy Documentation
 
 ## Class ComputingConfiguration
-Representation of divvy computing configuration file
+Represents computing configuration objects.
+
+The ComputingConfiguration class provides a computing configuration object
+that is an *in memory* representation of a `divvy` computing configuration
+file. This object has various functions to allow a user to activate, modify,
+and retrieve computing configuration files, and use these values to populate
+job submission script templates.
 
 **Parameters:**
 
-- `config_file` -- `str`:  YAML file specifying computing package data
+- `config_file` -- `str`:  YAML file specifying computing package data (The`DIVCFG` file).
 - `no_env_error` -- `type`:  type of exception to raise if divvysettings can't be established, optional; if null (the default), a warning message will be logged, and no exception will be raised.
 - `no_compute_exception` -- `type`:  type of exception to raise if computesettings can't be established, optional; if null (the default), a warning message will be logged, and no exception will be raised.
 
 
 ### activate\_package
-Set compute attributes according to settings in environment file.
+Activates a compute package.
+
+This copies the computing attributes from the configuration file into
+the `compute` attribute, where the class stores current compute
+settings.
 ```python
 def activate_package(self, package_name):
 ```
@@ -29,7 +39,7 @@ def activate_package(self, package_name):
 
 
 ### clean\_start
-Clear settings and then activate the given package.
+Clear current active settings and then activate the given package.
 ```python
 def clean_start(self, package_name):
 ```
@@ -139,6 +149,10 @@ def templates_folder:
 
 ### update\_packages
 Parse data from divvy configuration file.
+
+Given a divvy configuration file, this function will update (not
+overwrite) existing compute packages with existing values. It does not
+affect any currently active settings.
 ```python
 def update_packages(self, config_file):
 ```
@@ -151,7 +165,7 @@ def update_packages(self, config_file):
 
 
 ### write\_script
-Given currently active settings, write a job(s) submission script.
+Given currently active settings, populate the active template to write a submission script.
 ```python
 def write_script(self, output_path, extra_vars=None):
 ```

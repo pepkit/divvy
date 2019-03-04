@@ -9,6 +9,7 @@ nav:
     - Getting started tutorial: tutorial.md
   - How-to Guides:
     - Write a DIVCFG file: configuration.md
+    - Using divvy with looper: looper.md
     - Configuring containers: containers.md
   - Reference:
     - API: autodoc_build/divvy.md
