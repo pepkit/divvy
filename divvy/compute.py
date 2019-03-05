@@ -92,8 +92,8 @@ class ComputingConfiguration(AttMap):
         """
         Environment variable through which to access compute settings.
 
-        :return str: name of the environment variable to pointing to
-            compute settings
+        :return list[str]: names of candidate environment variables, for which
+            value may be path to compute settings file; first found is used.
         """
         return COMPUTE_SETTINGS_VARNAME
 
