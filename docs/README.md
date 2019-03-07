@@ -33,4 +33,4 @@ dcc.activate_package("slurm")
 dcc.write_script("test_script.sub", {"code": "bowtie2 input.bam output.bam"})
 ```
 
-To begin, check out the [tutorial](/tutorial).
+To begin, check out the [tutorial](tutorial).
