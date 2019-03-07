@@ -92,8 +92,8 @@ class ComputingConfiguration(AttMap):
         """
         Environment variable through which to access compute settings.
 
-        :return str: name of the environment variable to pointing to
-            compute settings
+        :return list[str]: names of candidate environment variables, for which
+            value may be path to compute settings file; first found is used.
         """
         return COMPUTE_SETTINGS_VARNAME
 
@@ -252,7 +252,7 @@ class ComputingConfiguration(AttMap):
          submission script.
 
         :param str output_path: Path to file to write as submission script
-        :param Mapping extra_vars: A list of Dict objects with key-value pairs
+        :param Iterable[Mapping] extra_vars: A list of Dict objects with key-value pairs
             with which to populate template fields. These will override any
             values in the currently active compute package.
         :return str: Path to the submission script file
@@ -262,9 +262,8 @@ class ComputingConfiguration(AttMap):
         if extra_vars:
             if not isinstance(extra_vars, list):
                 extra_vars = [extra_vars]
-            extra_vars.reverse()                
-            for item in extra_vars:
-                variables.update(item)
+            for kvs in reversed(extra_vars):
+                variables.update(kvs)
         _LOGGER.info("Writing script to {}".format(os.path.abspath(output_path)))
         return write_submit_script(output_path, self.template, variables)
 
