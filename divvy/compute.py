@@ -293,7 +293,7 @@ class _VersionInHelpParser(argparse.ArgumentParser):
 def main():
     """ Primary workflow """
 
-    banner = "%(prog)s - Loop through samples and submit pipelines."
+    banner = "%(prog)s - write compute jobs that can be submitted to any computing resource"
     additional_description = "\nhttps://github.com/pepkit/divvy"
 
     parser = _VersionInHelpParser(
