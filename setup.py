@@ -61,6 +61,11 @@ setup(
     url="https://github.com/pepkit/{}/".format(PACKAGE),
     author=u"Nathan Sheffield, Vince Reuter",
     license="BSD2",
+    entry_points={
+        "console_scripts": [
+            'divvy = divvy.compute:main'
+        ],
+    },    
     package_data={"divvy": [os.path.join("divvy", "*")]},
     include_package_data=True,
     test_suite="tests",
