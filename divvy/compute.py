@@ -49,11 +49,11 @@ class ComputingConfiguration(AttMap):
                               format(config_file))
                 raise IOError(config_file)
         else:
-            _LOGGER.info("No local config file was provided")
+            _LOGGER.debug("No local config file was provided")
             _LOGGER.debug("Checking this set of environment variables: {}".format(self.compute_env_var))
             divcfg_env_var, divcfg_file = get_first_env_var(self.compute_env_var) or ["", ""]
             if os.path.isfile(divcfg_file):
-                _LOGGER.info("Found global config file in {}: {}".
+                _LOGGER.debug("Found global config file in {}: {}".
                              format(divcfg_env_var, divcfg_file))
                 self.config_file = divcfg_file
             else:
@@ -226,7 +226,7 @@ class ComputingConfiguration(AttMap):
             # Any compute.submission_template variables should be made
             # absolute, relative to current divvy configuration file.
             if "compute" in env_settings:
-                _LOGGER.warning("Use 'compute_packages' instead of 'compute'")
+                _LOGGER.warning("In your divvy config file, please use 'compute_packages' instead of 'compute'")
                 env_settings["compute_packages"] = env_settings["compute"]
 
             loaded_packages = env_settings["compute_packages"]
@@ -243,7 +243,7 @@ class ComputingConfiguration(AttMap):
                 self.compute_packages = AttMap(loaded_packages)
             else:
                 self.compute_packages.add_entries(loaded_packages)
-        _LOGGER.info("Available packages: {}".format(self.list_compute_packages()))
+        _LOGGER.info("Available packages: {}".format(', '.join(self.list_compute_packages())))
         self.config_file = config_file
 
     def write_script(self, output_path, extra_vars=None):
