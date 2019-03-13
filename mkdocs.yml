@@ -7,7 +7,8 @@ pypi_name: divvy
 nav:
   - Getting Started: 
     - Introduction: README.md
-    - Getting started tutorial: tutorial.md
+    - "Tutorial: divvy in python": tutorial.md
+    - "Tutorial: divvy on the command line": cli.md
   - How-to Guides:
     - Write a DIVCFG file: configuration.md
     - Using divvy with looper: looper.md

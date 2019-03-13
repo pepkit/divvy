@@ -59,9 +59,8 @@ class ComputingConfiguration(AttMap):
                              format(divcfg_env_var, divcfg_file))
                 self.config_file = divcfg_file
             else:
-                _LOGGER.info("No global config file was provided in environment "
+                _LOGGER.info("Using default config file, no global config file provided in environment "
                              "variable(s): {}".format(str(self.compute_env_var)))
-                _LOGGER.info("Using default config file.")
                 self.config_file = self.default_config_file
 
         try:
@@ -326,12 +325,8 @@ def main():
 
     keys = [str.replace(x, "--", "") for x in remaining_args[::2]]
     custom_vars = dict(zip(keys, remaining_args[1::2]))
-    _LOGGER.info("Custom vars: {}", custom_vars)
-
-
     dcc = ComputingConfiguration(args.config)
     dcc.activate_package(args.package)
-    yaml_vars = {}
     if args.settings:
         with open(args.settings, 'r') as f:
             _LOGGER.info("Loading yaml settings file: %s", args.settings)
