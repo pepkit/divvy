@@ -1,7 +1,9 @@
 """ Computing configuration representation """
 
+import argparse
 import logging
 import os
+from sys import stdout
 import yaml
 
 from attmap import AttMap
@@ -9,7 +11,7 @@ from .const import \
     COMPUTE_SETTINGS_VARNAME, \
     DEFAULT_COMPUTE_RESOURCES_NAME
 from .utils import write_submit_script, get_first_env_var
-
+from . import  __version__
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -49,17 +51,16 @@ class ComputingConfiguration(AttMap):
                               format(config_file))
                 raise IOError(config_file)
         else:
-            _LOGGER.info("No local config file was provided")
+            _LOGGER.debug("No local config file was provided")
             _LOGGER.debug("Checking this set of environment variables: {}".format(self.compute_env_var))
             divcfg_env_var, divcfg_file = get_first_env_var(self.compute_env_var) or ["", ""]
             if os.path.isfile(divcfg_file):
-                _LOGGER.info("Found global config file in {}: {}".
+                _LOGGER.debug("Found global config file in {}: {}".
                              format(divcfg_env_var, divcfg_file))
                 self.config_file = divcfg_file
             else:
-                _LOGGER.info("No global config file was provided in environment "
+                _LOGGER.info("Using default config file, no global config file provided in environment "
                              "variable(s): {}".format(str(self.compute_env_var)))
-                _LOGGER.info("Using default config file.")
                 self.config_file = self.default_config_file
 
         try:
@@ -92,8 +93,8 @@ class ComputingConfiguration(AttMap):
         """
         Environment variable through which to access compute settings.
 
-        :return str: name of the environment variable to pointing to
-            compute settings
+        :return list[str]: names of candidate environment variables, for which
+            value may be path to compute settings file; first found is used.
         """
         return COMPUTE_SETTINGS_VARNAME
 
@@ -226,7 +227,7 @@ class ComputingConfiguration(AttMap):
             # Any compute.submission_template variables should be made
             # absolute, relative to current divvy configuration file.
             if "compute" in env_settings:
-                _LOGGER.warning("Use 'compute_packages' instead of 'compute'")
+                _LOGGER.warning("In your divvy config file, please use 'compute_packages' instead of 'compute'")
                 env_settings["compute_packages"] = env_settings["compute"]
 
             loaded_packages = env_settings["compute_packages"]
@@ -243,7 +244,7 @@ class ComputingConfiguration(AttMap):
                 self.compute_packages = AttMap(loaded_packages)
             else:
                 self.compute_packages.add_entries(loaded_packages)
-        _LOGGER.info("Available packages: {}".format(self.list_compute_packages()))
+        _LOGGER.info("Available packages: {}".format(', '.join(self.list_compute_packages())))
         self.config_file = config_file
 
     def write_script(self, output_path, extra_vars=None):
@@ -252,7 +253,7 @@ class ComputingConfiguration(AttMap):
          submission script.
 
         :param str output_path: Path to file to write as submission script
-        :param Mapping extra_vars: A list of Dict objects with key-value pairs
+        :param Iterable[Mapping] extra_vars: A list of Dict objects with key-value pairs
             with which to populate template fields. These will override any
             values in the currently active compute package.
         :return str: Path to the submission script file
@@ -262,9 +263,8 @@ class ComputingConfiguration(AttMap):
         if extra_vars:
             if not isinstance(extra_vars, list):
                 extra_vars = [extra_vars]
-            extra_vars.reverse()                
-            for item in extra_vars:
-                variables.update(item)
+            for kvs in reversed(extra_vars):
+                variables.update(kvs)
         _LOGGER.info("Writing script to {}".format(os.path.abspath(output_path)))
         return write_submit_script(output_path, self.template, variables)
 
@@ -281,3 +281,63 @@ class ComputingConfiguration(AttMap):
             _LOGGER.warning(message)
         else:
             when_missing(message)
+
+
+class _VersionInHelpParser(argparse.ArgumentParser):
+    def format_help(self):
+        """ Add version information to help text. """
+        return "version: {}\n".format(__version__) + \
+               super(_VersionInHelpParser, self).format_help()
+
+def main():
+    """ Primary workflow """
+
+    banner = "%(prog)s - write compute jobs that can be submitted to any computing resource"
+    additional_description = "\nhttps://github.com/pepkit/divvy"
+
+    parser = _VersionInHelpParser(
+            description=banner,
+            epilog=additional_description)
+
+    parser.add_argument(
+            "-V", "--version",
+            action="version",
+            version="%(prog)s {v}".format(v=__version__))
+
+    parser.add_argument(
+            "-C", "--config",
+            help="Divvy configuration file.")
+
+    parser.add_argument(
+            "-S", "--settings",
+            help="YAML file with job settings to populate the template.")    
+
+    parser.add_argument(
+            "-P", "--package", default="default",
+            help="Compute package")
+
+    parser.add_argument(
+            "-O", "--outfile", required=True,
+            help="Output filepath")
+
+
+    args, remaining_args = parser.parse_known_args()
+
+    keys = [str.replace(x, "--", "") for x in remaining_args[::2]]
+    custom_vars = dict(zip(keys, remaining_args[1::2]))
+    dcc = ComputingConfiguration(args.config)
+    dcc.activate_package(args.package)
+    if args.settings:
+        with open(args.settings, 'r') as f:
+            _LOGGER.info("Loading yaml settings file: %s", args.settings)
+            yaml_vars = yaml.load(f)
+        dcc.write_script(args.outfile, [custom_vars, yaml_vars])
+    else:
+        dcc.write_script(args.outfile, custom_vars)
+
+if __name__ == '__main__':
+    try:
+        sys.exit(main())
+    except KeyboardInterrupt:
+        _LOGGER.error("Program canceled by user!")
+        sys.exit(1)
