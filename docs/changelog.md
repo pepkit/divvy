@@ -1,6 +1,6 @@
 # Changelog
 
-## divvy [0.2] - Unreleased
+## divvy [0.2] - 2019-03-13
 
 ### Added
  - Implemented a `divvy` command-line interface

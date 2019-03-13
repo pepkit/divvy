@@ -11,7 +11,6 @@ nav:
     - "Tutorial: divvy on the command line": cli.md
   - How-to Guides:
     - Write a DIVCFG file: configuration.md
-    - Using divvy with looper: looper.md
     - Configuring containers: containers.md
   - Reference:
     - API: autodoc_build/divvy.md
