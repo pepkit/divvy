@@ -64,7 +64,7 @@ def compute_env_var:
 
 **Returns:**
 
-`str`:  name of the environment variable to pointing tocompute settings
+`list[str]`:  names of candidate environment variables, for whichvalue may be path to compute settings file; first found is used.
 
 
 
@@ -173,7 +173,7 @@ def write_script(self, output_path, extra_vars=None):
 **Parameters:**
 
 - `output_path` -- `str`:  Path to file to write as submission script
-- `extra_vars` -- `Mapping`:  A list of Dict objects with key-value pairswith which to populate template fields. These will override any values in the currently active compute package.
+- `extra_vars` -- `Iterable[Mapping]`:  A list of Dict objects with key-value pairswith which to populate template fields. These will override any values in the currently active compute package.
 
 
 **Returns:**

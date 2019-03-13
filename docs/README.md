@@ -24,6 +24,8 @@ pip install --user --upgrade divvy
 
 ## Quick start
 
+Use `divvy` via python interface:
+
 ```{python}
 import divvy
 dcc = divvy.ComputingConfiguration()
@@ -33,4 +35,10 @@ dcc.activate_package("slurm")
 dcc.write_script("test_script.sub", {"code": "bowtie2 input.bam output.bam"})
 ```
 
-To begin, check out the [tutorial](/tutorial).
+Or via command-line:
+
+```{console}
+divvy --package slurm --settings myjob.yaml --sample sample1 --outfile submit_script.txt
+```
+
+To begin, check out the [tutorial](tutorial).

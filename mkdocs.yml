@@ -2,14 +2,15 @@ site_name: Divvy
 site_logo: img/divvy_logo_dark.svg
 site_url: http://code.databio.org/divvy/
 repo_url: http://github.com/databio/divvy
+pypi_name: divvy
 
 nav:
   - Getting Started: 
     - Introduction: README.md
-    - Getting started tutorial: tutorial.md
+    - "Tutorial: divvy in python": tutorial.md
+    - "Tutorial: divvy on the command line": cli.md
   - How-to Guides:
     - Write a DIVCFG file: configuration.md
-    - Using divvy with looper: looper.md
     - Configuring containers: containers.md
   - Reference:
     - API: autodoc_build/divvy.md

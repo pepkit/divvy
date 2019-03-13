@@ -1,7 +1,7 @@
 
-# Configuring docker or singularity container computing with divvy
+# Configuring containers with divvy
 
-The `DIVCFG` framework is a natural way to run commands in a container. All we need to do is 1) design a template that will run the job in the container, instead of natively; and 2) create a new compute package that will use that template. **To use containers with looper requires `looper`version >= 0.9**.
+The `DIVCFG` framework is a natural way to run commands in a container, for example, using `docker` or `singularity`. All we need to do is 1) design a template that will run the job in the container, instead of natively; and 2) create a new compute package that will use that template.
 
 ## A template for container runs
 
@@ -20,13 +20,13 @@ srun singularity exec instance://{JOBNAME}_image {CODE}
 singularity instance.stop {JOBNAME}_image
 ```
 
-This template uses a few of the automatic variables defined earlier (`JOBNAME` and `CODE`) but adds two more: `{SINGULARITY_ARGS}` and `{SINGULARITY_IMAGE}`. For the *image*, this should point to a singularity image that could vary by pipeline, so it makes most sense to define this variable in the `pipeline_interface.yaml` file. So, any pipeline that provides a container should probably include a `compute: singularity_image:` attribute providing a place to point to the appropriate container image.
+This template uses a few of the automatic variables defined earlier (`JOBNAME` and `CODE`) but adds two more: `{SINGULARITY_ARGS}` and `{SINGULARITY_IMAGE}`. For the *image*, this should point to a singularity image that could vary by pipeline, so it makes most sense to define this variable in the `pipeline_interface.yaml` file. So, any pipeline that provides a container should probably include a `singularity_image` attribute providing a place to point to the appropriate container image.
 
 Of course, you will also need to make sure that you have access to `singularity` command from the compute nodes; on some clusters, you may need to add a `module load singularity` (or some variation) to enable it.
 
 The `{SINGULARITY_ARGS}` variable comes just right after the `instance.start` command, and can be used to pass any command-line arguments to singularity. We use these, for example, to bind host disk paths into the container. **It is critical that you explicitly bind any file systems with data necessary for the pipeline so the running container can see those files**. The [singularity documentation](https://singularity.lbl.gov/docs-mount#specifying-bind-paths) explains this, and you can find other arguments detailed there. Because this setting describes something about the computing environment (rather than an individual pipeline or sample), it makes most sense to put it in the `DIVCFG` environment configuration file. The next section includes examples of how to use `singularity_args`.
 
-## Adding compute packages for container runs.
+## Adding compute packages for container templates
 
 To add a package for these templates to a `DIVCFG` file, we just add a new section. There are a few examples in this repository. A singularity example we use at UVA looks like this:
 
