@@ -1,0 +1,14 @@
+#!/bin/bash
+#SBATCH --job-name='{JOBNAME}'
+#SBATCH --output='results.log'
+#SBATCH --mem='{MEM}'
+#SBATCH --cpus-per-task='6'
+#SBATCH --time='4-0-0'
+#SBATCH --partition='large_mem'
+#SBATCH -m block
+#SBATCH --ntasks=1
+
+echo 'Compute node:' `hostname`
+echo 'Start time:' `date +'%Y-%m-%d %T'`
+
+{CODE}

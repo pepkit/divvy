@@ -1,0 +1,4 @@
+time: 4-0-0
+logfile: results.log
+cores: 6
+partition: large_mem
