@@ -1,7 +1,7 @@
 
 # Divvy configuration files
 
-## The `$DIVCFG` environment variable
+## The DIVCFG environment variable
 
 At the heart of `divvy` is a `yaml` configuration file that specifies your available `compute_package`s. Each package represents a computing resource; for example, by default we have 1 package (called `local`) that populates templates to simple run jobs in the local console, and another package (called `slurm`) with a generic template to submit jobs to a SLURM cluster resource manager. By just choosing `local` or `slurm` you can change where your job is run. You can customize your compute packages as much as you need. 
 
