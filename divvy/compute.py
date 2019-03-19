@@ -6,7 +6,7 @@ import os
 from sys import stdout
 import yaml
 
-from attmap import AttMap
+from attmap import PepAttMap
 from .const import \
     COMPUTE_SETTINGS_VARNAME, \
     DEFAULT_COMPUTE_RESOURCES_NAME
@@ -16,7 +16,7 @@ from . import  __version__
 _LOGGER = logging.getLogger(__name__)
 
 
-class ComputingConfiguration(AttMap):
+class ComputingConfiguration(PepAttMap):
     """
     Represents computing configuration objects.
 
@@ -147,7 +147,7 @@ class ComputingConfiguration(AttMap):
             # Augment compute, creating it if needed.
             if self.compute is None:
                 _LOGGER.debug("Creating Project compute")
-                self.compute = AttMap()
+                self.compute = PepAttMap()
                 _LOGGER.debug("Adding entries for package_name '%s'", package_name)
             self.compute.add_entries(self.compute_packages[package_name])
 
@@ -186,7 +186,7 @@ class ComputingConfiguration(AttMap):
         """
         Returns settings for the currently active compute package
 
-        :return AttMap: data defining the active compute package
+        :return PepAttMap: data defining the active compute package
         """
         return self.compute
 
@@ -204,7 +204,7 @@ class ComputingConfiguration(AttMap):
         
         :return bool: success flag
         """
-        self.compute = AttMap()
+        self.compute = PepAttMap()
         return True
 
     def update_packages(self, config_file):
@@ -241,7 +241,7 @@ class ComputingConfiguration(AttMap):
                                     loaded_packages[key][key2])
 
             if self.compute_packages is None:
-                self.compute_packages = AttMap(loaded_packages)
+                self.compute_packages = PepAttMap(loaded_packages)
             else:
                 self.compute_packages.add_entries(loaded_packages)
         _LOGGER.info("Available packages: {}".format(', '.join(self.list_compute_packages())))
