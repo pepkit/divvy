@@ -1,5 +1,5 @@
 import pytest
-from attmap import PepAttMap
+from attmap import PathExAttMap
 from tests.conftest import DCC_ATTRIBUTES, FILES
 
 class DefaultDCCTests:
@@ -51,9 +51,9 @@ class GettingActivePackageTests:
     """ Test for the get_active_package method"""
 
     def test_settings_nonempty(self, dcc):
-        """ Test if get_active_package produces a nonempty PepAttMap object """
+        """ Test if get_active_package produces a nonempty PathExAttMap object """
         settings = dcc.get_active_package()
-        assert settings != PepAttMap()
+        assert settings != PathExAttMap()
 
 
 class ListingPackagesTests:
@@ -88,7 +88,7 @@ class UpdatingPackagesTests:
     def test_update_packages(self, dcc, config_file):
         """ Test updating does not produce empty compute packages """
         dcc.update_packages(config_file)
-        assert dcc.compute_packages != PepAttMap()
+        assert dcc.compute_packages != PathExAttMap()
 
 
 
