@@ -1,5 +1,10 @@
 # Changelog
 
+## divvy [0.2.1] - 2019-03-19
+
+### Changed
+- For environment variable population, use updated version of `attmap`
+
 ## divvy [0.2] - 2019-03-13
 
 ### Added
