@@ -3,8 +3,9 @@
 import argparse
 import logging
 import os
-from sys import stdout
+import sys
 import yaml
+from yaml import SafeLoader
 
 from attmap import PathExAttMap
 from .const import \
@@ -220,7 +221,7 @@ class ComputingConfiguration(PathExAttMap):
         """
         with open(config_file, 'r') as f:
             _LOGGER.info("Loading divvy config file: %s", config_file)
-            env_settings = yaml.load(f)
+            env_settings = yaml.load(f, SafeLoader)
             _LOGGER.debug("Parsed environment settings: %s",
                           str(env_settings))
 
@@ -289,6 +290,7 @@ class _VersionInHelpParser(argparse.ArgumentParser):
         return "version: {}\n".format(__version__) + \
                super(_VersionInHelpParser, self).format_help()
 
+
 def main():
     """ Primary workflow """
 
@@ -330,10 +332,11 @@ def main():
     if args.settings:
         with open(args.settings, 'r') as f:
             _LOGGER.info("Loading yaml settings file: %s", args.settings)
-            yaml_vars = yaml.load(f)
+            yaml_vars = yaml.load(f, SafeLoader)
         dcc.write_script(args.outfile, [custom_vars, yaml_vars])
     else:
         dcc.write_script(args.outfile, custom_vars)
+
 
 if __name__ == '__main__':
     try:
