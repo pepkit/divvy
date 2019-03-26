@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+- Safer use of `yaml`
+
 ## divvy [0.2.1] - 2019-03-19
 
 ### Changed

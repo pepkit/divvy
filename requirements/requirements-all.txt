@@ -1,5 +1,4 @@
 pandas>=0.20.2
-pyyaml>=3.12
-nbsphinx
+pyyaml>=5.1
 attmap>=0.4
 
