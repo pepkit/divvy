@@ -328,7 +328,6 @@ def main():
     def add_subparser(cmd):
         return subparsers.add_parser(cmd, description=msg_by_cmd[cmd], help=msg_by_cmd[cmd])
 
-    list_subparser = add_subparser("list")
     write_subparser = add_subparser("write")
 
     write_subparser.add_argument(
@@ -343,12 +342,10 @@ def main():
             "-O", "--outfile", required=True,
             help="Output filepath")
 
-
     args, remaining_args = parser.parse_known_args()
     keys = [str.replace(x, "--", "") for x in remaining_args[::2]]
     custom_vars = dict(zip(keys, remaining_args[1::2]))
     dcc = ComputingConfiguration(args.config)
-
 
     if args.command == "list":
         _LOGGER.info("Available compute packages: {}".format(', '.join(dcc.list_compute_packages())))
