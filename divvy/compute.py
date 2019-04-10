@@ -312,11 +312,18 @@ def main():
             help="Divvy configuration file.")
 
     subparsers = parser.add_subparsers(dest="command") 
-    list_subparser = subparsers.add_parser("list", description="Lists available packages",
-        help="Run 'divvy list' to list available packages")
 
-    write_subparser = subparsers.add_parser("write", description="write compute job script",
-        help="write compute job script")
+    # Individual subcommands
+    msg_by_cmd = {
+            "list": "List available compute packages",
+            "write": "Write a submit script"
+            }
+
+    def add_subparser(cmd):
+        return subparsers.add_parser(cmd, description=msg_by_cmd[cmd], help=msg_by_cmd[cmd])
+
+    list_subparser = add_subparser("list")
+    write_subparser = add_subparser("write")
 
     write_subparser.add_argument(
             "-S", "--settings",
