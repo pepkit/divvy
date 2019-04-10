@@ -128,6 +128,7 @@ class ComputingConfiguration(PathExAttMap):
         """
         return os.path.join(os.path.dirname(__file__), "submit_templates")
 
+
     def activate_package(self, package_name):
         """
         Activates a compute package.
@@ -228,7 +229,7 @@ class ComputingConfiguration(PathExAttMap):
             # Any compute.submission_template variables should be made
             # absolute, relative to current divvy configuration file.
             if "compute" in env_settings:
-                _LOGGER.warning("In your divvy config file, please use 'compute_packages' instead of 'compute'")
+                _LOGGER.warning("DEPRECATION WARNING: Divvy compute configuration 'compute' section changed to 'compute_packages'")
                 env_settings["compute_packages"] = env_settings["compute"]
 
             loaded_packages = env_settings["compute_packages"]
@@ -245,7 +246,7 @@ class ComputingConfiguration(PathExAttMap):
                 self.compute_packages = PathExAttMap(loaded_packages)
             else:
                 self.compute_packages.add_entries(loaded_packages)
-        _LOGGER.info("Available packages: {}".format(', '.join(self.list_compute_packages())))
+        _LOGGER.debug("Available divvy packages: {}".format(', '.join(self.list_compute_packages())))
         self.config_file = config_file
 
     def write_script(self, output_path, extra_vars=None):
@@ -294,7 +295,7 @@ class _VersionInHelpParser(argparse.ArgumentParser):
 def main():
     """ Primary workflow """
 
-    banner = "%(prog)s - write compute jobs that can be submitted to any computing resource"
+    banner = "%(prog)s - write compute job scripts that can be submitted to any computing resource"
     additional_description = "\nhttps://github.com/pepkit/divvy"
 
     parser = _VersionInHelpParser(
@@ -310,24 +311,36 @@ def main():
             "-C", "--config",
             help="Divvy configuration file.")
 
-    parser.add_argument(
+    subparsers = parser.add_subparsers(dest="command") 
+    list_subparser = subparsers.add_parser("list", description="Lists available packages",
+        help="Run 'divvy list' to list available packages")
+
+    write_subparser = subparsers.add_parser("write", description="write compute job script",
+        help="write compute job script")
+
+    write_subparser.add_argument(
             "-S", "--settings",
             help="YAML file with job settings to populate the template.")    
 
-    parser.add_argument(
+    write_subparser.add_argument(
             "-P", "--package", default="default",
             help="Compute package")
 
-    parser.add_argument(
+    write_subparser.add_argument(
             "-O", "--outfile", required=True,
             help="Output filepath")
 
 
     args, remaining_args = parser.parse_known_args()
-
     keys = [str.replace(x, "--", "") for x in remaining_args[::2]]
     custom_vars = dict(zip(keys, remaining_args[1::2]))
     dcc = ComputingConfiguration(args.config)
+
+
+    if args.command == "list":
+        _LOGGER.info("Available compute packages: {}".format(', '.join(dcc.list_compute_packages())))
+        sys.exit(1)
+
     dcc.activate_package(args.package)
     if args.settings:
         with open(args.settings, 'r') as f:
