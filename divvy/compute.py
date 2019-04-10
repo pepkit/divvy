@@ -4,6 +4,7 @@ import argparse
 import logging
 import os
 import sys
+import warnings
 import yaml
 from yaml import SafeLoader
 
@@ -12,7 +13,7 @@ from .const import \
     COMPUTE_SETTINGS_VARNAME, \
     DEFAULT_COMPUTE_RESOURCES_NAME
 from .utils import write_submit_script, get_first_env_var
-from . import  __version__
+from . import __version__
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -226,11 +227,16 @@ class ComputingConfiguration(PathExAttMap):
             _LOGGER.debug("Parsed environment settings: %s",
                           str(env_settings))
 
+            old_compute_key = "compute"
+            new_compute_key = "compute_packages"
+
             # Any compute.submission_template variables should be made
             # absolute, relative to current divvy configuration file.
-            if "compute" in env_settings:
-                _LOGGER.warning("DEPRECATION WARNING: Divvy compute configuration 'compute' section changed to 'compute_packages'")
-                env_settings["compute_packages"] = env_settings["compute"]
+            if old_compute_key in env_settings:
+                warnings.warn("Divvy compute configuration '{}' section changed "
+                              "to '{}'".format(old_compute_key, new_compute_key),
+                              DeprecationWarning)
+                env_settings[new_compute_key] = env_settings[old_compute_key]
 
             loaded_packages = env_settings["compute_packages"]
             for key, value in loaded_packages.items():
