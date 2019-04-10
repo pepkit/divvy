@@ -1,4 +1,4 @@
-compute:
+compute_packages:
   default:
     submission_template: templates/localhost_template.sub
     submission_command: sh
