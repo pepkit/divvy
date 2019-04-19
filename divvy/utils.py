@@ -301,7 +301,7 @@ def parse_config_file(conf_file):
                       "to '{}'".format(OLD_COMPUTE_KEY, NEW_COMPUTE_KEY),
                       DeprecationWarning)
         env_settings[NEW_COMPUTE_KEY] = env_settings[OLD_COMPUTE_KEY]
-    return conf_file
+    return env_settings
 
 
 def parse_ftype(input_file):
