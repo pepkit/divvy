@@ -10,7 +10,7 @@ nav:
     - "Tutorial: divvy in python": tutorial.md
     - "Tutorial: divvy on the command line": cli.md
   - How-to Guides:
-    - Write a DIVCFG file: configuration.md
+    - Configuring divvy: configuration.md
     - Configuring containers: containers.md
   - Reference:
     - API: autodoc_build/divvy.md
