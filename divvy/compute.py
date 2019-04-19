@@ -4,7 +4,6 @@ import argparse
 import logging
 import os
 import sys
-import warnings
 import yaml
 from yaml import SafeLoader
 
@@ -12,7 +11,7 @@ from attmap import PathExAttMap
 from .const import \
     COMPUTE_SETTINGS_VARNAME, \
     DEFAULT_COMPUTE_RESOURCES_NAME
-from .utils import write_submit_script, get_first_env_var
+from .utils import parse_config_file, write_submit_script, get_first_env_var
 from . import __version__
 
 _LOGGER = logging.getLogger(__name__)
@@ -129,7 +128,6 @@ class ComputingConfiguration(PathExAttMap):
         """
         return os.path.join(os.path.dirname(__file__), "submit_templates")
 
-
     def activate_package(self, package_name):
         """
         Activates a compute package.
@@ -218,27 +216,9 @@ class ComputingConfiguration(PathExAttMap):
         overwrite) existing compute packages with existing values. It does not
         affect any currently active settings.
         
-        :param str config_file: path to file with
-            new divvy configuration data
+        :param str config_file: path to file with new divvy configuration data
         """
-        with open(config_file, 'r') as f:
-            _LOGGER.info("Loading divvy config file: %s", config_file)
-            env_settings = yaml.load(f, SafeLoader)
-
-        _LOGGER.debug("Parsed environment settings: %s",
-                      str(env_settings))
-
-        old_compute_key = "compute"
-        new_compute_key = "compute_packages"
-
-        # Any compute.submission_template variables should be made
-        # absolute, relative to current divvy configuration file.
-        if old_compute_key in env_settings:
-            warnings.warn("Divvy compute configuration '{}' section changed "
-                          "to '{}'".format(old_compute_key, new_compute_key),
-                          DeprecationWarning)
-            env_settings[new_compute_key] = env_settings[old_compute_key]
-
+        env_settings = parse_config_file(config_file)
         loaded_packages = env_settings["compute_packages"]
         for key, value in loaded_packages.items():
             if type(loaded_packages[key]) is dict:
@@ -254,7 +234,8 @@ class ComputingConfiguration(PathExAttMap):
         else:
             self.compute_packages.add_entries(loaded_packages)
 
-        _LOGGER.debug("Available divvy packages: {}".format(', '.join(self.list_compute_packages())))
+        _LOGGER.debug("Available divvy packages: {}".
+                      format(', '.join(self.list_compute_packages())))
         self.config_file = config_file
 
     def write_script(self, output_path, extra_vars=None):
