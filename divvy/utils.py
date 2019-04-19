@@ -14,15 +14,11 @@ if sys.version_info < (3, 0):
 else:
     from urllib.parse import urlparse
 import warnings
-
-
 import yaml
-
 from .const import GENERIC_PROTOCOL_KEY, SAMPLE_INDEPENDENT_PROJECT_SECTIONS
 
 
 _LOGGER = logging.getLogger(__name__)
-
 
 
 def add_project_sample_constants(sample, project):
@@ -40,7 +36,6 @@ def add_project_sample_constants(sample, project):
     return sample
 
 
-
 def alpha_cased(text, lower=False):
     """
     Filter text to just letters and homogenize case.
@@ -52,7 +47,6 @@ def alpha_cased(text, lower=False):
     text = "".join(filter(
             lambda c: c.isalpha() or c == GENERIC_PROTOCOL_KEY, text))
     return text.lower() if lower else text.upper()
-
 
 
 def check_bam(bam, o):
@@ -87,11 +81,9 @@ def check_bam(bam, o):
     return read_lengths, paired
 
 
-
 def check_fastq(fastq, o):
     raise NotImplementedError("Detection of read type/length for "
                               "fastq input is not yet implemented.")
-
 
 
 def check_sample_sheet_row_count(sheet, filepath):
@@ -113,7 +105,6 @@ def check_sample_sheet_row_count(sheet, filepath):
     return len(sheet) == len(lines) - deduction
 
 
-
 def copy(obj):
     def copy(self):
         """
@@ -126,7 +117,6 @@ def copy(obj):
     return obj
 
 
-
 def expandpath(path):
     """
     Expand a filesystem path that may or may not contain user/env vars.
@@ -135,7 +125,6 @@ def expandpath(path):
     :return str: expanded version of input path
     """
     return os.path.expandvars(os.path.expanduser(path)).replace("//", "/")
-
 
 
 def get_file_size(filename):
@@ -158,7 +147,6 @@ def get_file_size(filename):
         return 0.0
     else:
         return float(total_bytes) / (1024 ** 3)
-
 
 
 def fetch_samples(proj, inclusion=None, exclusion=None):
@@ -217,7 +205,6 @@ def fetch_samples(proj, inclusion=None, exclusion=None):
     return list(filter(keep, proj.samples))
 
 
-
 def grab_project_data(prj):
     """
     From the given Project, grab Sample-independent data.
@@ -244,7 +231,6 @@ def grab_project_data(prj):
             _LOGGER.debug("Project lacks section '%s', skipping", section)
 
     return data
-
 
 
 def import_from_source(module_filepath):
@@ -285,7 +271,6 @@ def import_from_source(module_filepath):
     return mod
 
 
-
 def is_url(maybe_url):
     """
     Determine whether a path is a URL.
@@ -294,7 +279,6 @@ def is_url(maybe_url):
     :return bool: whether path appears to be a URL
     """
     return urlparse(maybe_url).scheme != ""
-
 
 
 def parse_ftype(input_file):
@@ -315,7 +299,6 @@ def parse_ftype(input_file):
     else:
         raise TypeError("Type of input file ends in neither '.bam' "
                         "nor '.fastq' [file: '" + input_file + "']")
-
 
 
 def parse_text_data(lines_or_path, delimiter=os.linesep):
@@ -346,7 +329,6 @@ def parse_text_data(lines_or_path, delimiter=os.linesep):
                          format(lines_or_path, type(lines_or_path)))
 
 
-
 def sample_folder(prj, sample):
     """
     Get the path to this Project's root folder for the given Sample.
@@ -358,7 +340,6 @@ def sample_folder(prj, sample):
     """
     return os.path.join(prj.metadata.results_subdir,
                         sample["sample_name"])
-
 
 
 def write_submit_script(fp, content, data):
@@ -390,7 +371,6 @@ def write_submit_script(fp, content, data):
     return fp
 
 
-
 @contextlib.contextmanager
 def standard_stream_redirector(stream):
     """
@@ -411,7 +391,6 @@ def standard_stream_redirector(stream):
         sys.stdout, sys.stderr = genuine_stdout, genuine_stderr
 
 
-
 def warn_derived_cols():
     _warn_cols_to_attrs("derived")
 
@@ -423,7 +402,6 @@ def warn_implied_cols():
 def _warn_cols_to_attrs(prefix):
     warnings.warn("{pfx}_columns should be encoded and referenced "
                   "as {pfx}_attributes".format(pfx=prefix), DeprecationWarning)
-
 
 
 class CommandChecker(object):
@@ -439,7 +417,6 @@ class CommandChecker(object):
     :param Iterable[str] sections_to_skip: analogous to
         the check names parameter, but for specific sections to skip.
     """
-
 
     def __init__(self, path_conf_file,
                  sections_to_check=None, sections_to_skip=None):
@@ -506,7 +483,6 @@ class CommandChecker(object):
                     self._logger.debug("Command '%s': %s", command,
                                        "SUCCESS" if success else "FAILURE")
 
-
     def _store_status(self, section, command, name):
         """
         Based on new command execution attempt, update instance's
@@ -521,7 +497,6 @@ class CommandChecker(object):
             self.failures_by_section[section].append(command)
             self.failures.add(command)
         return succeeded
-
 
     @property
     def failed(self):
@@ -538,7 +513,6 @@ class CommandChecker(object):
         if not self.section_to_status_by_command:
             raise ValueError("No commands validated")
         return 0 == len(self.failures)
-
 
 
 def is_command_callable(command, name=""):
