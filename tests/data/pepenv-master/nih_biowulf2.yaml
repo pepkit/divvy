@@ -1,7 +1,7 @@
 # Environment configuration file for looper
 # This version describes the compute environment on biowulf2 at the NIH
 
-compute:
+compute_packages:
   default:
     submission_template: templates/slurm_template.sub
     submission_command: sbatch --mail-type=BEGIN,TIME_LIMIT_90,END
