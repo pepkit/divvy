@@ -8,9 +8,8 @@ import yaml
 from yaml import SafeLoader
 
 from attmap import PathExAttMap
-from .const import \
-    COMPUTE_SETTINGS_VARNAME, \
-    DEFAULT_COMPUTE_RESOURCES_NAME
+from .const import COMPUTE_SETTINGS_VARNAME, DEFAULT_COMPUTE_RESOURCES_NAME, \
+    NEW_COMPUTE_KEY
 from .utils import parse_config_file, write_submit_script, get_first_env_var
 from . import __version__
 
@@ -219,7 +218,7 @@ class ComputingConfiguration(PathExAttMap):
         :param str config_file: path to file with new divvy configuration data
         """
         env_settings = parse_config_file(config_file)
-        loaded_packages = env_settings["compute_packages"]
+        loaded_packages = env_settings[NEW_COMPUTE_KEY]
         for key, value in loaded_packages.items():
             if type(loaded_packages[key]) is dict:
                 for key2, value2 in loaded_packages[key].items():
@@ -262,7 +261,7 @@ class ComputingConfiguration(PathExAttMap):
     def _handle_missing_env_attrs(self, config_file, when_missing):
         """ Default environment settings aren't required; warn, though. """
         missing_env_attrs = \
-            [attr for attr in ["compute_packages", "config_file"]
+            [attr for attr in [NEW_COMPUTE_KEY, "config_file"]
              if not hasattr(self, attr) or getattr(self, attr) is None]
         if not missing_env_attrs:
             return
