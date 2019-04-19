@@ -262,7 +262,7 @@ class ComputingConfiguration(PathExAttMap):
         """ Default environment settings aren't required; warn, though. """
         missing_env_attrs = \
             [attr for attr in [NEW_COMPUTE_KEY, "config_file"]
-             if not hasattr(self, attr) or getattr(self, attr) is None]
+             if getattr(self, attr, None) is None]
         if not missing_env_attrs:
             return
         message = "'{}' lacks environment attributes: {}". \
