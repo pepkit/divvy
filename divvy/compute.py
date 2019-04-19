@@ -327,7 +327,7 @@ def main():
 
     args, remaining_args = parser.parse_known_args()
     keys = [str.replace(x, "--", "") for x in remaining_args[::2]]
-    custom_vars = dict(zip(keys, remaining_args[1::2]))
+    cli_vars = dict(zip(keys, remaining_args[1::2]))
     dcc = ComputingConfiguration(args.config)
 
     if args.command == "list":
@@ -337,12 +337,12 @@ def main():
 
     dcc.activate_package(args.package)
     if args.settings:
+        _LOGGER.info("Loading settings file: %s", args.settings)
         with open(args.settings, 'r') as f:
-            _LOGGER.info("Loading yaml settings file: %s", args.settings)
-            yaml_vars = yaml.load(f, SafeLoader)
-        dcc.write_script(args.outfile, [custom_vars, yaml_vars])
+            vars_groups = [cli_vars, yaml.load(f, SafeLoader)]
     else:
-        dcc.write_script(args.outfile, custom_vars)
+        vars_groups = [cli_vars]
+    dcc.write_script(args.outfile, vars_groups)
 
 
 if __name__ == '__main__':
