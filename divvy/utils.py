@@ -15,7 +15,8 @@ else:
     from urllib.parse import urlparse
 import warnings
 import yaml
-from .const import GENERIC_PROTOCOL_KEY, SAMPLE_INDEPENDENT_PROJECT_SECTIONS
+from .const import GENERIC_PROTOCOL_KEY, NEW_COMPUTE_KEY, OLD_COMPUTE_KEY, \
+    SAMPLE_INDEPENDENT_PROJECT_SECTIONS
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -279,6 +280,28 @@ def is_url(maybe_url):
     :return bool: whether path appears to be a URL
     """
     return urlparse(maybe_url).scheme != ""
+
+
+def parse_config_file(conf_file):
+    """
+    Parse a divvy configuration file.
+
+    :param str conf_file: path to divvy configuration file
+    :return Mapping: compute settings as declared in config file
+    """
+    with open(conf_file, 'r') as f:
+        _LOGGER.info("Loading divvy config file: %s", conf_file)
+        env_settings = yaml.load(f, yaml.SafeLoader)
+    _LOGGER.debug("Parsed environment settings: %s",
+                  str(env_settings))
+    # Any compute.submission_template variables should be made
+    # absolute, relative to current divvy configuration file.
+    if OLD_COMPUTE_KEY in env_settings:
+        warnings.warn("Divvy compute configuration '{}' section changed "
+                      "to '{}'".format(OLD_COMPUTE_KEY, NEW_COMPUTE_KEY),
+                      DeprecationWarning)
+        env_settings[NEW_COMPUTE_KEY] = env_settings[OLD_COMPUTE_KEY]
+    return conf_file
 
 
 def parse_ftype(input_file):
