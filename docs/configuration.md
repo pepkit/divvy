@@ -42,6 +42,10 @@ The `submission_command` attribute is the string your cluster resource manager u
 Each compute package specifies a path to a template file (`submission_template`). The template file provides a skeleton that `divvy` will populate with job-specific attributes. These paths can be relative or absolute; relative paths are considered *relative to the DIVCFG file*.
 
 
+## Resources
+
+You may notice that the compute config file does not specify resources to request (like memory, CPUs, or time). Yet, these are required in order to submit a job to a cluster. **Resources are not handled by the divcfg file** because they not relative to a particular computing environment; instead they vary by pipeline and sample. As such, these items should be defined at other stages. 
+
 ## Template files
 
 Each compute package must point to a template file with the `submission_template` attribute. These template files are typically stored relative to the `divvy` configuration file. Template files are taken by `divvy`, populated with job-specific information, and then run as scripts. Here's an example of a generic SLURM template file:
