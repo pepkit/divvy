@@ -4,6 +4,7 @@ import argparse
 import logging
 import os
 import sys
+import warnings
 import yaml
 from yaml import SafeLoader
 
@@ -12,7 +13,7 @@ from .const import \
     COMPUTE_SETTINGS_VARNAME, \
     DEFAULT_COMPUTE_RESOURCES_NAME
 from .utils import write_submit_script, get_first_env_var
-from . import  __version__
+from . import __version__
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -226,11 +227,16 @@ class ComputingConfiguration(PathExAttMap):
             _LOGGER.debug("Parsed environment settings: %s",
                           str(env_settings))
 
+            old_compute_key = "compute"
+            new_compute_key = "compute_packages"
+
             # Any compute.submission_template variables should be made
             # absolute, relative to current divvy configuration file.
-            if "compute" in env_settings:
-                _LOGGER.warning("DEPRECATION WARNING: Divvy compute configuration 'compute' section changed to 'compute_packages'")
-                env_settings["compute_packages"] = env_settings["compute"]
+            if old_compute_key in env_settings:
+                warnings.warn("Divvy compute configuration '{}' section changed "
+                              "to '{}'".format(old_compute_key, new_compute_key),
+                              DeprecationWarning)
+                env_settings[new_compute_key] = env_settings[old_compute_key]
 
             loaded_packages = env_settings["compute_packages"]
             for key, value in loaded_packages.items():
@@ -322,7 +328,6 @@ def main():
     def add_subparser(cmd):
         return subparsers.add_parser(cmd, description=msg_by_cmd[cmd], help=msg_by_cmd[cmd])
 
-    list_subparser = add_subparser("list")
     write_subparser = add_subparser("write")
 
     write_subparser.add_argument(
@@ -337,12 +342,10 @@ def main():
             "-O", "--outfile", required=True,
             help="Output filepath")
 
-
     args, remaining_args = parser.parse_known_args()
     keys = [str.replace(x, "--", "") for x in remaining_args[::2]]
     custom_vars = dict(zip(keys, remaining_args[1::2]))
     dcc = ComputingConfiguration(args.config)
-
 
     if args.command == "list":
         _LOGGER.info("Available compute packages: {}".format(', '.join(dcc.list_compute_packages())))
