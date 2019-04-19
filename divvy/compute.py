@@ -224,34 +224,36 @@ class ComputingConfiguration(PathExAttMap):
         with open(config_file, 'r') as f:
             _LOGGER.info("Loading divvy config file: %s", config_file)
             env_settings = yaml.load(f, SafeLoader)
-            _LOGGER.debug("Parsed environment settings: %s",
-                          str(env_settings))
 
-            old_compute_key = "compute"
-            new_compute_key = "compute_packages"
+        _LOGGER.debug("Parsed environment settings: %s",
+                      str(env_settings))
 
-            # Any compute.submission_template variables should be made
-            # absolute, relative to current divvy configuration file.
-            if old_compute_key in env_settings:
-                warnings.warn("Divvy compute configuration '{}' section changed "
-                              "to '{}'".format(old_compute_key, new_compute_key),
-                              DeprecationWarning)
-                env_settings[new_compute_key] = env_settings[old_compute_key]
+        old_compute_key = "compute"
+        new_compute_key = "compute_packages"
 
-            loaded_packages = env_settings["compute_packages"]
-            for key, value in loaded_packages.items():
-                if type(loaded_packages[key]) is dict:
-                    for key2, value2 in loaded_packages[key].items():
-                        if key2 == "submission_template":
-                            if not os.path.isabs(loaded_packages[key][key2]):
-                                loaded_packages[key][key2] = os.path.join(
-                                    os.path.dirname(config_file),
-                                    loaded_packages[key][key2])
+        # Any compute.submission_template variables should be made
+        # absolute, relative to current divvy configuration file.
+        if old_compute_key in env_settings:
+            warnings.warn("Divvy compute configuration '{}' section changed "
+                          "to '{}'".format(old_compute_key, new_compute_key),
+                          DeprecationWarning)
+            env_settings[new_compute_key] = env_settings[old_compute_key]
 
-            if self.compute_packages is None:
-                self.compute_packages = PathExAttMap(loaded_packages)
-            else:
-                self.compute_packages.add_entries(loaded_packages)
+        loaded_packages = env_settings["compute_packages"]
+        for key, value in loaded_packages.items():
+            if type(loaded_packages[key]) is dict:
+                for key2, value2 in loaded_packages[key].items():
+                    if key2 == "submission_template":
+                        if not os.path.isabs(loaded_packages[key][key2]):
+                            loaded_packages[key][key2] = os.path.join(
+                                os.path.dirname(config_file),
+                                loaded_packages[key][key2])
+
+        if self.compute_packages is None:
+            self.compute_packages = PathExAttMap(loaded_packages)
+        else:
+            self.compute_packages.add_entries(loaded_packages)
+
         _LOGGER.debug("Available divvy packages: {}".format(', '.join(self.list_compute_packages())))
         self.config_file = config_file
 
