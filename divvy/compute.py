@@ -331,7 +331,8 @@ def main():
     dcc = ComputingConfiguration(args.config)
 
     if args.command == "list":
-        _LOGGER.info("Available compute packages: {}".format(', '.join(dcc.list_compute_packages())))
+        print("Available compute packages:\n{}".format(
+            "\n".join(dcc.list_compute_packages())))
         sys.exit(1)
 
     dcc.activate_package(args.package)
