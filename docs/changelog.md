@@ -1,5 +1,12 @@
 # Changelog
 
+## divvy [0.3] - 2019-04-19
+
+### Changed
+- Safer use of `yaml`
+- Reduced verbosity for clearer usage
+- The CLI now uses `divvy write` and `divvy list` subcommands
+
 ## divvy [0.2.1] - 2019-03-19
 
 ### Changed

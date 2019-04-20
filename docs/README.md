@@ -3,13 +3,15 @@
 [![PEP compatible](http://pepkit.github.io/img/PEP-compatible-green.svg)](http://pepkit.github.io)
 
 
-`divvy` is a simple templating system written in python that allows users to write compute jobs that can be submitted to any computing resource (laptop, cluster, cloud). It works using a simple configuration file, which we call *computing configuration files*, where you specify variables for your computing environment. It uses these variables to populate simple, Jinja-like templates to make computing job submission flexible. 
+`Divvy` is a computing resource configuration manager. It reads a standard configuration file describing available compute resources and then uses a simple Jinja-like templating system to enable users to write custom job submission scripts.
+
+In `divvy`, computing resources are organized as *compute packages*, which define job submission templates and other variables. Users then select a compute package and provide variable values, and `divvy` populates the templates to write compute jobs. The flexible templating system means users can quickly switch jobs to submit to any computing resource (laptop, cluster, cloud). `Divvy` provides both an interactive python API and a command-line interface.
 
 
 ## Installing
 
+Releases are posted as [GitHub releases](https://github.com/databio/divvy/releases), or you can install from PyPI using `pip`:
 
-Release versions are posted on the GitHub [divvy releases page](https://github.com/databio/divvy/releases). You can install the latest release directly from PyPI using pip:
 
 ```{console}
 pip install --user divvy
@@ -38,7 +40,8 @@ dcc.write_script("test_script.sub", {"code": "bowtie2 input.bam output.bam"})
 Or via command-line:
 
 ```{console}
-divvy --package slurm --settings myjob.yaml --sample sample1 --outfile submit_script.txt
+divvy list
+divvy write --package slurm --settings myjob.yaml --sample sample1 --outfile submit_script.txt
 ```
 
 To begin, check out the [tutorial](tutorial).

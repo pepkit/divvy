@@ -2,7 +2,7 @@
 # This version describes the compute environment for a local computer that uses
 # docker or singularity containers
 
-compute:
+compute_packages:
   default:
     submission_template: templates/localhost_template.sub
     submission_command: sh
