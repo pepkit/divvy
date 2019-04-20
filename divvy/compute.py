@@ -3,15 +3,15 @@
 import argparse
 import logging
 import os
-from sys import stdout
+import sys
 import yaml
+from yaml import SafeLoader
 
 from attmap import PathExAttMap
-from .const import \
-    COMPUTE_SETTINGS_VARNAME, \
-    DEFAULT_COMPUTE_RESOURCES_NAME
-from .utils import write_submit_script, get_first_env_var
-from . import  __version__
+from .const import COMPUTE_SETTINGS_VARNAME, DEFAULT_COMPUTE_RESOURCES_NAME, \
+    NEW_COMPUTE_KEY
+from .utils import parse_config_file, write_submit_script, get_first_env_var
+from . import __version__
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -215,36 +215,26 @@ class ComputingConfiguration(PathExAttMap):
         overwrite) existing compute packages with existing values. It does not
         affect any currently active settings.
         
-        :param str config_file: path to file with
-            new divvy configuration data
+        :param str config_file: path to file with new divvy configuration data
         """
-        with open(config_file, 'r') as f:
-            _LOGGER.info("Loading divvy config file: %s", config_file)
-            env_settings = yaml.load(f)
-            _LOGGER.debug("Parsed environment settings: %s",
-                          str(env_settings))
+        env_settings = parse_config_file(config_file)
+        loaded_packages = env_settings[NEW_COMPUTE_KEY]
+        for key, value in loaded_packages.items():
+            if type(loaded_packages[key]) is dict:
+                for key2, value2 in loaded_packages[key].items():
+                    if key2 == "submission_template":
+                        if not os.path.isabs(loaded_packages[key][key2]):
+                            loaded_packages[key][key2] = os.path.join(
+                                os.path.dirname(config_file),
+                                loaded_packages[key][key2])
 
-            # Any compute.submission_template variables should be made
-            # absolute, relative to current divvy configuration file.
-            if "compute" in env_settings:
-                _LOGGER.warning("In your divvy config file, please use 'compute_packages' instead of 'compute'")
-                env_settings["compute_packages"] = env_settings["compute"]
+        if self.compute_packages is None:
+            self.compute_packages = PathExAttMap(loaded_packages)
+        else:
+            self.compute_packages.add_entries(loaded_packages)
 
-            loaded_packages = env_settings["compute_packages"]
-            for key, value in loaded_packages.items():
-                if type(loaded_packages[key]) is dict:
-                    for key2, value2 in loaded_packages[key].items():
-                        if key2 == "submission_template":
-                            if not os.path.isabs(loaded_packages[key][key2]):
-                                loaded_packages[key][key2] = os.path.join(
-                                    os.path.dirname(config_file),
-                                    loaded_packages[key][key2])
-
-            if self.compute_packages is None:
-                self.compute_packages = PathExAttMap(loaded_packages)
-            else:
-                self.compute_packages.add_entries(loaded_packages)
-        _LOGGER.info("Available packages: {}".format(', '.join(self.list_compute_packages())))
+        _LOGGER.debug("Available divvy packages: {}".
+                      format(', '.join(self.list_compute_packages())))
         self.config_file = config_file
 
     def write_script(self, output_path, extra_vars=None):
@@ -271,8 +261,8 @@ class ComputingConfiguration(PathExAttMap):
     def _handle_missing_env_attrs(self, config_file, when_missing):
         """ Default environment settings aren't required; warn, though. """
         missing_env_attrs = \
-            [attr for attr in ["compute_packages", "config_file"]
-             if not hasattr(self, attr) or getattr(self, attr) is None]
+            [attr for attr in [NEW_COMPUTE_KEY, "config_file"]
+             if getattr(self, attr, None) is None]
         if not missing_env_attrs:
             return
         message = "'{}' lacks environment attributes: {}". \
@@ -289,10 +279,11 @@ class _VersionInHelpParser(argparse.ArgumentParser):
         return "version: {}\n".format(__version__) + \
                super(_VersionInHelpParser, self).format_help()
 
+
 def main():
     """ Primary workflow """
 
-    banner = "%(prog)s - write compute jobs that can be submitted to any computing resource"
+    banner = "%(prog)s - write compute job scripts that can be submitted to any computing resource"
     additional_description = "\nhttps://github.com/pepkit/divvy"
 
     parser = _VersionInHelpParser(
@@ -308,32 +299,51 @@ def main():
             "-C", "--config",
             help="Divvy configuration file.")
 
-    parser.add_argument(
+    subparsers = parser.add_subparsers(dest="command") 
+
+
+    def add_subparser(cmd):
+        # Individual subcommands
+        msg_by_cmd = {
+            "list": "List available compute packages",
+            "write": "Write a submit script"
+        }
+        return subparsers.add_parser(
+            cmd, description=msg_by_cmd[cmd], help=msg_by_cmd[cmd])
+
+    write_subparser = add_subparser("write")
+
+    write_subparser.add_argument(
             "-S", "--settings",
             help="YAML file with job settings to populate the template.")    
 
-    parser.add_argument(
+    write_subparser.add_argument(
             "-P", "--package", default="default",
             help="Compute package")
 
-    parser.add_argument(
+    write_subparser.add_argument(
             "-O", "--outfile", required=True,
             help="Output filepath")
 
-
     args, remaining_args = parser.parse_known_args()
-
     keys = [str.replace(x, "--", "") for x in remaining_args[::2]]
-    custom_vars = dict(zip(keys, remaining_args[1::2]))
+    cli_vars = dict(zip(keys, remaining_args[1::2]))
     dcc = ComputingConfiguration(args.config)
+
+    if args.command == "list":
+        print("Available compute packages:\n{}".format(
+            "\n".join(dcc.list_compute_packages())))
+        sys.exit(1)
+
     dcc.activate_package(args.package)
     if args.settings:
+        _LOGGER.info("Loading settings file: %s", args.settings)
         with open(args.settings, 'r') as f:
-            _LOGGER.info("Loading yaml settings file: %s", args.settings)
-            yaml_vars = yaml.load(f)
-        dcc.write_script(args.outfile, [custom_vars, yaml_vars])
+            vars_groups = [cli_vars, yaml.load(f, SafeLoader)]
     else:
-        dcc.write_script(args.outfile, custom_vars)
+        vars_groups = [cli_vars]
+    dcc.write_script(args.outfile, vars_groups)
+
 
 if __name__ == '__main__':
     try:
