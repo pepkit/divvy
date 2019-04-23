@@ -13,6 +13,7 @@ from sys import stdout
 
 from ._version import __version__
 from .compute import ComputingConfiguration
+from .const import *
 from .utils import write_submit_script
 
 __classes__ = ["ComputingConfiguration"]
@@ -32,7 +33,6 @@ DEV_LOGGING_FMT = "%(module)s:%(lineno)d (%(funcName)s) [%(levelname)s] > %(mess
 _LOGGER = logging.getLogger(__name__)
 if not logging.getLogger().handlers:
     _LOGGER.addHandler(logging.NullHandler())
-
 
 
 def setup_divvy_logger(level, additional_locations=None, devmode=False):

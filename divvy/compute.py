@@ -318,7 +318,7 @@ def main():
             help="YAML file with job settings to populate the template.")    
 
     write_subparser.add_argument(
-            "-P", "--package", default="default",
+            "-P", "--package", default=DEFAULT_COMPUTE_RESOURCES_NAME,
             help="Compute package")
 
     write_subparser.add_argument(
