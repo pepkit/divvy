@@ -49,6 +49,7 @@ setup(
     version=version,
     description="A python-based configuration manager for portable environment configurations",
     long_description=long_description,
+    long_description_content_type='text/markdown',
     classifiers=[
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: BSD License",
