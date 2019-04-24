@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/pepkit/divvy/master/docs/img/divvy_logo.svg?sanitize=true" alt="Divvy logo" height="70" align="left"/><br>
+<img src="https://raw.githubusercontent.com/pepkit/divvy/master/docs/img/divvy_logo.svg?sanitize=true" alt="Divvy" height="70" align="left"/><br>
 
 [![Build Status](https://travis-ci.org/pepkit/divvy.svg?branch=master)](https://travis-ci.org/pepkit/divvy) [![PEP compatible](http://pepkit.github.io/img/PEP-compatible-green.svg)](http://pepkit.github.io)
 
