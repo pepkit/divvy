@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## divvy [0.3.1] - 2019-04-24
+### Changed
+- Minor updates to improve interface with looper and peppy
+
+
+
 ## divvy [0.3] - 2019-04-19
 ### Changed
 - Safer use of `yaml`
