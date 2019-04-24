@@ -61,6 +61,7 @@ setup(
     keywords="project, metadata, bioinformatics, sequencing, ngs, workflow",
     url="https://github.com/pepkit/{}/".format(PACKAGE),
     author=u"Nathan Sheffield, Vince Reuter, Michal Stolarczyk",
+    author_email=u"nathan@code.databio.org, vreuter@virginia.edu, mjs5kd@virginia.edu", 
     license="BSD2",
     entry_points={
         "console_scripts": [
