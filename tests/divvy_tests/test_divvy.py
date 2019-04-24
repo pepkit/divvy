@@ -1,6 +1,10 @@
+""" Assorted divvy tests """
+
 import pytest
 from attmap import PathExAttMap
+from divvy import DEFAULT_COMPUTE_RESOURCES_NAME
 from tests.conftest import DCC_ATTRIBUTES, FILES
+
 
 class DefaultDCCTests:
     """ Tests the default divvvy.ComputingConfiguration object creation"""
@@ -9,10 +13,10 @@ class DefaultDCCTests:
         """ Lack of arguments does not cause failure """
         empty_dcc
 
-    @pytest.mark.parametrize(argnames="attrs", argvalues=DCC_ATTRIBUTES)
-    def test_attrs_produced(self, attrs, empty_dcc):
+    @pytest.mark.parametrize(argnames="att", argvalues=DCC_ATTRIBUTES)
+    def test_attrs_produced(self, att, empty_dcc):
         """ Test if compute property is produced and is not empty """
-        empty_dcc[attrs]
+        empty_dcc[att]
 
 
 class DCCTests:
@@ -22,10 +26,10 @@ class DCCTests:
         """ Test object creation for all the available compute files in pepenv repo"""
         dcc
 
-    @pytest.mark.parametrize(argnames="attrs", argvalues=DCC_ATTRIBUTES)
-    def test_attrs_produced(self, attrs, dcc):
+    @pytest.mark.parametrize(argnames="att", argvalues=DCC_ATTRIBUTES)
+    def test_attrs_produced(self, att, dcc):
         """ Test if compute all properties are produced """
-        dcc[attrs]
+        dcc[att]
 
 
 class ActivatingTests:
@@ -33,7 +37,7 @@ class ActivatingTests:
 
     def test_activating_default_package(self, dcc):
         """ Test if activating the default compute package works for every case """
-        assert dcc.activate_package("default")
+        assert dcc.activate_package(DEFAULT_COMPUTE_RESOURCES_NAME)
 
     @pytest.mark.parametrize(argnames="package_idx", argvalues=[0, 1])
     def test_activating_some_package(self, dcc, package_idx):
