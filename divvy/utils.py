@@ -7,7 +7,6 @@ import os
 import random
 import re
 import string
-import subprocess as sp
 import sys
 if sys.version_info < (3, 0):
     from urlparse import urlparse
@@ -19,58 +18,6 @@ from .const import NEW_COMPUTE_KEY, OLD_COMPUTE_KEY
 
 
 _LOGGER = logging.getLogger(__name__)
-
-
-def add_project_sample_constants(sample, project):
-    """
-    Update a Sample with constants declared by a Project.
-
-    :param Sample sample: sample instance for which to update constants
-        based on Project
-    :param Project project: Project with which to update Sample; it
-        may or may not declare constants. If not, no update occurs.
-    :return Sample: Updates Sample instance, according to any and all
-        constants declared by the Project.
-    """
-    sample.update(project.constants)
-    return sample
-
-
-def check_bam(bam, o):
-    """
-    Check reads in BAM file for read type and lengths.
-
-    :param str bam: BAM file path.
-    :param int o: Number of reads to look at for estimation.
-    """
-    try:
-        p = sp.Popen(['samtools', 'view', bam], stdout=sp.PIPE)
-        # Count paired alignments
-        paired = 0
-        read_lengths = defaultdict(int)
-        while o > 0:  # Count down number of lines
-            line = p.stdout.readline().decode().split("\t")
-            flag = int(line[1])
-            read_lengths[len(line[9])] += 1
-            if 1 & flag:  # check decimal flag contains 1 (paired)
-                paired += 1
-            o -= 1
-        p.kill()
-    except OSError:
-        reason = "Note (samtools not in path): For NGS inputs, " \
-                 "pep needs samtools to auto-populate " \
-                 "'read_length' and 'read_type' attributes; " \
-                 "these attributes were not populated."
-        raise OSError(reason)
-
-    _LOGGER.debug("Read lengths: {}".format(read_lengths))
-    _LOGGER.debug("paired: {}".format(paired))
-    return read_lengths, paired
-
-
-def check_fastq(fastq, o):
-    raise NotImplementedError("Detection of read type/length for "
-                              "fastq input is not yet implemented.")
 
 
 def check_sample_sheet_row_count(sheet, filepath):
