@@ -51,38 +51,6 @@ def copy(obj):
     return obj
 
 
-def expandpath(path):
-    """
-    Expand a filesystem path that may or may not contain user/env vars.
-
-    :param str path: path to expand
-    :return str: expanded version of input path
-    """
-    return os.path.expandvars(os.path.expanduser(path)).replace("//", "/")
-
-
-def get_file_size(filename):
-    """
-    Get size of all files in gigabytes (Gb).
-
-    :param str | collections.Iterable[str] filename: A space-separated
-        string or list of space-separated strings of absolute file paths.
-    :return float: size of file(s), in gigabytes.
-    """
-    if filename is None:
-        return float(0)
-    if type(filename) is list:
-        return float(sum([get_file_size(x) for x in filename]))
-    try:
-        total_bytes = sum([float(os.stat(f).st_size)
-                           for f in filename.split(" ") if f is not ''])
-    except OSError:
-        # File not found
-        return 0.0
-    else:
-        return float(total_bytes) / (1024 ** 3)
-
-
 def import_from_source(module_filepath):
     """
     Import a module from a particular filesystem location.
