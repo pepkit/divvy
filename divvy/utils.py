@@ -121,26 +121,6 @@ def parse_config_file(conf_file):
     return env_settings
 
 
-def parse_ftype(input_file):
-    """
-    Checks determine filetype from extension.
-
-    :param str input_file: String to check.
-    :return str: filetype (extension without dot prefix)
-    :raises TypeError: if file does not appear of a supported type
-    """
-    if input_file.endswith(".bam"):
-        return "bam"
-    elif input_file.endswith(".fastq") or \
-            input_file.endswith(".fq") or \
-            input_file.endswith(".fq.gz") or \
-            input_file.endswith(".fastq.gz"):
-        return "fastq"
-    else:
-        raise TypeError("Type of input file ends in neither '.bam' "
-                        "nor '.fastq' [file: '" + input_file + "']")
-
-
 def parse_text_data(lines_or_path, delimiter=os.linesep):
     """
     Interpret input argument as lines of data. This is intended to support
