@@ -4,4 +4,4 @@
 [![Build Status](https://travis-ci.org/pepkit/divvy.svg?branch=master)](https://travis-ci.org/pepkit/divvy)
 [![Coverage Status](https://coveralls.io/repos/github/pepkit/divvy/badge.svg?branch=master)](https://coveralls.io/github/pepkit/divvy?branch=master)
 
-`divvy` is a python package for reading portable computing environment configuration files, which we call *divvy configuration files*. Complete documentation and API for the `divvy` python package is at [code.databio.org/divvy](http://code.databio.org/divvy).
+`divvy` is a python package for reading portable computing environment configuration files, which we call *divvy configuration files*. Complete documentation and API for the `divvy` python package is at [divvy.databio.org](http://divvy.databio.org).
