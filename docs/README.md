@@ -10,7 +10,7 @@ In `divvy`, computing resources are organized as *compute packages*, which defin
 
 ## Installing
 
-Releases are posted as [GitHub releases](https://github.com/databio/divvy/releases), or you can install from PyPI using `pip`:
+Install from [GitHub releases](https://github.com/databio/divvy/releases) or from PyPI using `pip`:
 
 
 ```{console}
