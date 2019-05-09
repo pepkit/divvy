@@ -7,7 +7,6 @@ import os
 import random
 import re
 import string
-import subprocess as sp
 import sys
 if sys.version_info < (3, 0):
     from urlparse import urlparse
@@ -19,58 +18,6 @@ from .const import NEW_COMPUTE_KEY, OLD_COMPUTE_KEY
 
 
 _LOGGER = logging.getLogger(__name__)
-
-
-def add_project_sample_constants(sample, project):
-    """
-    Update a Sample with constants declared by a Project.
-
-    :param Sample sample: sample instance for which to update constants
-        based on Project
-    :param Project project: Project with which to update Sample; it
-        may or may not declare constants. If not, no update occurs.
-    :return Sample: Updates Sample instance, according to any and all
-        constants declared by the Project.
-    """
-    sample.update(project.constants)
-    return sample
-
-
-def check_bam(bam, o):
-    """
-    Check reads in BAM file for read type and lengths.
-
-    :param str bam: BAM file path.
-    :param int o: Number of reads to look at for estimation.
-    """
-    try:
-        p = sp.Popen(['samtools', 'view', bam], stdout=sp.PIPE)
-        # Count paired alignments
-        paired = 0
-        read_lengths = defaultdict(int)
-        while o > 0:  # Count down number of lines
-            line = p.stdout.readline().decode().split("\t")
-            flag = int(line[1])
-            read_lengths[len(line[9])] += 1
-            if 1 & flag:  # check decimal flag contains 1 (paired)
-                paired += 1
-            o -= 1
-        p.kill()
-    except OSError:
-        reason = "Note (samtools not in path): For NGS inputs, " \
-                 "pep needs samtools to auto-populate " \
-                 "'read_length' and 'read_type' attributes; " \
-                 "these attributes were not populated."
-        raise OSError(reason)
-
-    _LOGGER.debug("Read lengths: {}".format(read_lengths))
-    _LOGGER.debug("paired: {}".format(paired))
-    return read_lengths, paired
-
-
-def check_fastq(fastq, o):
-    raise NotImplementedError("Detection of read type/length for "
-                              "fastq input is not yet implemented.")
 
 
 def check_sample_sheet_row_count(sheet, filepath):
@@ -102,38 +49,6 @@ def copy(obj):
         return deepcopy(self)
     obj.copy = copy
     return obj
-
-
-def expandpath(path):
-    """
-    Expand a filesystem path that may or may not contain user/env vars.
-
-    :param str path: path to expand
-    :return str: expanded version of input path
-    """
-    return os.path.expandvars(os.path.expanduser(path)).replace("//", "/")
-
-
-def get_file_size(filename):
-    """
-    Get size of all files in gigabytes (Gb).
-
-    :param str | collections.Iterable[str] filename: A space-separated
-        string or list of space-separated strings of absolute file paths.
-    :return float: size of file(s), in gigabytes.
-    """
-    if filename is None:
-        return float(0)
-    if type(filename) is list:
-        return float(sum([get_file_size(x) for x in filename]))
-    try:
-        total_bytes = sum([float(os.stat(f).st_size)
-                           for f in filename.split(" ") if f is not ''])
-    except OSError:
-        # File not found
-        return 0.0
-    else:
-        return float(total_bytes) / (1024 ** 3)
 
 
 def import_from_source(module_filepath):
@@ -204,26 +119,6 @@ def parse_config_file(conf_file):
                       DeprecationWarning)
         env_settings[NEW_COMPUTE_KEY] = env_settings[OLD_COMPUTE_KEY]
     return env_settings
-
-
-def parse_ftype(input_file):
-    """
-    Checks determine filetype from extension.
-
-    :param str input_file: String to check.
-    :return str: filetype (extension without dot prefix)
-    :raises TypeError: if file does not appear of a supported type
-    """
-    if input_file.endswith(".bam"):
-        return "bam"
-    elif input_file.endswith(".fastq") or \
-            input_file.endswith(".fq") or \
-            input_file.endswith(".fq.gz") or \
-            input_file.endswith(".fastq.gz"):
-        return "fastq"
-    else:
-        raise TypeError("Type of input file ends in neither '.bam' "
-                        "nor '.fastq' [file: '" + input_file + "']")
 
 
 def parse_text_data(lines_or_path, delimiter=os.linesep):
