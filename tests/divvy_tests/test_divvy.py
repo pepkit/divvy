@@ -1,7 +1,7 @@
 """ Assorted divvy tests """
 
 import pytest
-from attmap import PathExAttMap
+from attmap import OrdPathExAttMap
 from divvy import DEFAULT_COMPUTE_RESOURCES_NAME
 from tests.conftest import DCC_ATTRIBUTES, FILES
 
@@ -55,9 +55,9 @@ class GettingActivePackageTests:
     """ Test for the get_active_package method"""
 
     def test_settings_nonempty(self, dcc):
-        """ Test if get_active_package produces a nonempty PathExAttMap object """
+        """ Test if get_active_package produces a nonempty OrdPathExAttMap object """
         settings = dcc.get_active_package()
-        assert settings != PathExAttMap()
+        assert settings != OrdPathExAttMap()
 
 
 class ListingPackagesTests:
@@ -92,7 +92,7 @@ class UpdatingPackagesTests:
     def test_update_packages(self, dcc, config_file):
         """ Test updating does not produce empty compute packages """
         dcc.update_packages(config_file)
-        assert dcc.compute_packages != PathExAttMap()
+        assert dcc.compute_packages != OrdPathExAttMap()
 
 
 

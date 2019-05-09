@@ -7,7 +7,7 @@ import sys
 import yaml
 from yaml import SafeLoader
 
-from attmap import PathExAttMap
+from attmap import OrdPathExAttMap
 from .const import COMPUTE_SETTINGS_VARNAME, DEFAULT_COMPUTE_RESOURCES_NAME, \
     NEW_COMPUTE_KEY
 from .utils import parse_config_file, write_submit_script, get_first_env_var
@@ -16,7 +16,7 @@ from . import __version__
 _LOGGER = logging.getLogger(__name__)
 
 
-class ComputingConfiguration(PathExAttMap):
+class ComputingConfiguration(OrdPathExAttMap):
     """
     Represents computing configuration objects.
 
@@ -147,7 +147,7 @@ class ComputingConfiguration(PathExAttMap):
             # Augment compute, creating it if needed.
             if self.compute is None:
                 _LOGGER.debug("Creating Project compute")
-                self.compute = PathExAttMap()
+                self.compute = OrdPathExAttMap()
                 _LOGGER.debug("Adding entries for package_name '%s'", package_name)
             self.compute.add_entries(self.compute_packages[package_name])
 
@@ -186,7 +186,7 @@ class ComputingConfiguration(PathExAttMap):
         """
         Returns settings for the currently active compute package
 
-        :return PathExAttMap: data defining the active compute package
+        :return OrdPathExAttMap: data defining the active compute package
         """
         return self.compute
 
@@ -204,7 +204,7 @@ class ComputingConfiguration(PathExAttMap):
         
         :return bool: success flag
         """
-        self.compute = PathExAttMap()
+        self.compute = OrdPathExAttMap()
         return True
 
     def update_packages(self, config_file):
@@ -229,7 +229,7 @@ class ComputingConfiguration(PathExAttMap):
                                 loaded_packages[key][key2])
 
         if self.compute_packages is None:
-            self.compute_packages = PathExAttMap(loaded_packages)
+            self.compute_packages = OrdPathExAttMap(loaded_packages)
         else:
             self.compute_packages.add_entries(loaded_packages)
 
