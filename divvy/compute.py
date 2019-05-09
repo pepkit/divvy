@@ -312,6 +312,7 @@ def main():
             cmd, description=msg_by_cmd[cmd], help=msg_by_cmd[cmd])
 
     write_subparser = add_subparser("write")
+    list_subparser = add_subparser("list")
 
     write_subparser.add_argument(
             "-S", "--settings",
