@@ -1,11 +1,11 @@
 
 # Configuring containers with divvy
 
-The `DIVCFG` framework is a natural way to run commands in a container, for example, using `docker` or `singularity`. All we need to do is 1) design a template that will run the job in the container, instead of natively; and 2) create a new compute package that will use that template.
+The divvy tempplate framework is a natural way to run commands in a container, for example, using `docker` or `singularity`. All we need to do is 1) design a template that will run the job in the container, instead of natively; and 2) create a new compute package that will use that template.
 
 ## A template for container runs
 
-[The divcfg repository](http://github.com/pepkit/pepenv) includes [templates](https://github.com/pepkit/pepenv/tree/master/templates) for the following scenarios:
+[The divcfg repository](http://github.com/pepkit/divcfg) includes [templates](https://github.com/pepkit/pepenv/tree/master/templates) for the following scenarios:
 
 - singularity on SLURM
 - singularity on localhost
@@ -20,11 +20,11 @@ srun singularity exec instance://{JOBNAME}_image {CODE}
 singularity instance.stop {JOBNAME}_image
 ```
 
-This template uses a few of the automatic variables defined earlier (`JOBNAME` and `CODE`) but adds two more: `{SINGULARITY_ARGS}` and `{SINGULARITY_IMAGE}`. For the *image*, this should point to a singularity image that could vary by pipeline, so it makes most sense to define this variable in the `pipeline_interface.yaml` file. So, any pipeline that provides a container should probably include a `singularity_image` attribute providing a place to point to the appropriate container image.
+This particular template uses some variables provided by [looper](http://looper.databio.org) (`JOBNAME` and `CODE`), as well as a few singularity-specific arguments: `{SINGULARITY_ARGS}` and `{SINGULARITY_IMAGE}`. These arguments could be defined at different places. Fore xample, the *image* variable should point to a singularity image that could vary by pipeline, so it makes most sense to define this variable individually for each pipeline. So, any pipeline that provides a container should probably include a `singularity_image` attribute providing a place to point to the appropriate container image.
 
 Of course, you will also need to make sure that you have access to `singularity` command from the compute nodes; on some clusters, you may need to add a `module load singularity` (or some variation) to enable it.
 
-The `{SINGULARITY_ARGS}` variable comes just right after the `instance.start` command, and can be used to pass any command-line arguments to singularity. We use these, for example, to bind host disk paths into the container. **It is critical that you explicitly bind any file systems with data necessary for the pipeline so the running container can see those files**. The [singularity documentation](https://singularity.lbl.gov/docs-mount#specifying-bind-paths) explains this, and you can find other arguments detailed there. Because this setting describes something about the computing environment (rather than an individual pipeline or sample), it makes most sense to put it in the `DIVCFG` environment configuration file. The next section includes examples of how to use `singularity_args`.
+The `{SINGULARITY_ARGS}` variable comes just right after the `instance.start` command, and can be used to pass any command-line arguments to singularity. We use these, for example, to bind host disk paths into the container. **It is critical that you explicitly bind any file systems with data necessary for the pipeline so the running container can see those files**. The [singularity documentation](https://singularity.lbl.gov/docs-mount#specifying-bind-paths) explains this, and you can find other arguments detailed there. Because this setting describes something about the computing environment (rather than an individual pipeline or sample), it makes most sense to put it in the `DIVCFG` file for a particular compute package. The next section includes examples of how to use `singularity_args`.
 
 ## Adding compute packages for container templates
 

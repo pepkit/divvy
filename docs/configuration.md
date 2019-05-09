@@ -1,17 +1,8 @@
+# The divvy configuration file
 
-# Divvy configuration files
+At the heart of `divvy` is a the *divvy configuration file*, or `DIVCFG` for short. This is a `yaml` file that specifies a user's available *compute packages*. Each compute package represents a computing resource; for example, by default we have a package (called `local`) that populates templates to simple run jobs in the local console, and another package (called `slurm`) with a generic template to submit jobs to a SLURM cluster resource manager. Users can customize compute packages as much as needed. Here is an example `divvy` configuration file:
 
-## The DIVCFG environment variable
-
-At the heart of `divvy` is a `yaml` configuration file that specifies your available `compute_package`s. Each package represents a computing resource; for example, by default we have 1 package (called `local`) that populates templates to simple run jobs in the local console, and another package (called `slurm`) with a generic template to submit jobs to a SLURM cluster resource manager. By just choosing `local` or `slurm` you can change where your job is run. You can customize your compute packages as much as you need. 
-
-The file specifying the compute packages is called the `DIVCFG` file. If using `divvy` from within `python`, you can pass a configuration file when you construct a new `ComputingConfiguration` object. If you don't specify one, `divvy` will first look for a file in the `$DIVCFG` environment variable. If it cannot find one there, then it will load a default configuration file with a few basic compute packages.
-
-## The DIVCFG file
-
-The DIVCFG file is a `yaml` file listing different *compute packages*. Here is an example `divvy` configuration file:
-
-```{yaml}
+```{console}
 compute_packages:
   default:
     submission_template: templates/local_template.sub
@@ -44,7 +35,7 @@ Each compute package specifies a path to a template file (`submission_template`)
 
 ## Resources
 
-You may notice that the compute config file does not specify resources to request (like memory, CPUs, or time). Yet, these are required in order to submit a job to a cluster. **Resources are not handled by the divcfg file** because they not relative to a particular computing environment; instead they vary by pipeline and sample. As such, these items should be defined at other stages. 
+You may notice that the compute config file does not specify resources to request (like memory, CPUs, or time). Yet, these are required in order to submit a job to a cluster. **Resources are not handled by the divcfg file** because they not relative to a particular computing environment; instead they vary by pipeline and sample. As such, these items should be provided elsewhere. 
 
 ## Template files
 
@@ -69,4 +60,11 @@ srun {CODE}
 
 Template files use variables (*e.g.* `{VARIABLE}`), which will be populated independently for each job.
 
-`Divvy` comes with a few commonly used templates (in the [submit_templates](/https://github.com/pepkit/divvy/tree/master/divvy/submit_templates) folder). Many users will not need to tweak the template files, but if you need to, you can also create your own templates, giving `divvy` ultimate flexibility to work with any compute infrastructure in any environment. To create a custom template, just follow the examples and put together what you need. Then, point to your custom template in the `submission_template` attribute of a compute package in your `DIVCFG` config file.
+`Divvy` comes with a few commonly used templates (in the [submit_templates](https://github.com/pepkit/divvy/tree/master/divvy/submit_templates) folder). Many users will not need to tweak the template files, but if you need to, you can also create your own templates, giving `divvy` ultimate flexibility to work with any compute infrastructure in any environment. To create a custom template, just follow the examples and put together what you need. Then, point to your custom template in the `submission_template` attribute of a compute package in your `DIVCFG` config file.
+
+
+
+## Configuration file priority lookup
+
+ When `divvy` starts, it checks a few places for the `DIVCFG` file. First, the user may may specify a `DIVCFG` file when invoking `divvy` either from the command line or from within python. If the file is not provided, `divvy` will next look file in the `$DIVCFG` environment variable. If it cannot find one there, then it will load a default configuration file with a few basic compute packages. We recommend for most users, setting the `DIVCFG` environment variable is the most convenient use case.
+
