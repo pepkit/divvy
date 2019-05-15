@@ -153,7 +153,7 @@ def sample_folder(prj, sample):
     """
     Get the path to this Project's root folder for the given Sample.
 
-    :param OrdPathExAttMap | Project prj: project with which sample is associated
+    :param PathExAttMap | Project prj: project with which sample is associated
     :param Mapping sample: Sample or sample data for which to get root output
         folder path.
     :return str: this Project's root folder for the given Sample
