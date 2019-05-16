@@ -89,16 +89,6 @@ def import_from_source(module_filepath):
     return mod
 
 
-def is_url(maybe_url):
-    """
-    Determine whether a path is a URL.
-
-    :param str maybe_url: path to investigate as URL
-    :return bool: whether path appears to be a URL
-    """
-    return urlparse(maybe_url).scheme != ""
-
-
 def parse_config_file(conf_file):
     """
     Parse a divvy configuration file.
