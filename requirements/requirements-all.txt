@@ -1,3 +1,4 @@
 attmap>=0.12.3
 pandas>=0.20.2
 pyyaml>=5.1
+logmuse>=0.2.0
