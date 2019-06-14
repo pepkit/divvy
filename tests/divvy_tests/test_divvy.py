@@ -82,7 +82,7 @@ class ResettingSettingsTests:
     def test_reset_active_settings_works(self, dcc):
         """ Test if the settings are cleared """
         dcc.reset_active_settings()
-        assert dcc.get_active_package() == {}
+        assert dcc.get_active_package() == PathExAttMap({})
 
 
 class UpdatingPackagesTests:

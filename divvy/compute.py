@@ -301,18 +301,12 @@ def main():
 
     subparsers = parser.add_subparsers(dest="command") 
 
-
-    def add_subparser(cmd):
-        # Individual subcommands
-        msg_by_cmd = {
-            "list": "List available compute packages",
-            "write": "Write a submit script"
-        }
+    def add_subparser(cmd, description):
         return subparsers.add_parser(
-            cmd, description=msg_by_cmd[cmd], help=msg_by_cmd[cmd])
+            cmd, description=description, help=description)
 
-    write_subparser = add_subparser("write")
-    list_subparser = add_subparser("list")
+    write_subparser = add_subparser("write", "Write a submit script")
+    list_subparser = add_subparser("list", "List available compute packages")
 
     write_subparser.add_argument(
             "-S", "--settings",
