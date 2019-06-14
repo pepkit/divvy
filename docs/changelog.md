@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.3.3] -- 2019-06-11
+## [0.3.3] -- 2019-06-14
 ### Changed
 - Removed utilities that are in `peppy`.
 - Removed logging setup function.
