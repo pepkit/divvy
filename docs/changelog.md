@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.4] -- Unreleased
+### Fixed
+- `divvy` now shows help message with no args
+- No longer print 'package activated' for default package
+
 ## [0.3.3] -- 2019-06-14
 ### Changed
 - Removed utilities that are in `peppy`.
