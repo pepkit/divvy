@@ -141,10 +141,11 @@ class ComputingConfiguration(PathExAttMap):
         """
 
         # Hope that environment & environment compute are present.
+        act_msg = "Activating compute package '{}'".format(package_name)
         if package_name == "default":
-            _LOGGER.debug("Activating compute package '{}'".format(package_name))
+            _LOGGER.debug(act_msg)
         else:
-            _LOGGER.info("Activating compute package '{}'".format(package_name))
+            _LOGGER.info(act_msg)
 
         if package_name and self.compute_packages and package_name in self.compute_packages:
             # Augment compute, creating it if needed.
