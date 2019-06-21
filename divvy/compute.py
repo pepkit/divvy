@@ -333,7 +333,12 @@ def main():
             "\n".join(dcc.list_compute_packages())))
         sys.exit(1)
 
-    dcc.activate_package(args.package)
+    try:
+        dcc.activate_package(args.package)
+    except AttributeError:
+        parser.print_help(sys.stderr)
+        sys.exit(1)
+
     if args.settings:
         _LOGGER.info("Loading settings file: %s", args.settings)
         with open(args.settings, 'r') as f:
