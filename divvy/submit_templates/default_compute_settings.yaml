@@ -11,3 +11,23 @@ compute_packages:
   slurm:
     submission_template: slurm_template.sub
     submission_command: sbatch
+  singularity:
+    submission_template: localhost_singularity_template.sub
+    submission_command: sh
+    singularity_args: ""
+  singularity_slurm:
+    submission_template: slurm_singularity_template.sub
+    submission_command: sbatch
+    singularity_args: ""
+  docker:
+    submission_template: localhost_docker_template.sub
+    submission_command: sh
+    docker_args: |
+      --user=$(id -u):$(id -g) \
+      --env="DISPLAY" \
+      --volume="/etc/group:/etc/group:ro" \
+      --volume="/etc/passwd:/etc/passwd:ro" \
+      --volume="/etc/shadow:/etc/shadow:ro"  \
+      --volume="/etc/sudoers.d:/etc/sudoers.d:ro" \
+      --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+      --workdir="`pwd`" \
