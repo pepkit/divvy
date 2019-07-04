@@ -1,24 +1,28 @@
 """ Computing configuration representation """
 
+
 import argparse
 import logging
+import logmuse
 import os
 import sys
 import yaml
 from yaml import SafeLoader
 
 # from attmap import PathExAttMap
-from yacman import YacAttMap
+import yacman
+from collections import OrderedDict
 
 from .const import COMPUTE_SETTINGS_VARNAME, DEFAULT_COMPUTE_RESOURCES_NAME, \
     NEW_COMPUTE_KEY
 from .utils import parse_config_file, write_submit_script, get_first_env_var
 from . import __version__
 
-_LOGGER = logging.getLogger(__name__)
+_LOGGER = None
+# _LOGGER = logging.getLogger(__name__)
 
 
-class ComputingConfiguration(YacAttMap):
+class ComputingConfiguration(yacman.YacAttMap):
     """
     Represents computing configuration objects.
 
@@ -153,7 +157,7 @@ class ComputingConfiguration(YacAttMap):
             # Augment compute, creating it if needed.
             if self.compute is None:
                 _LOGGER.debug("Creating Project compute")
-                self.compute = YacAttMap()
+                self.compute = yacman.YacAttMap()
                 _LOGGER.debug("Adding entries for package_name '%s'", package_name)
             self.compute.add_entries(self.compute_packages[package_name])
 
@@ -192,7 +196,7 @@ class ComputingConfiguration(YacAttMap):
         """
         Returns settings for the currently active compute package
 
-        :return YacAttMap: data defining the active compute package
+        :return yacman.YacAttMap: data defining the active compute package
         """
         return self.compute
 
@@ -210,7 +214,7 @@ class ComputingConfiguration(YacAttMap):
         
         :return bool: success flag
         """
-        self.compute = YacAttMap()
+        self.compute = yacman.YacAttMap()
         return True
 
     def update_packages(self, config_file):
@@ -235,7 +239,7 @@ class ComputingConfiguration(YacAttMap):
                                 loaded_packages[key][key2])
 
         if self.compute_packages is None:
-            self.compute_packages = YacAttMap(loaded_packages)
+            self.compute_packages = yacman.YacAttMap(loaded_packages)
         else:
             self.compute_packages.add_entries(loaded_packages)
 
@@ -286,6 +290,38 @@ class _VersionInHelpParser(argparse.ArgumentParser):
                super(_VersionInHelpParser, self).format_help()
 
 
+def divvy_init(config_path):
+    """
+    Initialize a genome config file.
+    
+    :param str config_path: path to genome configuration file to 
+        create/initialize
+    :param st genome_server: URL for a server
+    """
+
+    # Set up default 
+    dcc = ComputingConfiguration()
+
+    _LOGGER.debug("DCC: {}".format(dcc))
+
+    if config_path and not os.path.exists(config_path):
+        dcc.write(config_path)
+        _LOGGER.info("Wrote new divvy configuration file: {}".format(config_path))
+    else:
+        _LOGGER.warning("Can't initialize, file exists: {} ".format(config_path))
+
+def _single_folder_writeable(d):
+    return os.access(d, os.W_OK) and os.access(d, os.X_OK)
+
+def _writeable(outdir, strict_exists=False):
+    outdir = outdir or "."
+    if os.path.exists(outdir):
+        return _single_folder_writeable(outdir)
+    elif strict_exists:
+        raise MissingFolderError(outdir)
+    return _writeable(os.path.dirname(outdir), strict_exists)
+
+
 def main():
     """ Primary workflow """
 
@@ -302,7 +338,7 @@ def main():
             version="%(prog)s {v}".format(v=__version__))
 
     parser.add_argument(
-            "-C", "--config",
+            "-c", "--config",
             help="Divvy configuration file.")
 
     subparsers = parser.add_subparsers(dest="command") 
@@ -313,28 +349,56 @@ def main():
 
     write_subparser = add_subparser("write", "Write a submit script")
     list_subparser = add_subparser("list", "List available compute packages")
+    init_subparser = add_subparser("init", "Initialize a new divvy config file")
 
     write_subparser.add_argument(
-            "-S", "--settings",
+            "-s", "--settings",
             help="YAML file with job settings to populate the template.")    
 
     write_subparser.add_argument(
-            "-P", "--package", default=DEFAULT_COMPUTE_RESOURCES_NAME,
-            help="Compute package")
+            "-p", "--package", default=DEFAULT_COMPUTE_RESOURCES_NAME,
+            help="Select from available compute packages.")
+
+    # write_subparser.add_argument(
+    #         "-t", "--template",
+    #         help="Provide a template file (not yet implemented).")
 
     write_subparser.add_argument(
-            "-O", "--outfile", required=True,
+            "-o", "--outfile", required=True,
             help="Output filepath")
 
+    parser = logmuse.add_logging_options(parser)
     args, remaining_args = parser.parse_known_args()
+    global _LOGGER
+    _LOGGER = logmuse.logger_via_cli(args)
+
+    # Any non-divvy arguments will be passed along as key-value pairs
+    # that can be used to populate the template.
     keys = [str.replace(x, "--", "") for x in remaining_args[::2]]
     cli_vars = dict(zip(keys, remaining_args[1::2]))
-    dcc = ComputingConfiguration(args.config)
+
+    default_config_filepath = os.path.join(
+        os.path.dirname(__file__),
+        "submit_templates",
+        "default_compute_settings.yaml")
+
+    divcfg = yacman.select_config(
+        args.config, COMPUTE_SETTINGS_VARNAME,
+        check_exist=not args.command == "init",  on_missing=lambda fp: fp,
+        default_config_filepath=default_config_filepath)
+    _LOGGER.info("Divvy config: {}".format(divcfg))
+    dcc = ComputingConfiguration(divcfg)
 
     if args.command == "list":
         print("Available compute packages:\n{}".format(
             "\n".join(dcc.list_compute_packages())))
         sys.exit(1)
+
+    if args.command == "init":
+        _LOGGER.info("Initializing divvy configuration")
+        _writeable(os.path.dirname(divcfg), strict_exists=True)
+        divvy_init(divcfg)
+        sys.exit(0)      
 
     try:
         dcc.activate_package(args.package)
