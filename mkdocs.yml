@@ -13,6 +13,7 @@ nav:
     - Configuring divvy: configuration.md
     - Configuring containers: containers.md
   - Reference:
+    - Default packages: default_packages.md
     - API: autodoc_build/divvy.md
     - Support: support.md
     - Contributing: contributing.md
