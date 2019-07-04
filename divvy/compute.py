@@ -42,32 +42,14 @@ class ComputingConfiguration(yacman.YacAttMap):
         a warning message will be logged, and no exception will be raised.
     """
 
-    def __init__(self, config_file=None,
+    def __init__(self, entries=None,
                  no_env_error=None, no_compute_exception=None):
-
-        super(ComputingConfiguration, self).__init__()
+        super(ComputingConfiguration, self).__init__(entries)
 
         self.compute_packages = None
 
-        if config_file:
-            if os.path.isfile(config_file):
-                self.config_file = config_file
-            else:
-                _LOGGER.error("Config file path isn't a file: {}".
-                              format(config_file))
-                raise IOError(config_file)
-        else:
-            _LOGGER.debug("No local config file was provided")
-            _LOGGER.debug("Checking this set of environment variables: {}".format(self.compute_env_var))
-            divcfg_env_var, divcfg_file = get_first_env_var(self.compute_env_var) or ["", ""]
-            if os.path.isfile(divcfg_file):
-                _LOGGER.debug("Found global config file in {}: {}".
-                             format(divcfg_env_var, divcfg_file))
-                self.config_file = divcfg_file
-            else:
-                _LOGGER.info("Using default config file, no global config file provided in environment "
-                             "variable(s): {}".format(str(self.compute_env_var)))
-                self.config_file = self.default_config_file
+        if entries:
+             self.config_file = entries
 
         try:
             self.update_packages(self.config_file)
@@ -290,7 +272,7 @@ class _VersionInHelpParser(argparse.ArgumentParser):
                super(_VersionInHelpParser, self).format_help()
 
 
-def divvy_init(config_path):
+def divvy_init(config_path, template_config_path):
     """
     Initialize a genome config file.
     
@@ -300,7 +282,7 @@ def divvy_init(config_path):
     """
 
     # Set up default 
-    dcc = ComputingConfiguration()
+    dcc = ComputingConfiguration(template_config_path)
 
     _LOGGER.debug("DCC: {}".format(dcc))
 
@@ -386,6 +368,14 @@ def main():
         args.config, COMPUTE_SETTINGS_VARNAME,
         check_exist=not args.command == "init",  on_missing=lambda fp: fp,
         default_config_filepath=default_config_filepath)
+
+    if args.command == "init":
+        _LOGGER.info("Initializing divvy configuration")
+        _writeable(os.path.dirname(divcfg), strict_exists=True)
+        divvy_init(divcfg, default_config_filepath)
+        sys.exit(0)      
+
+
     _LOGGER.info("Divvy config: {}".format(divcfg))
     dcc = ComputingConfiguration(divcfg)
 
@@ -394,11 +384,6 @@ def main():
             "\n".join(dcc.list_compute_packages())))
         sys.exit(1)
 
-    if args.command == "init":
-        _LOGGER.info("Initializing divvy configuration")
-        _writeable(os.path.dirname(divcfg), strict_exists=True)
-        divvy_init(divcfg)
-        sys.exit(0)      
 
     try:
         dcc.activate_package(args.package)
