@@ -6,6 +6,7 @@ import logging
 import logmuse
 import os
 import sys
+import shutil
 import yaml
 from yaml import SafeLoader
 
@@ -75,6 +76,16 @@ class ComputingConfiguration(yacman.YacAttMap):
                 _LOGGER.warning(message)
         else:
             _LOGGER.debug("Compute: %s", str(self.compute))
+
+    def write(self, filename=None):
+        super(ComputingConfiguration, self).write(filename)
+        filename = filename or getattr(self, FILEPATH_KEY)
+        filedir = os.path.dirname(filename)
+        # For this object, we *also* have to write the template files
+        for pkg_name, pkg in self.compute_packages.items():
+            print(pkg)
+            destfile = os.path.join(filedir, os.path.basename(pkg.submission_template))
+            copyfile(pkg.submission_template, destfile)
 
     @property
     def compute_env_var(self):
@@ -287,7 +298,11 @@ def divvy_init(config_path, template_config_path):
     _LOGGER.debug("DCC: {}".format(dcc))
 
     if config_path and not os.path.exists(config_path):
-        dcc.write(config_path)
+        # dcc.write(config_path)
+        # Init should *also* write the templates.
+        shutil.copytree(os.path.dirname(template_config_path),os.path.dirname(config_path))
+        new_template = os.path.join(os.path.dirname(config_path), os.path.basename(template_config_path))
+        os.rename(new_template, config_path)
         _LOGGER.info("Wrote new divvy configuration file: {}".format(config_path))
     else:
         _LOGGER.warning("Can't initialize, file exists: {} ".format(config_path))
@@ -370,8 +385,8 @@ def main():
         default_config_filepath=default_config_filepath)
 
     if args.command == "init":
-        _LOGGER.info("Initializing divvy configuration")
-        _writeable(os.path.dirname(divcfg), strict_exists=True)
+        _LOGGER.debug("Initializing divvy configuration")
+        _writeable(os.path.dirname(divcfg), strict_exists=False)
         divvy_init(divcfg, default_config_filepath)
         sys.exit(0)      
 
