@@ -9,6 +9,7 @@ import sys
 import shutil
 import yaml
 from yaml import SafeLoader
+from distutils.dir_util import copy_tree
 
 # from attmap import PathExAttMap
 import yacman
@@ -304,7 +305,8 @@ def divvy_init(config_path, template_config_path):
     if config_path and not os.path.exists(config_path):
         # dcc.write(config_path)
         # Init should *also* write the templates.
-        shutil.copytree(os.path.dirname(template_config_path),os.path.dirname(config_path))
+        dest_folder = os.path.dirname(config_path)
+        copy_tree(os.path.dirname(template_config_path), dest_folder)
         new_template = os.path.join(os.path.dirname(config_path), os.path.basename(template_config_path))
         os.rename(new_template, config_path)
         _LOGGER.info("Wrote new divvy configuration file: {}".format(config_path))
@@ -323,8 +325,12 @@ def _writeable(outdir, strict_exists=False):
     return _writeable(os.path.dirname(outdir), strict_exists)
 
 
-def main():
-    """ Primary workflow """
+def build_argparser():
+    """
+    Builds argument parser.
+
+    :return argparse.ArgumentParser
+    """
 
     banner = "%(prog)s - write compute job scripts that can be submitted to any computing resource"
     additional_description = "\nhttps://github.com/pepkit/divvy"
@@ -338,37 +344,48 @@ def main():
             action="version",
             version="%(prog)s {v}".format(v=__version__))
 
-    parser.add_argument(
-            "-c", "--config",
-            help="Divvy configuration file.")
-
     subparsers = parser.add_subparsers(dest="command") 
 
     def add_subparser(cmd, description):
         return subparsers.add_parser(
             cmd, description=description, help=description)
 
-    write_subparser = add_subparser("write", "Write a submit script")
-    list_subparser = add_subparser("list", "List available compute packages")
-    init_subparser = add_subparser("init", "Initialize a new divvy config file")
+    subparser_messages = {
+        "init": "Initialize a new divvy config file",
+        "list": "List available compute packages",
+        "write": "Write a job script"
+    }
 
-    write_subparser.add_argument(
+    sps = {}
+    for cmd, desc in subparser_messages.items():
+        sps[cmd] = add_subparser(cmd, desc)
+        sps[cmd].add_argument(
+            "-c", "--config",
+            help="Divvy configuration file.")
+
+    sps["write"].add_argument(
             "-s", "--settings",
             help="YAML file with job settings to populate the template.")    
 
-    write_subparser.add_argument(
+    sps["write"].add_argument(
             "-p", "--package", default=DEFAULT_COMPUTE_RESOURCES_NAME,
             help="Select from available compute packages.")
 
-    # write_subparser.add_argument(
+    # sps["write"].add_argument(
     #         "-t", "--template",
     #         help="Provide a template file (not yet implemented).")
 
-    write_subparser.add_argument(
+    sps["write"].add_argument(
             "-o", "--outfile", required=True,
             help="Output filepath")
 
-    parser = logmuse.add_logging_options(parser)
+    return parser
+
+
+def main():
+    """ Primary workflow """
+
+    parser = logmuse.add_logging_options(build_argparser())
     args, remaining_args = parser.parse_known_args()
     global _LOGGER
     _LOGGER = logmuse.logger_via_cli(args)
@@ -377,8 +394,6 @@ def main():
     # that can be used to populate the template.
     keys = [str.replace(x, "--", "") for x in remaining_args[::2]]
     cli_vars = dict(zip(keys, remaining_args[1::2]))
-
-
 
     divcfg = yacman.select_config(
         args.config, COMPUTE_SETTINGS_VARNAME,
