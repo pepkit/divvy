@@ -302,6 +302,10 @@ def divvy_init(config_path, template_config_path):
 
     _LOGGER.debug("DCC: {}".format(dcc))
 
+    if not config_path:
+        _LOGGER.error("You must specify a file path to initialize.")
+        return
+
     if config_path and not os.path.exists(config_path):
         # dcc.write(config_path)
         # Init should *also* write the templates.
@@ -360,7 +364,7 @@ def build_argparser():
     for cmd, desc in subparser_messages.items():
         sps[cmd] = add_subparser(cmd, desc)
         sps[cmd].add_argument(
-            "-c", "--config",
+            "-c", "--config", required=(cmd == "init"),
             help="Divvy configuration file.")
 
     sps["write"].add_argument(
