@@ -390,6 +390,10 @@ def main():
     global _LOGGER
     _LOGGER = logmuse.logger_via_cli(args)
 
+    if not args.command:
+        parser.print_help()
+        _LOGGER.error("No command given")
+        sys.exit(1)
     # Any non-divvy arguments will be passed along as key-value pairs
     # that can be used to populate the template.
     keys = [str.replace(x, "--", "") for x in remaining_args[::2]]
@@ -411,8 +415,11 @@ def main():
     dcc = ComputingConfiguration(divcfg)
 
     if args.command == "list":
-        print("Available compute packages:\n{}".format(
-            "\n".join(dcc.list_compute_packages())))
+        # Put the header through logger and the content through print so the
+        # user can redirect the list from stdout if desired without the header
+        # as clutter
+        _LOGGER.info("Available compute packages:\n")
+        print("{}".format("\n".join(dcc.list_compute_packages())))
         sys.exit(1)
 
 
