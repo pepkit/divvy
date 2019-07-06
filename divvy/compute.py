@@ -19,6 +19,11 @@ from .const import COMPUTE_SETTINGS_VARNAME, DEFAULT_COMPUTE_RESOURCES_NAME, \
 from .utils import parse_config_file, write_submit_script, get_first_env_var
 from . import __version__
 
+DEFAULT_CONFIG_FILEPATH =  os.path.join(
+        os.path.dirname(__file__),
+        "default_config",
+        "divvy_config.yaml")
+
 _LOGGER = None
 # _LOGGER = logging.getLogger(__name__)
 
@@ -104,8 +109,7 @@ class ComputingConfiguration(yacman.YacAttMap):
         
         :return str: Path to default compute settings file
         """
-        return os.path.join(
-            self.templates_folder, "default_compute_settings.yaml")
+        return DEFAULT_CONFIG_FILEPATH
 
     @property
     def template(self):
@@ -124,7 +128,7 @@ class ComputingConfiguration(yacman.YacAttMap):
 
         :return str: path to folder with default submission templates
         """
-        return os.path.join(os.path.dirname(__file__), "submit_templates")
+        return os.path.join(os.path.dirname(__file__), "default_config", "submit_templates")
 
     def activate_package(self, package_name):
         """
@@ -374,20 +378,17 @@ def main():
     keys = [str.replace(x, "--", "") for x in remaining_args[::2]]
     cli_vars = dict(zip(keys, remaining_args[1::2]))
 
-    default_config_filepath = os.path.join(
-        os.path.dirname(__file__),
-        "submit_templates",
-        "default_compute_settings.yaml")
+
 
     divcfg = yacman.select_config(
         args.config, COMPUTE_SETTINGS_VARNAME,
         check_exist=not args.command == "init",  on_missing=lambda fp: fp,
-        default_config_filepath=default_config_filepath)
+        default_config_filepath=DEFAULT_CONFIG_FILEPATH)
 
     if args.command == "init":
         _LOGGER.debug("Initializing divvy configuration")
         _writeable(os.path.dirname(divcfg), strict_exists=False)
-        divvy_init(divcfg, default_config_filepath)
+        divvy_init(divcfg, DEFAULT_CONFIG_FILEPATH)
         sys.exit(0)      
 
 
