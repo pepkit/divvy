@@ -25,9 +25,7 @@ DEFAULT_CONFIG_FILEPATH =  os.path.join(
         "default_config",
         "divvy_config.yaml")
 
-_LOGGER = None
-# _LOGGER = logging.getLogger(__name__)
-
+_LOGGER = logging.getLogger(__name__)
 
 class ComputingConfiguration(yacman.YacAttMap):
     """
@@ -57,6 +55,8 @@ class ComputingConfiguration(yacman.YacAttMap):
 
         if entries:
              self.config_file = entries
+        else:
+            self.config_file = None
 
         try:
             self.update_packages(self.config_file)
