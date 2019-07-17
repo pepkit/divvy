@@ -108,7 +108,9 @@ class ComputingConfiguration(PathExAttMap):
         return os.path.join(
             self.templates_folder, "default_compute_settings.yaml")
 
-    @property
+    # Warning: template cannot be a property, because otherwise
+    # it will get treated as a PathExAttMap treats all properties, which
+    # is that it will turn any double-slashes into single slashes.
     def template(self):
         """
         Get the currently active submission template.
@@ -117,6 +119,8 @@ class ComputingConfiguration(PathExAttMap):
         """
         with open(self.compute.submission_template, 'r') as f:
             return f.read()
+
+
 
     @property
     def templates_folder(self):
@@ -256,7 +260,7 @@ class ComputingConfiguration(PathExAttMap):
             for kvs in reversed(extra_vars):
                 variables.update(kvs)
         _LOGGER.info("Writing script to {}".format(os.path.abspath(output_path)))
-        return write_submit_script(output_path, self.template, variables)
+        return write_submit_script(output_path, self.template(), variables)
 
     def _handle_missing_env_attrs(self, config_file, when_missing):
         """ Default environment settings aren't required; warn, though. """
