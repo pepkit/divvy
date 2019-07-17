@@ -37,8 +37,11 @@ class ComputingConfiguration(yacman.YacAttMap):
     and retrieve computing configuration files, and use these values to populate
     job submission script templates.
     
+    :param str | Iterable[(str, object)] | Mapping[str, object] entries: config
+        filepath or collection of key-value pairs. YAML file specifying
+        computing package data (The `DIVCFG` file).
     :param str config_file: YAML file specifying computing package data (The
-        `DIVCFG` file).
+        `DIVCFG` file). [DEPRECATED]
     :param type no_env_error: type of exception to raise if divvy
         settings can't be established, optional; if null (the default),
         a warning message will be logged, and no exception will be raised.
@@ -48,8 +51,12 @@ class ComputingConfiguration(yacman.YacAttMap):
     """
 
     def __init__(self, entries=None,
-                 no_env_error=None, no_compute_exception=None):
+                config_file=None, # for backwards compatibility with peppy 0.22
+                no_env_error=None, no_compute_exception=None):
+        if config_file:
+            entries = config_file
         super(ComputingConfiguration, self).__init__(entries)
+
 
         self.compute_packages = None
 
