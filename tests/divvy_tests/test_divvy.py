@@ -1,10 +1,9 @@
 """ Assorted divvy tests """
 
 import pytest
-from yacman import YacAttMap
+from yacman import YacAttMap, load_yaml
 from divvy import DEFAULT_COMPUTE_RESOURCES_NAME
 from tests.conftest import DCC_ATTRIBUTES, FILES
-
 
 class DefaultDCCTests:
     """ Tests the default divvy.ComputingConfiguration object creation"""
@@ -91,7 +90,8 @@ class UpdatingPackagesTests:
     @pytest.mark.parametrize(argnames="config_file", argvalues=FILES)
     def test_update_packages(self, dcc, config_file):
         """ Test updating does not produce empty compute packages """
-        dcc.update_packages(config_file)
+        entries = load_yaml(config_file)
+        dcc.update(entries)
         assert dcc.compute_packages != YacAttMap()
 
 

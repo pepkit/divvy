@@ -38,10 +38,11 @@ class ComputingConfiguration(yacman.YacAttMap):
     job submission script templates.
     
     :param str | Iterable[(str, object)] | Mapping[str, object] entries: config
-        filepath or collection of key-value pairs. YAML file specifying
-        computing package data (The `DIVCFG` file).
-    :param str config_file: YAML file specifying computing package data (The
-        `DIVCFG` file). [DEPRECATED]
+        Collection of key-value pairs.
+    :param str filepath: YAML file specifying computing package data. (the
+        `DIVCFG` file)
+    :param str config_file: YAML file specifying computing package data.
+        [DEPRECATED: renamed to filepath to sync with yacman]
     :param type no_env_error: type of exception to raise if divvy
         settings can't be established, optional; if null (the default),
         a warning message will be logged, and no exception will be raised.
@@ -50,35 +51,38 @@ class ComputingConfiguration(yacman.YacAttMap):
         a warning message will be logged, and no exception will be raised.
     """
 
-    def __init__(self, entries=None,
-                config_file=None, # for backwards compatibility with peppy 0.22
+    def __init__(self, entries=None, filepath=None, 
+                config_file=None,  # for backwards compatibility with peppy 0.22
                 no_env_error=None, no_compute_exception=None):
-        if config_file:
-            entries = config_file
-        super(ComputingConfiguration, self).__init__(entries)
+        if config_file:  # for backwards compatibility with peppy 0.22 (remove later)
+            filepath = config_file
+        filepath = yacman.select_config(filepath, "DIVCFG", self.default_config_file)
+        _LOGGER.debug("Selected config file: {}".format(filepath))
+        super(ComputingConfiguration, self).__init__(entries, filepath)
 
+        if not hasattr(self, "compute_packages"):
+            raise Exception("Your config file is not in divvy config format (it"
+            " lacks a compute_packages section)")
+            # We require that compute_packages be present, even if empty
+            self.compute_packages = {}
 
-        self.compute_packages = None
+        # try:
+        #     self.update_packages(self.config_file)
+        # except Exception as e:
+        #     _LOGGER.error("Can't load config file '%s'",
+        #                   str(self.config_file))
+        #     _LOGGER.error(str(type(e).__name__) + str(e))
 
-        if entries:
-             self.config_file = entries
-        else:
-            self.config_file = None
-
-        try:
-            self.update_packages(self.config_file)
-        except Exception as e:
-            _LOGGER.error("Can't load config file '%s'",
-                          str(self.config_file))
-            _LOGGER.error(str(type(e).__name__) + str(e))
-
-        self._handle_missing_env_attrs(
-            self.config_file, when_missing=no_env_error)
+        # self._handle_missing_env_attrs(
+        #     self._file_path, when_missing=no_env_error)
 
         # Initialize default compute settings.
         _LOGGER.debug("Establishing project compute settings")
         self.compute = None
         self.activate_package(DEFAULT_COMPUTE_RESOURCES_NAME)
+
+
+        self.config_file = self._file_path
 
         # Either warn or raise exception if the compute is null.
         if self.compute is None:
@@ -98,7 +102,7 @@ class ComputingConfiguration(yacman.YacAttMap):
         for pkg_name, pkg in self.compute_packages.items():
             print(pkg)
             destfile = os.path.join(filedir, os.path.basename(pkg.submission_template))
-            copyfile(pkg.submission_template, destfile)
+            shutil.copyfile(pkg.submission_template, destfile)
 
     @property
     def compute_env_var(self):
@@ -168,26 +172,34 @@ class ComputingConfiguration(yacman.YacAttMap):
                 _LOGGER.debug("Creating Project compute")
                 self.compute = yacman.YacAttMap()
                 _LOGGER.debug("Adding entries for package_name '%s'", package_name)
+
             self.compute.add_entries(self.compute_packages[package_name])
 
-            # Ensure submission template is absolute.
-            # This is handled at update.
-            # if not os.path.isabs(self.compute.submission_template):
-            #     try:
-            #         self.compute.submission_template = os.path.join(
-            #             os.path.dirname(self.config_file),
-            #             self.compute.submission_template)
-            #     except AttributeError as e:
-            #         # Environment and environment compute should at least have been
-            #         # set as null-valued attributes, so execution here is an error.
-            #         _LOGGER.error(str(e))
+            # Ensure submission template is absolute. This *used to be* handled
+            # at update (so the paths were stored as absolutes in the packages),
+            # but now, it makes more sense to do it here so we can piggyback on
+            # the default update() method and not even have to do that.
+            if not os.path.isabs(self.compute.submission_template):
+                try:
+                    self.compute.submission_template = os.path.join(
+                        os.path.dirname(self._file_path),
+                        self.compute.submission_template)
+                except AttributeError as e:
+                    # Environment and environment compute should at least have been
+                    # set as null-valued attributes, so execution here is an error.
+                    _LOGGER.error(str(e))
+
+            _LOGGER.debug("Submit template set to: {}".format(self.compute.submission_template))
+            _LOGGER.debug("Submit template set to: {}".format(self["compute"]["submission_template"]))
+
+
 
             return True
 
         else:
             # Scenario in which environment and environment compute are
             # both present--but don't evaluate to True--is fairly harmless.
-            _LOGGER.debug("Environment = {}".format(self.compute_packages))
+            _LOGGER.debug("Can't activate package. compute_packages = {}".format(self.compute_packages))
 
         return False
 
@@ -226,35 +238,35 @@ class ComputingConfiguration(yacman.YacAttMap):
         self.compute = yacman.YacAttMap()
         return True
 
-    def update_packages(self, config_file):
-        """
-        Parse data from divvy configuration file.
+    # def update_packages(self, config_file):
+    #     """
+    #     Parse data from divvy configuration file.
 
-        Given a divvy configuration file, this function will update (not
-        overwrite) existing compute packages with existing values. It does not
-        affect any currently active settings.
+    #     Given a divvy configuration file, this function will update (not
+    #     overwrite) existing compute packages with existing values. It does not
+    #     affect any currently active settings.
         
-        :param str config_file: path to file with new divvy configuration data
-        """
-        env_settings = parse_config_file(config_file)
-        loaded_packages = env_settings[NEW_COMPUTE_KEY]
-        for key, value in loaded_packages.items():
-            if type(loaded_packages[key]) is dict:
-                for key2, value2 in loaded_packages[key].items():
-                    if key2 == "submission_template":
-                        if not os.path.isabs(loaded_packages[key][key2]):
-                            loaded_packages[key][key2] = os.path.join(
-                                os.path.dirname(config_file),
-                                loaded_packages[key][key2])
+    #     :param str config_file: path to file with new divvy configuration data
+    #     """
+    #     env_settings = parse_config_file(config_file)
+    #     loaded_packages = env_settings[NEW_COMPUTE_KEY]
+    #     for key, value in loaded_packages.items():
+    #         if type(loaded_packages[key]) is dict:
+    #             for key2, value2 in loaded_packages[key].items():
+    #                 if key2 == "submission_template":
+    #                     if not os.path.isabs(loaded_packages[key][key2]):
+    #                         loaded_packages[key][key2] = os.path.join(
+    #                             os.path.dirname(config_file),
+    #                             loaded_packages[key][key2])
 
-        if self.compute_packages is None:
-            self.compute_packages = yacman.YacAttMap(loaded_packages)
-        else:
-            self.compute_packages.add_entries(loaded_packages)
+    #     if self.compute_packages is None:
+    #         self.compute_packages = yacman.YacAttMap(loaded_packages)
+    #     else:
+    #         self.compute_packages.add_entries(loaded_packages)
 
-        _LOGGER.debug("Available divvy packages: {}".
-                      format(', '.join(self.list_compute_packages())))
-        self.config_file = config_file
+    #     _LOGGER.debug("Available divvy packages: {}".
+    #                   format(', '.join(self.list_compute_packages())))
+    #     self.config_file = config_file
 
     def write_script(self, output_path, extra_vars=None):
         """
@@ -275,6 +287,7 @@ class ComputingConfiguration(yacman.YacAttMap):
             for kvs in reversed(extra_vars):
                 variables.update(kvs)
         _LOGGER.info("Writing script to {}".format(os.path.abspath(output_path)))
+        _LOGGER.debug("Submission template: {}".format(self.compute.submission_template))
         return write_submit_script(output_path, self.template(), variables)
 
     def _handle_missing_env_attrs(self, config_file, when_missing):
