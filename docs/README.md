@@ -35,9 +35,29 @@ export DIVCFG="divvy_config.yaml"
 divvy init -c $DIVCFG
 ```
 
+### List available compute packages
+
 ```{console}
 divvy list
-divvy write --package slurm --settings myjob.yaml --sample sample1 --outfile submit_script.txt
+```
+
+```{console}
+Divvy config: divvy_config.yaml
+
+docker
+default
+singularity_slurm
+singularity
+local
+slurm
+```
+### Write a submission script:
+
+```{console}
+divvy write --package slurm \
+	--settings myjob.yaml \
+	--sample sample1 \
+	--outfile submit_script.txt
 ```
 
 ### Python interface
