@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.4.0] -- Unreleased
+## [0.4.0] -- 2019-07-30
 ### Added
 - Default templates for singularity and docker compute packages
 - `divvy init` function now initializes a default config setup.
