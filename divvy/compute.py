@@ -66,16 +66,6 @@ class ComputingConfiguration(yacman.YacAttMap):
             # We require that compute_packages be present, even if empty
             self.compute_packages = {}
 
-        # try:
-        #     self.update_packages(self.config_file)
-        # except Exception as e:
-        #     _LOGGER.error("Can't load config file '%s'",
-        #                   str(self.config_file))
-        #     _LOGGER.error(str(type(e).__name__) + str(e))
-
-        # self._handle_missing_env_attrs(
-        #     self._file_path, when_missing=no_env_error)
-
         # Initialize default compute settings.
         _LOGGER.debug("Establishing project compute settings")
         self.compute = None
@@ -238,35 +228,19 @@ class ComputingConfiguration(yacman.YacAttMap):
         self.compute = yacman.YacAttMap()
         return True
 
-    # def update_packages(self, config_file):
-    #     """
-    #     Parse data from divvy configuration file.
+    def update_packages(self, config_file):
+        """
+        Parse data from divvy configuration file.
 
-    #     Given a divvy configuration file, this function will update (not
-    #     overwrite) existing compute packages with existing values. It does not
-    #     affect any currently active settings.
+        Given a divvy configuration file, this function will update (not
+        overwrite) existing compute packages with existing values. It does not
+        affect any currently active settings.
         
-    #     :param str config_file: path to file with new divvy configuration data
-    #     """
-    #     env_settings = parse_config_file(config_file)
-    #     loaded_packages = env_settings[NEW_COMPUTE_KEY]
-    #     for key, value in loaded_packages.items():
-    #         if type(loaded_packages[key]) is dict:
-    #             for key2, value2 in loaded_packages[key].items():
-    #                 if key2 == "submission_template":
-    #                     if not os.path.isabs(loaded_packages[key][key2]):
-    #                         loaded_packages[key][key2] = os.path.join(
-    #                             os.path.dirname(config_file),
-    #                             loaded_packages[key][key2])
-
-    #     if self.compute_packages is None:
-    #         self.compute_packages = yacman.YacAttMap(loaded_packages)
-    #     else:
-    #         self.compute_packages.add_entries(loaded_packages)
-
-    #     _LOGGER.debug("Available divvy packages: {}".
-    #                   format(', '.join(self.list_compute_packages())))
-    #     self.config_file = config_file
+        :param str config_file: path to file with new divvy configuration data
+        """
+        entries = yacman.load_yaml(config_file)
+        self.update(entries)
+        return True
 
     def write_script(self, output_path, extra_vars=None):
         """

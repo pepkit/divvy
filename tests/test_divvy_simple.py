@@ -35,6 +35,14 @@ def test_write_script():
 
 	os.remove("test.sub")
 
+# def test_update():
+# 	# probably will be removed later
+# 	dcc1 = divvy.ComputingConfiguration()
+# 	dcc1.update_packages("code/divvy/tests/data/pepenv-master/cemm.yaml")
+# 	dcc2 = divvy.ComputingConfiguration()
+# 	y = yacman.load_yaml("code/divvy/tests/data/pepenv-master/cemm.yaml")
+# 	dcc2.update(y)
+# 	dcc1 == dcc2
 
 # class ptest(object):
 # 	@property
