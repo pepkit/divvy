@@ -1,6 +1,6 @@
 # The divvy configuration file
 
-At the heart of `divvy` is a the *divvy configuration file*, or `DIVCFG` for short. This is a `yaml` file that specifies a user's available *compute packages*. Each compute package represents a computing resource; for example, by default we have a package (called `local`) that populates templates to simple run jobs in the local console, and another package (called `slurm`) with a generic template to submit jobs to a SLURM cluster resource manager. Users can customize compute packages as much as needed. Here is an example `divvy` configuration file:
+At the heart of `divvy` is a the *divvy configuration file*, or `DIVCFG` for short. This is a `yaml` file that specifies a user's available *compute packages*. Each compute package represents a computing resource; for example, by default we have a package called `local` that populates templates to simple run jobs in the local console, and another package called `slurm` with a generic template to submit jobs to a SLURM cluster resource manager. Users can customize compute packages as much as needed. Here is an example `divvy` configuration file:
 
 ```{console}
 compute_packages:
@@ -30,12 +30,7 @@ The `submission_command` attribute is the string your cluster resource manager u
 
 ### The `submission_template` attribute
 
-Each compute package specifies a path to a template file (`submission_template`). The template file provides a skeleton that `divvy` will populate with job-specific attributes. These paths can be relative or absolute; relative paths are considered *relative to the DIVCFG file*.
-
-
-## Resources
-
-You may notice that the compute config file does not specify resources to request (like memory, CPUs, or time). Yet, these are required in order to submit a job to a cluster. **Resources are not handled by the divcfg file** because they not relative to a particular computing environment; instead they vary by pipeline and sample. As such, these items should be provided elsewhere. 
+Each compute package specifies a path to a template file (`submission_template`). The template file provides a skeleton that `divvy` will populate with job-specific attributes. These paths can be relative or absolute; relative paths are considered *relative to the DIVCFG file*. Let's explore what template files look like next.
 
 ## Template files
 
@@ -66,5 +61,9 @@ Template files use variables (*e.g.* `{VARIABLE}`), which will be populated inde
 
 ## Configuration file priority lookup
 
- When `divvy` starts, it checks a few places for the `DIVCFG` file. First, the user may may specify a `DIVCFG` file when invoking `divvy` either from the command line or from within python. If the file is not provided, `divvy` will next look file in the `$DIVCFG` environment variable. If it cannot find one there, then it will load a default configuration file with a few basic compute packages. We recommend for most users, setting the `DIVCFG` environment variable is the most convenient use case.
+When `divvy` starts, it checks a few places for the `DIVCFG` file. First, the user may may specify a `DIVCFG` file when invoking `divvy` either from the command line or from within python. If the file is not provided, `divvy` will next look file in the `$DIVCFG` environment variable. If it cannot find one there, then it will load a default configuration file with a few basic compute packages. We recommend setting the `DIVCFG` environment variable as the most convenient use case.
 
+
+## Resources
+
+You may notice that the compute config file does not specify resources to request (like memory, CPUs, or time). Yet, these are required in order to submit a job to a cluster. **Resources are not handled by the divcfg file** because they not relative to a particular computing environment; instead they vary by pipeline and sample. As such, these items should be provided elsewhere. 

@@ -10,7 +10,7 @@
 ## What makes `divvy` better?
 
 <img src="img/nodivvy.svg" style="float:left; padding-left: 5px; padding-right: 25px">
-Divvy *makes software portable*.
+Divvy *makes compute-heavy software portable*, that is, it will work on any computing environment, from a laptop to the cloud.
 
 Many bioinformatics tools require a particular compute resource setup. For example, one pipeline may be written to require running on SLURM, while another requires a cloud provider like AWS, and yet another just runs directly on your laptop. This makes it difficult to use these tools with different computing systems.
 
@@ -26,7 +26,7 @@ Divvy reads a standard configuration file describing available compute resources
 
 ## Quick start
 
-### Install and initialize
+#### Install and initialize
 
 
 ```{console}
@@ -35,7 +35,7 @@ export DIVCFG="divvy_config.yaml"
 divvy init -c $DIVCFG
 ```
 
-### List available compute packages
+#### List available compute packages
 
 ```{console}
 divvy list
@@ -51,7 +51,7 @@ singularity
 local
 slurm
 ```
-### Write a submission script:
+#### Write a submission script:
 
 ```{console}
 divvy write --package slurm \
@@ -60,7 +60,7 @@ divvy write --package slurm \
 	--outfile submit_script.txt
 ```
 
-### Python interface
+#### Python interface
 
 Use `divvy` via python interface:
 
