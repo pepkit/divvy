@@ -49,13 +49,13 @@ class ComputingConfiguration(yacman.YacAttMap):
                 no_compute_exception=None): # for backwards compatibility with peppy 0.22
 
         if no_env_error:
-            _LOGGER.warning("The no_env_error argument has been deprecated. It will be removed in the next version of divvy")
+            _LOGGER.debug("The no_env_error argument has been deprecated. It will be removed in the next version of divvy")
 
         if no_compute_exception:
-            _LOGGER.warning("The no_compute_exception argument has been deprecated. It will be removed in the next version of divvy")
+            _LOGGER.debug("The no_compute_exception argument has been deprecated. It will be removed in the next version of divvy")
 
         if config_file:  # for backwards compatibility with peppy 0.22 (remove later)
-            _LOGGER.warning("The config_file argument has renamed filepath.")
+            _LOGGER.debug("The config_file argument has renamed filepath.")
             filepath = select_divvy_config(config_file)
 
         if not entries and not filepath and not config_file:
