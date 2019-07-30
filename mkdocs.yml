@@ -16,7 +16,7 @@ nav:
   - Reference:
     - Default packages: default_packages.md
     - API: autodoc_build/divvy.md
-    - Support: support.md
+    - Support: https://github.com/pepkit/divvy/issues
     - Contributing: contributing.md
     - Changelog: changelog.md
     - DIVCFG examples: http://github.com/pepkit/divcfg
