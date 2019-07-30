@@ -26,7 +26,6 @@ DEFAULT_CONFIG_FILEPATH =  os.path.join(
         "divvy_config.yaml")
 
 _LOGGER = logging.getLogger(__name__)
-global _LOGGER
 
 class ComputingConfiguration(yacman.YacAttMap):
     """
