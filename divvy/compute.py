@@ -361,7 +361,7 @@ def build_argparser():
     """
 
     banner = "%(prog)s - write compute job scripts that can be submitted to any computing resource"
-    additional_description = "\nhttps://github.com/pepkit/divvy"
+    additional_description = "\nhttps://divvy.databio.org"
 
     parser = _VersionInHelpParser(
             description=banner,
