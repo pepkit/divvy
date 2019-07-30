@@ -9,6 +9,7 @@ nav:
     - Introduction: README.md
     - "Tutorial: divvy in python": tutorial.md
     - "Tutorial: divvy on the command line": cli.md
+    - Install and configure: install.md
   - How-to Guides:
     - Configuring divvy: configuration.md
     - Configuring containers: containers.md

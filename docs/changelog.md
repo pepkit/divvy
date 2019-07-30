@@ -1,9 +1,16 @@
 # Changelog
 
-## [0.3.4] -- Unreleased
+## [0.4.0] -- 2019-07-30
+### Added
+- Default templates for singularity and docker compute packages
+- `divvy init` function now initializes a default config setup.
+
 ### Fixed
 - `divvy` now shows help message with no args
 - No longer print 'package activated' for default package
+
+### Changed
+- Restructured the objects to use more `yacman` functionality under the hood.
 
 ## [0.3.3] -- 2019-06-14
 ### Changed
