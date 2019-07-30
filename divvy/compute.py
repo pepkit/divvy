@@ -26,6 +26,7 @@ DEFAULT_CONFIG_FILEPATH =  os.path.join(
         "divvy_config.yaml")
 
 _LOGGER = logging.getLogger(__name__)
+global _LOGGER
 
 class ComputingConfiguration(yacman.YacAttMap):
     """
@@ -41,23 +42,27 @@ class ComputingConfiguration(yacman.YacAttMap):
         Collection of key-value pairs.
     :param str filepath: YAML file specifying computing package data. (the
         `DIVCFG` file)
-    :param str config_file: YAML file specifying computing package data.
-        [DEPRECATED: renamed to filepath to sync with yacman]
-    :param type no_env_error: type of exception to raise if divvy
-        settings can't be established, optional; if null (the default),
-        a warning message will be logged, and no exception will be raised.
-    :param type no_compute_exception: type of exception to raise if compute
-        settings can't be established, optional; if null (the default),
-        a warning message will be logged, and no exception will be raised.
     """
 
     def __init__(self, entries=None, filepath=None, 
                 config_file=None,  # for backwards compatibility with peppy 0.22
-                no_env_error=None, no_compute_exception=None):
+                no_env_error=None,  # for backwards compatibility with peppy 0.22
+                no_compute_exception=None): # for backwards compatibility with peppy 0.22
+
+        if no_env_error:
+            _LOGGER.warning("The no_env_error argument has been deprecated. It will be removed in the next version of divvy")
+
+        if no_compute_exception:
+            _LOGGER.warning("The no_compute_exception argument has been deprecated. It will be removed in the next version of divvy")
+
         if config_file:  # for backwards compatibility with peppy 0.22 (remove later)
-            filepath = config_file
-        filepath = yacman.select_config(filepath, "DIVCFG", self.default_config_file)
-        _LOGGER.debug("Selected config file: {}".format(filepath))
+            _LOGGER.warning("The config_file argument has renamed filepath.")
+            filepath = select_divvy_config(config_file)
+
+        if not entries and not filepath and not config_file:
+            # Handle the case of an empty one, when we'll use the default
+            filepath = select_divvy_config(None)
+
         super(ComputingConfiguration, self).__init__(entries, filepath)
 
         if not hasattr(self, "compute_packages"):
@@ -70,19 +75,7 @@ class ComputingConfiguration(yacman.YacAttMap):
         _LOGGER.debug("Establishing project compute settings")
         self.compute = None
         self.activate_package(DEFAULT_COMPUTE_RESOURCES_NAME)
-
-
         self.config_file = self._file_path
-
-        # Either warn or raise exception if the compute is null.
-        if self.compute is None:
-            message = "Failed to establish compute settings."
-            if no_compute_exception:
-                no_compute_exception(message)
-            else:
-                _LOGGER.warning(message)
-        else:
-            _LOGGER.debug("Compute: %s", str(self.compute))
 
     def write(self, filename=None):
         super(ComputingConfiguration, self).write(filename)
@@ -124,8 +117,6 @@ class ComputingConfiguration(yacman.YacAttMap):
         """
         with open(self.compute.submission_template, 'r') as f:
             return f.read()
-
-
 
     @property
     def templates_folder(self):
@@ -180,9 +171,7 @@ class ComputingConfiguration(yacman.YacAttMap):
                     _LOGGER.error(str(e))
 
             _LOGGER.debug("Submit template set to: {}".format(self.compute.submission_template))
-            _LOGGER.debug("Submit template set to: {}".format(self["compute"]["submission_template"]))
-
-
+            # _LOGGER.debug("Submit template set to: {}".format(self["compute"]["submission_template"]))
 
             return True
 
@@ -279,6 +268,16 @@ class ComputingConfiguration(yacman.YacAttMap):
             when_missing(message)
 
 
+def select_divvy_config(filepath):
+    divcfg = yacman.select_config(
+        filepath,
+        COMPUTE_SETTINGS_VARNAME,
+        default_config_filepath=DEFAULT_CONFIG_FILEPATH,
+        check_exist=True)
+    _LOGGER.debug("Selected divvy config: {}".format(divcfg))
+    return divcfg
+
+
 class _VersionInHelpParser(argparse.ArgumentParser):
     def format_help(self):
         """ Add version information to help text. """
@@ -290,18 +289,17 @@ def divvy_init(config_path, template_config_path):
     """
     Initialize a genome config file.
     
-    :param str config_path: path to genome configuration file to 
+    :param str config_path: path to divvy configuration file to 
         create/initialize
-    :param st genome_server: URL for a server
+    :param str template_config_path: path to divvy configuration file to 
+        copy FROM
     """
-
-    # Set up default 
-    dcc = ComputingConfiguration(template_config_path)
-
-    _LOGGER.debug("DCC: {}".format(dcc))
-
     if not config_path:
         _LOGGER.error("You must specify a file path to initialize.")
+        return
+
+    if not template_config_path:
+        _LOGGER.error("You must specify a template config file path.")
         return
 
     if config_path and not os.path.exists(config_path):
@@ -315,16 +313,32 @@ def divvy_init(config_path, template_config_path):
     else:
         _LOGGER.warning("Can't initialize, file exists: {} ".format(config_path))
 
-def _single_folder_writeable(d):
-    return os.access(d, os.W_OK) and os.access(d, os.X_OK)
 
-def _writeable(outdir, strict_exists=False):
-    outdir = outdir or "."
-    if os.path.exists(outdir):
-        return _single_folder_writeable(outdir)
-    elif strict_exists:
-        raise MissingFolderError(outdir)
-    return _writeable(os.path.dirname(outdir), strict_exists)
+def _is_writeable(folder, check_exist=False, create=False):
+    """
+    Make sure a folder is writable.
+
+    Given a folder, check that it exists and is writable. Errors if requested on
+    a non-existent folder. Otherwise, make sure the first existing parent folder
+    is writable such that this folder could be created.
+
+    :param str folder: Folder to check for writeability.
+    :param bool check_exist: Throw an error if it doesn't exist?
+    :param bool create: Create the folder if it doesn't exist?
+    """
+    folder = folder or "."
+
+    if os.path.exists(folder):
+        return os.access(folder, os.W_OK) and os.access(folder, os.X_OK)
+    elif create_folder:
+        os.mkdir(folder)
+    elif check_exist:
+        raise OSError("Folder not found: {}".format(folder))
+    else:
+        _LOGGER.debug("Folder not found: {}".format(folder))
+        # The folder didn't exist. Recurse up the folder hierarchy to make sure
+        # all paths are writable
+        return _is_writeable(os.path.dirname(folder), strict_exists)
 
 
 def build_argparser():
@@ -389,6 +403,8 @@ def main():
 
     parser = logmuse.add_logging_options(build_argparser())
     args, remaining_args = parser.parse_known_args()
+    logger_kwargs = {"level": args.verbosity, "devmode": args.logdev}
+    logmuse.init_logger(name="yacman", **logger_kwargs)
     global _LOGGER
     _LOGGER = logmuse.logger_via_cli(args)
 
@@ -401,25 +417,20 @@ def main():
     keys = [str.replace(x, "--", "") for x in remaining_args[::2]]
     cli_vars = dict(zip(keys, remaining_args[1::2]))
 
-    divcfg = yacman.select_config(
-        args.config, COMPUTE_SETTINGS_VARNAME,
-        check_exist=not args.command == "init",  on_missing=lambda fp: fp,
-        default_config_filepath=DEFAULT_CONFIG_FILEPATH)
 
     if args.command == "init":
+        divcfg = args.config
         _LOGGER.debug("Initializing divvy configuration")
-        _writeable(os.path.dirname(divcfg), strict_exists=False)
+        _is_writable(os.path.dirname(divcfg), check_exist=False)
         divvy_init(divcfg, DEFAULT_CONFIG_FILEPATH)
         sys.exit(0)      
 
-
-    _LOGGER.info("Divvy config: {}".format(divcfg))
-    dcc = ComputingConfiguration(divcfg)
+    divcfg = select_divvy_config(args.config)
+    dcc = ComputingConfiguration(filepath=divcfg)
 
     if args.command == "list":
-        # Put the header through logger and the content through print so the
-        # user can redirect the list from stdout if desired without the header
-        # as clutter
+        # Output header via logger and content via print so the user can
+        # redirect the list from stdout if desired without the header as clutter
         _LOGGER.info("Available compute packages:\n")
         print("{}".format("\n".join(dcc.list_compute_packages())))
         sys.exit(1)
