@@ -425,6 +425,7 @@ def main():
         sys.exit(0)      
 
     divcfg = select_divvy_config(args.config)
+    _LOGGER.info("Using divvy config: {}".format(divcfg))
     dcc = ComputingConfiguration(filepath=divcfg)
 
     if args.command == "list":
