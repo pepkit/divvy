@@ -1,13 +1,12 @@
 """ Assorted divvy tests """
 
 import pytest
-from attmap import PathExAttMap
+from yacman import YacAttMap, load_yaml
 from divvy import DEFAULT_COMPUTE_RESOURCES_NAME
 from tests.conftest import DCC_ATTRIBUTES, FILES
 
-
 class DefaultDCCTests:
-    """ Tests the default divvvy.ComputingConfiguration object creation"""
+    """ Tests the default divvy.ComputingConfiguration object creation"""
 
     def test_no_args(self, empty_dcc):
         """ Lack of arguments does not cause failure """
@@ -20,7 +19,7 @@ class DefaultDCCTests:
 
 
 class DCCTests:
-    """ Tests the divvvy.ComputingConfiguration object creation """
+    """ Tests the divvy.ComputingConfiguration object creation """
 
     def test_object_creation(self, dcc):
         """ Test object creation for all the available compute files in pepenv repo"""
@@ -55,9 +54,9 @@ class GettingActivePackageTests:
     """ Test for the get_active_package method"""
 
     def test_settings_nonempty(self, dcc):
-        """ Test if get_active_package produces a nonempty PathExAttMap object """
+        """ Test if get_active_package produces a nonempty YacAttMap object """
         settings = dcc.get_active_package()
-        assert settings != PathExAttMap()
+        assert settings != YacAttMap()
 
 
 class ListingPackagesTests:
@@ -82,7 +81,7 @@ class ResettingSettingsTests:
     def test_reset_active_settings_works(self, dcc):
         """ Test if the settings are cleared """
         dcc.reset_active_settings()
-        assert dcc.get_active_package() == PathExAttMap({})
+        assert dcc.get_active_package() == YacAttMap({})
 
 
 class UpdatingPackagesTests:
@@ -91,8 +90,9 @@ class UpdatingPackagesTests:
     @pytest.mark.parametrize(argnames="config_file", argvalues=FILES)
     def test_update_packages(self, dcc, config_file):
         """ Test updating does not produce empty compute packages """
-        dcc.update_packages(config_file)
-        assert dcc.compute_packages != PathExAttMap()
+        entries = load_yaml(config_file)
+        dcc.update(entries)
+        assert dcc.compute_packages != YacAttMap()
 
 
 
