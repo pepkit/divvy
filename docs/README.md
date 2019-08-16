@@ -1,6 +1,6 @@
 # <img src="img/divvy_logo.svg" class="img-header"> makes software portable
 
-[![PEP compatible](http://pepkit.github.io/img/PEP-compatible-green.svg)](http://pepkit.github.io)
+[![PEP compatible](https://pepkit.github.io/img/PEP-compatible-green.svg)](http://pepkit.github.io)
 
 ## What is `divvy`?
 
