@@ -65,8 +65,8 @@ class ComputingConfiguration(yacman.YacAttMap):
         super(ComputingConfiguration, self).__init__(entries, filepath)
 
         if not hasattr(self, "compute_packages"):
-            raise Exception("Your config file is not in divvy config format (it"
-            " lacks a compute_packages section)")
+            raise Exception("Your divvy config file is not in divvy config format (it"
+            " lacks a compute_packages section): '{}'".format(filepath))
             # We require that compute_packages be present, even if empty
             self.compute_packages = {}
 
