@@ -3,7 +3,8 @@
 import pytest
 from yacman import YacAttMap, load_yaml
 from divvy import DEFAULT_COMPUTE_RESOURCES_NAME
-from tests.conftest import DCC_ATTRIBUTES, FILES
+from tests.conftest import DCC_ATTRIBUTES, FILES, mock_env_missing
+
 
 class DefaultDCCTests:
     """ Tests the default divvy.ComputingConfiguration object creation"""
@@ -16,6 +17,9 @@ class DefaultDCCTests:
     def test_attrs_produced(self, att, empty_dcc):
         """ Test if compute property is produced and is not empty """
         empty_dcc[att]
+
+    def test_no_env_var(self, mock_env_missing, empty_dcc):
+        empty_dcc
 
 
 class DCCTests:

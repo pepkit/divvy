@@ -22,6 +22,8 @@ def dcc(request):
     return divvy.ComputingConfiguration(request.param)
 
 
-
+@pytest.fixture
+def mock_env_missing(monkeypatch):
+    [monkeypatch.delenv(env_var, raising=False) for env_var in divvy.const.COMPUTE_SETTINGS_VARNAME]
 
 
