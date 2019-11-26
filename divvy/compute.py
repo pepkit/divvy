@@ -12,6 +12,7 @@ from yaml import SafeLoader
 from distutils.dir_util import copy_tree
 
 # from attmap import PathExAttMap
+from ubiquerg import is_writable
 import yacman
 from collections import OrderedDict
 
@@ -313,33 +314,6 @@ def divvy_init(config_path, template_config_path):
         _LOGGER.warning("Can't initialize, file exists: {} ".format(config_path))
 
 
-def _is_writeable(folder, check_exist=False, create=False):
-    """
-    Make sure a folder is writable.
-
-    Given a folder, check that it exists and is writable. Errors if requested on
-    a non-existent folder. Otherwise, make sure the first existing parent folder
-    is writable such that this folder could be created.
-
-    :param str folder: Folder to check for writeability.
-    :param bool check_exist: Throw an error if it doesn't exist?
-    :param bool create: Create the folder if it doesn't exist?
-    """
-    folder = folder or "."
-
-    if os.path.exists(folder):
-        return os.access(folder, os.W_OK) and os.access(folder, os.X_OK)
-    elif create_folder:
-        os.mkdir(folder)
-    elif check_exist:
-        raise OSError("Folder not found: {}".format(folder))
-    else:
-        _LOGGER.debug("Folder not found: {}".format(folder))
-        # The folder didn't exist. Recurse up the folder hierarchy to make sure
-        # all paths are writable
-        return _is_writeable(os.path.dirname(folder), strict_exists)
-
-
 def build_argparser():
     """
     Builds argument parser.
@@ -420,7 +394,7 @@ def main():
     if args.command == "init":
         divcfg = args.config
         _LOGGER.debug("Initializing divvy configuration")
-        _is_writable(os.path.dirname(divcfg), check_exist=False)
+        is_writable(os.path.dirname(divcfg), check_exist=False)
         divvy_init(divcfg, DEFAULT_CONFIG_FILEPATH)
         sys.exit(0)      
 
