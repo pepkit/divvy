@@ -21,12 +21,13 @@ from .const import COMPUTE_SETTINGS_VARNAME, DEFAULT_COMPUTE_RESOURCES_NAME, \
 from .utils import parse_config_file, write_submit_script, get_first_env_var
 from . import __version__
 
-DEFAULT_CONFIG_FILEPATH =  os.path.join(
+DEFAULT_CONFIG_FILEPATH = os.path.join(
         os.path.dirname(__file__),
         "default_config",
         "divvy_config.yaml")
 
 _LOGGER = logging.getLogger(__name__)
+
 
 class ComputingConfiguration(yacman.YacAttMap):
     """
@@ -79,7 +80,7 @@ class ComputingConfiguration(yacman.YacAttMap):
 
     def write(self, filename=None):
         super(ComputingConfiguration, self).write(filename)
-        filename = filename or getattr(self, FILEPATH_KEY)
+        filename = filename or getattr(self, yacman.FILEPATH_KEY)
         filedir = os.path.dirname(filename)
         # For this object, we *also* have to write the template files
         for pkg_name, pkg in self.compute_packages.items():
