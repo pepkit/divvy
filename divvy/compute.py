@@ -391,7 +391,6 @@ def main():
     keys = [str.replace(x, "--", "") for x in remaining_args[::2]]
     cli_vars = dict(zip(keys, remaining_args[1::2]))
 
-
     if args.command == "init":
         divcfg = args.config
         _LOGGER.debug("Initializing divvy configuration")

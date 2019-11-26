@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1] -- 2019-11-26
+### Fixed
+- `NameError` in `divvy init`; [#44](https://github.com/pepkit/divvy/issues/44)
+
+### Changed
+- improved error message when config format is incompatible
+
 ## [0.4.0] -- 2019-07-30
 ### Added
 - Default templates for singularity and docker compute packages
