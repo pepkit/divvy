@@ -326,6 +326,7 @@ def build_argparser():
     additional_description = "\nhttps://divvy.databio.org"
 
     parser = _VersionInHelpParser(
+            prog="divvy",
             description=banner,
             epilog=additional_description)
 
@@ -423,11 +424,3 @@ def main():
     else:
         vars_groups = [cli_vars]
     dcc.write_script(args.outfile, vars_groups)
-
-
-if __name__ == '__main__':
-    try:
-        sys.exit(main())
-    except KeyboardInterrupt:
-        _LOGGER.error("Program canceled by user!")
-        sys.exit(1)

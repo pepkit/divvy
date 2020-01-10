@@ -65,7 +65,7 @@ setup(
     license="BSD-2-Clause",
     entry_points={
         "console_scripts": [
-            'divvy = divvy.compute:main'
+            'divvy = divvy.__main__:main'
         ],
     },    
     package_data={"divvy": [os.path.join("divvy", "*")]},
