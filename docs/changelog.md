@@ -1,8 +1,11 @@
 # Changelog
 
-## [0.4.1] -- 2019-11-26
+## [0.4.1] -- unreleased
 ### Fixed
 - `NameError` in `divvy init`; [#44](https://github.com/pepkit/divvy/issues/44)
+
+### Added
+- possibility to execute library module as a script: `python -m looper ...`
 
 ### Changed
 - improved error message when config format is incompatible
