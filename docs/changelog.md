@@ -5,7 +5,7 @@
 - `NameError` in `divvy init`; [#44](https://github.com/pepkit/divvy/issues/44)
 
 ### Added
-- possibility to execute library module as a script: `python -m looper ...`
+- possibility to execute library module as a script: `python -m divvy ...`
 
 ### Changed
 - improved error message when config format is incompatible
