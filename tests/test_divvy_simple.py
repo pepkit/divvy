@@ -32,8 +32,40 @@ def test_write_script():
 		contents = f.read()
 		assert(contents.find("mycode")>0)
 		assert(contents.find("{SINGULARITY_ARGS}") <0)
-
 	os.remove("test.sub")
+
+class TestAdapters:
+    def test_write_script_adapters(self):
+        from yacman import YacAttMap
+        dcc = divvy.ComputingConfiguration()
+        dcc.adapters = {"MEM": "compute.mem"}
+        dcc.activate_package("singularity_slurm")
+        compute = YacAttMap({"mem": 1000})
+        extra_vars = {
+            "compute": compute
+        }
+        dcc.write_script("test.sub", extra_vars)
+        with open("test.sub", 'r') as f:
+            contents = f.read()
+            assert (contents.find("1000") > 0)
+        os.remove("test.sub")
+
+    def test_adapters_overwitten_by_others(self):
+        from yacman import YacAttMap
+        dcc = divvy.ComputingConfiguration()
+        dcc.adapters = {"MEM": "compute.mem"}
+        dcc.activate_package("singularity_slurm")
+        compute = YacAttMap({"mem": 1000})
+        extra_vars = {
+            "MEM": 333,
+            "compute": compute
+        }
+        dcc.write_script("test.sub", extra_vars)
+        with open("test.sub", 'r') as f:
+            contents = f.read()
+            assert not (contents.find("1000") > 0)
+            assert (contents.find("333") > 0)
+        os.remove("test.sub")
 
 # def test_update():
 # 	# probably will be removed later

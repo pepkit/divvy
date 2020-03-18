@@ -75,6 +75,7 @@ class ComputingConfiguration(yacman.YacAttMap):
         # Initialize default compute settings.
         _LOGGER.debug("Establishing project compute settings")
         self.compute = None
+        self.setdefault("adapters", None)
         self.activate_package(DEFAULT_COMPUTE_RESOURCES_NAME)
         self.config_file = self._file_path
 
@@ -244,7 +245,7 @@ class ComputingConfiguration(yacman.YacAttMap):
         :return yacman.YacAttMap: current adapters mapping
         """
         adapters = yacman.YacAttMap()
-        if "adapters" in self:
+        if "adapters" in self and self.adapters is not None:
             adapters.update(self.adapters)
         if "compute" in self and "adapters" in self.compute:
             adapters.update(self.compute.adapters)
