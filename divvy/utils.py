@@ -64,7 +64,6 @@ def parse_config_file(conf_file):
     return env_settings
 
 
-
 def write_submit_script(fp, content, data):
     """
     Write a submission script by populating a template with data.

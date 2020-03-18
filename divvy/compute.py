@@ -248,14 +248,15 @@ class ComputingConfiguration(yacman.YacAttMap):
             adapters.update(self.adapters)
         if "compute" in self and "adapters" in self.compute:
             adapters.update(self.compute.adapters)
-        if len(adapters) < 1:
+        if not adapters:
             _LOGGER.debug("No adapters determined in divvy configuration file.")
         return adapters
 
     def write_script(self, output_path, extra_vars=None):
         """
         Given currently active settings, populate the active template to write a
-         submission script.
+         submission script. Additionally use the current adapters to adjust
+         the select of the provided variables
 
         :param str output_path: Path to file to write as submission script
         :param Iterable[Mapping] extra_vars: A list of Dict objects with
@@ -263,15 +264,52 @@ class ComputingConfiguration(yacman.YacAttMap):
             override any values in the currently active compute package.
         :return str: Path to the submission script file
         """
+
+        def _get_from_dict(map, attrs):
+            """
+            Get value from a possibly mapping using a list of its attributes
+
+            :param collections.Mapping map: mapping to retrieve values from
+            :param Iterable[str] attrs: a list of attributes
+            :return: value found in the for the requested attribute or
+                None if one of the keys does not exist
+            """
+            for a in attrs:
+                try:
+                    map = map[a]
+                except KeyError:
+                    return None
+            return map
+
         from copy import deepcopy
         variables = deepcopy(self.compute)
         if extra_vars:
             if not isinstance(extra_vars, list):
                 extra_vars = [extra_vars]
-            for kvs in reversed(extra_vars):
-                variables.update(kvs)
-        _LOGGER.info("Writing script to {}".format(os.path.abspath(output_path)))
-        _LOGGER.debug("Submission template: {}".format(self.compute.submission_template))
+            adapters = self.get_adapters()
+            exclude = []
+            if adapters:
+                # apply adapted values first and keep track of
+                # which of extra_vars were used
+                for n, v in adapters.items():
+                    split_v = v.split(".")
+                    namespace = split_v[0]
+                    for extra_var in reversed(extra_vars):
+                        if namespace in extra_var:
+                            exclude.append(namespace)
+                            var = _get_from_dict(extra_var, split_v)
+                            if var is not None:
+                                variables[n] = var
+                                _LOGGER.debug("adapted {}: ({}={})".
+                                              format(n, ".".join(split_v), var))
+            for extra_var in reversed(extra_vars):
+                # then update variables with the rest of the extra_vars
+                if list(extra_var.keys())[0] not in exclude:
+                    variables.update(extra_var)
+        _LOGGER.debug("Submission template: {}".
+                      format(self.compute.submission_template))
+        _LOGGER.info("Writing script to {}".
+                     format(os.path.abspath(output_path)))
         return write_submit_script(output_path, self.template(), variables)
 
     def _handle_missing_env_attrs(self, config_file, when_missing):
