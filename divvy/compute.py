@@ -232,15 +232,35 @@ class ComputingConfiguration(yacman.YacAttMap):
         self.update(entries)
         return True
 
+    def get_adapters(self):
+        """
+        Get current adapters, if defined.
+
+        Adapters are sourced from the 'adapters' section in the root of the
+        divvy configuration file and updated with a active compute
+        package-specific set of adapters, if any defined in 'adapters' section
+        under currently active compute package.
+
+        :return yacman.YacAttMap: current adapters mapping
+        """
+        adapters = yacman.YacAttMap()
+        if "adapters" in self:
+            adapters.update(self.adapters)
+        if "compute" in self and "adapters" in self.compute:
+            adapters.update(self.compute.adapters)
+        if len(adapters) < 1:
+            _LOGGER.debug("No adapters determined in divvy configuration file.")
+        return adapters
+
     def write_script(self, output_path, extra_vars=None):
         """
         Given currently active settings, populate the active template to write a
          submission script.
 
         :param str output_path: Path to file to write as submission script
-        :param Iterable[Mapping] extra_vars: A list of Dict objects with key-value pairs
-            with which to populate template fields. These will override any
-            values in the currently active compute package.
+        :param Iterable[Mapping] extra_vars: A list of Dict objects with
+            key-value pairs with which to populate template fields. These will
+            override any values in the currently active compute package.
         :return str: Path to the submission script file
         """
         from copy import deepcopy
