@@ -1,6 +1,10 @@
 # Changelog
 
-## [0.4.1] -- unreleased
+## [0.5.0] -- unreleased
+### Added
+- adapters support, see [#47](https://github.com/pepkit/divvy/issues/47) for detailed explanation
+
+## [0.4.1] -- 2020-03-20
 ### Fixed
 - `NameError` in `divvy init`; [#44](https://github.com/pepkit/divvy/issues/44)
 
