@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.4.1] -- unreleased
+## [0.4.1] -- 2020-03-20
 ### Fixed
 - `NameError` in `divvy init`; [#44](https://github.com/pepkit/divvy/issues/44)
 
