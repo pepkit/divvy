@@ -62,10 +62,10 @@ setup(
     url="https://github.com/pepkit/{}/".format(PACKAGE),
     author=u"Nathan Sheffield, Vince Reuter, Michal Stolarczyk",
     author_email=u"nathan@code.databio.org, vreuter@virginia.edu, mjs5kd@virginia.edu", 
-    license="BSD2",
+    license="BSD-2-Clause",
     entry_points={
         "console_scripts": [
-            'divvy = divvy.compute:main'
+            'divvy = divvy.__main__:main'
         ],
     },    
     package_data={"divvy": [os.path.join("divvy", "*")]},

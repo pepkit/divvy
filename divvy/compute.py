@@ -12,6 +12,7 @@ from yaml import SafeLoader
 from distutils.dir_util import copy_tree
 
 # from attmap import PathExAttMap
+from ubiquerg import is_writable
 import yacman
 from collections import OrderedDict
 
@@ -20,12 +21,13 @@ from .const import COMPUTE_SETTINGS_VARNAME, DEFAULT_COMPUTE_RESOURCES_NAME, \
 from .utils import parse_config_file, write_submit_script, get_first_env_var
 from . import __version__
 
-DEFAULT_CONFIG_FILEPATH =  os.path.join(
+DEFAULT_CONFIG_FILEPATH = os.path.join(
         os.path.dirname(__file__),
         "default_config",
         "divvy_config.yaml")
 
 _LOGGER = logging.getLogger(__name__)
+
 
 class ComputingConfiguration(yacman.YacAttMap):
     """
@@ -65,8 +67,8 @@ class ComputingConfiguration(yacman.YacAttMap):
         super(ComputingConfiguration, self).__init__(entries, filepath)
 
         if not hasattr(self, "compute_packages"):
-            raise Exception("Your config file is not in divvy config format (it"
-            " lacks a compute_packages section)")
+            raise Exception("Your divvy config file is not in divvy config format (it"
+            " lacks a compute_packages section): '{}'".format(filepath))
             # We require that compute_packages be present, even if empty
             self.compute_packages = {}
 
@@ -78,7 +80,7 @@ class ComputingConfiguration(yacman.YacAttMap):
 
     def write(self, filename=None):
         super(ComputingConfiguration, self).write(filename)
-        filename = filename or getattr(self, FILEPATH_KEY)
+        filename = filename or getattr(self, yacman.FILEPATH_KEY)
         filedir = os.path.dirname(filename)
         # For this object, we *also* have to write the template files
         for pkg_name, pkg in self.compute_packages.items():
@@ -313,33 +315,6 @@ def divvy_init(config_path, template_config_path):
         _LOGGER.warning("Can't initialize, file exists: {} ".format(config_path))
 
 
-def _is_writeable(folder, check_exist=False, create=False):
-    """
-    Make sure a folder is writable.
-
-    Given a folder, check that it exists and is writable. Errors if requested on
-    a non-existent folder. Otherwise, make sure the first existing parent folder
-    is writable such that this folder could be created.
-
-    :param str folder: Folder to check for writeability.
-    :param bool check_exist: Throw an error if it doesn't exist?
-    :param bool create: Create the folder if it doesn't exist?
-    """
-    folder = folder or "."
-
-    if os.path.exists(folder):
-        return os.access(folder, os.W_OK) and os.access(folder, os.X_OK)
-    elif create_folder:
-        os.mkdir(folder)
-    elif check_exist:
-        raise OSError("Folder not found: {}".format(folder))
-    else:
-        _LOGGER.debug("Folder not found: {}".format(folder))
-        # The folder didn't exist. Recurse up the folder hierarchy to make sure
-        # all paths are writable
-        return _is_writeable(os.path.dirname(folder), strict_exists)
-
-
 def build_argparser():
     """
     Builds argument parser.
@@ -351,6 +326,7 @@ def build_argparser():
     additional_description = "\nhttps://divvy.databio.org"
 
     parser = _VersionInHelpParser(
+            prog="divvy",
             description=banner,
             epilog=additional_description)
 
@@ -416,11 +392,10 @@ def main():
     keys = [str.replace(x, "--", "") for x in remaining_args[::2]]
     cli_vars = dict(zip(keys, remaining_args[1::2]))
 
-
     if args.command == "init":
         divcfg = args.config
         _LOGGER.debug("Initializing divvy configuration")
-        _is_writable(os.path.dirname(divcfg), check_exist=False)
+        is_writable(os.path.dirname(divcfg), check_exist=False)
         divvy_init(divcfg, DEFAULT_CONFIG_FILEPATH)
         sys.exit(0)      
 
@@ -449,11 +424,3 @@ def main():
     else:
         vars_groups = [cli_vars]
     dcc.write_script(args.outfile, vars_groups)
-
-
-if __name__ == '__main__':
-    try:
-        sys.exit(main())
-    except KeyboardInterrupt:
-        _LOGGER.error("Program canceled by user!")
-        sys.exit(1)
