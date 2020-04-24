@@ -55,17 +55,12 @@ class TestAdapters:
         dcc = divvy.ComputingConfiguration()
         dcc.activate_package("singularity_slurm")
         compute = YacAttMap({"mem": 1000})
-        extra_vars = {
-            "compute": compute,
-            "MEM": 333
-        }
+        extra_vars = [{"compute": compute}, {"MEM": 333}]
         dcc.write_script("test1.sub", extra_vars)
         with open("test1.sub", 'r') as f:
             contents = f.read()
-
             assert not (contents.find("1000") > 0)
             assert (contents.find("333") > 0)
-        print(contents)
         os.remove("test1.sub")
 
 # def test_update():
