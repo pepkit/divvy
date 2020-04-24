@@ -288,7 +288,7 @@ class ComputingConfiguration(yacman.YacAttMap):
             if not isinstance(extra_vars, list):
                 extra_vars = [extra_vars]
             adapters = self.get_adapters()
-            exclude = []
+            exclude = set()
             if adapters:
                 # apply adapted values first and keep track of
                 # which of extra_vars were used
@@ -297,7 +297,7 @@ class ComputingConfiguration(yacman.YacAttMap):
                     namespace = split_v[0]
                     for extra_var in reversed(extra_vars):
                         if namespace in list(extra_var.keys())[0]:
-                            exclude.append(namespace)
+                            exclude.add(namespace)
                             var = _get_from_dict(extra_var, split_v)
                             if var is not None:
                                 variables[n] = var
