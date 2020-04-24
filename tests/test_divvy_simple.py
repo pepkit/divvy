@@ -40,7 +40,6 @@ class TestWriting:
 class TestAdapters:
     def test_write_script_adapters(self):
         dcc = divvy.ComputingConfiguration()
-        dcc.adapters = {"MEM": "compute.mem"}
         dcc.activate_package("singularity_slurm")
         compute = YacAttMap({"mem": 1000})
         extra_vars = {
@@ -54,7 +53,6 @@ class TestAdapters:
 
     def test_adapters_overwitten_by_others(self):
         dcc = divvy.ComputingConfiguration()
-        dcc.adapters = {"MEM": "compute.mem"}
         dcc.activate_package("singularity_slurm")
         compute = YacAttMap({"mem": 1000})
         extra_vars = {
