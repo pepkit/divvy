@@ -296,7 +296,7 @@ class ComputingConfiguration(yacman.YacAttMap):
                     split_v = v.split(".")
                     namespace = split_v[0]
                     for extra_var in reversed(extra_vars):
-                        if namespace in extra_var:
+                        if namespace in list(extra_var.keys())[0]:
                             exclude.append(namespace)
                             var = _get_from_dict(extra_var, split_v)
                             if var is not None:

@@ -56,8 +56,8 @@ class TestAdapters:
         dcc.activate_package("singularity_slurm")
         compute = YacAttMap({"mem": 1000})
         extra_vars = {
-            "MEM": 333,
-            "compute": compute
+            "compute": compute,
+            "MEM": 333
         }
         dcc.write_script("test1.sub", extra_vars)
         with open("test1.sub", 'r') as f:
