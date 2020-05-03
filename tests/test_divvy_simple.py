@@ -1,6 +1,9 @@
 import divvy
-from yacman import YacAttMap
 import os
+import pytest
+from collections import OrderedDict
+
+from yacman import YacAttMap
 # For interactive debugging:
 # import logmuse
 # logmuse.init_logger("divvy", "DEBUG")
@@ -38,13 +41,17 @@ class TestWriting:
 
 
 class TestAdapters:
-    def test_write_script_adapters(self):
+    @pytest.mark.parametrize("compute", [dict({"mem": 1000, "test": 0}),
+                                         YacAttMap({"mem": 1000, "test": 0}),
+                                         OrderedDict({"mem": 1000, "test": 0})])
+    @pytest.mark.parametrize("package", ["singularity_slurm",
+                                         "parallel",
+                                         "largemem"])
+    def test_write_script_adapters(self, compute, package):
+        """ Test successful adapter sourcing from various Mapping types """
         dcc = divvy.ComputingConfiguration()
-        dcc.activate_package("singularity_slurm")
-        compute = YacAttMap({"mem": 1000})
-        extra_vars = {
-            "compute": compute
-        }
+        dcc.activate_package(package)
+        extra_vars = {"compute": compute}
         dcc.write_script("test.sub", extra_vars)
         with open("test.sub", 'r') as f:
             contents = f.read()
