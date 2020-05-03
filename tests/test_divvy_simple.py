@@ -45,8 +45,7 @@ class TestAdapters:
                                          YacAttMap({"mem": 1000, "test": 0}),
                                          OrderedDict({"mem": 1000, "test": 0})])
     @pytest.mark.parametrize("package", ["singularity_slurm",
-                                         "parallel",
-                                         "largemem"])
+                                         "slurm"])
     def test_write_script_adapters(self, compute, package):
         """ Test successful adapter sourcing from various Mapping types """
         dcc = divvy.ComputingConfiguration()
