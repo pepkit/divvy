@@ -12,7 +12,7 @@ from yaml import SafeLoader
 from distutils.dir_util import copy_tree
 
 # from attmap import PathExAttMap
-from ubiquerg import is_writable
+from ubiquerg import is_writable, VersionInHelpParser
 import yacman
 from collections import OrderedDict
 
@@ -45,30 +45,18 @@ class ComputingConfiguration(yacman.YacAttMap):
         `DIVCFG` file)
     """
 
-    def __init__(self, entries=None, filepath=None, 
-                config_file=None,  # for backwards compatibility with peppy 0.22
-                no_env_error=None,  # for backwards compatibility with peppy 0.22
-                no_compute_exception=None): # for backwards compatibility with peppy 0.22
+    def __init__(self, entries=None, filepath=None): # for backwards compatibility with peppy 0.22
 
-        if no_env_error:
-            _LOGGER.debug("The no_env_error argument has been deprecated. It will be removed in the next version of divvy")
-
-        if no_compute_exception:
-            _LOGGER.debug("The no_compute_exception argument has been deprecated. It will be removed in the next version of divvy")
-
-        if config_file:  # for backwards compatibility with peppy 0.22 (remove later)
-            _LOGGER.debug("The config_file argument has renamed filepath.")
-            filepath = select_divvy_config(config_file)
-
-        if not entries and not filepath and not config_file:
+        if not entries and not filepath:
             # Handle the case of an empty one, when we'll use the default
             filepath = select_divvy_config(None)
 
         super(ComputingConfiguration, self).__init__(entries, filepath)
 
         if not hasattr(self, "compute_packages"):
-            raise Exception("Your divvy config file is not in divvy config format (it"
-            " lacks a compute_packages section): '{}'".format(filepath))
+            raise Exception(
+                "Your divvy config file is not in divvy config format "
+                "(it lacks a compute_packages section): '{}'".format(filepath))
             # We require that compute_packages be present, even if empty
             self.compute_packages = {}
 
@@ -329,20 +317,24 @@ class ComputingConfiguration(yacman.YacAttMap):
 
 
 def select_divvy_config(filepath):
+    """
+    Selects the divvy config file path to load.
+
+    This uses a priority ordering to first choose a config file path if
+    it's given, but if not, then look in a priority list of environment
+    variables and choose the first available file path to return. If none of
+    these options succeed, the default config path will be returned.
+
+    :param str | NoneType filepath: direct file path specification
+    :return str: path to the config file to read
+    """
     divcfg = yacman.select_config(
-        filepath,
-        COMPUTE_SETTINGS_VARNAME,
+        config_filepath=filepath,
+        config_env_vars=COMPUTE_SETTINGS_VARNAME,
         default_config_filepath=DEFAULT_CONFIG_FILEPATH,
         check_exist=True)
     _LOGGER.debug("Selected divvy config: {}".format(divcfg))
     return divcfg
-
-
-class _VersionInHelpParser(argparse.ArgumentParser):
-    def format_help(self):
-        """ Add version information to help text. """
-        return "version: {}\n".format(__version__) + \
-               super(_VersionInHelpParser, self).format_help()
 
 
 def divvy_init(config_path, template_config_path):
@@ -381,18 +373,13 @@ def build_argparser():
     :return argparse.ArgumentParser
     """
 
-    banner = "%(prog)s - write compute job scripts that can be submitted to any computing resource"
+    banner = "%(prog)s - write compute job scripts that can be submitted to " \
+             "any computing resource"
     additional_description = "\nhttps://divvy.databio.org"
 
-    parser = _VersionInHelpParser(
-            prog="divvy",
-            description=banner,
-            epilog=additional_description)
-
-    parser.add_argument(
-            "-V", "--version",
-            action="version",
-            version="%(prog)s {v}".format(v=__version__))
+    parser = VersionInHelpParser(prog="divvy", description=banner,
+                                 epilog=additional_description,
+                                 version=__version__)
 
     subparsers = parser.add_subparsers(dest="command") 
 
@@ -468,7 +455,6 @@ def main():
         _LOGGER.info("Available compute packages:\n")
         print("{}".format("\n".join(dcc.list_compute_packages())))
         sys.exit(1)
-
 
     try:
         dcc.activate_package(args.package)

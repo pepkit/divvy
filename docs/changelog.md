@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [0.5.0] -- unreleased
 ### Added
 - adapters support, see [#47](https://github.com/pepkit/divvy/issues/47) for detailed explanation
+- `select_divvy_config` function
 
 ## [0.4.1] -- 2020-03-20
 ### Fixed
