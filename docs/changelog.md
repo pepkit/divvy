@@ -14,6 +14,9 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Instead of passing extra variables as CLI args, you now must explicitly pass them to the `--compute` arg.
 - The config file is now passed with a positional argument, instead of with `--config`.
 
+### Removed
+- `config_file`, `no_env_error` and `no_compute_exception` from `ComputingConfiguration` class constructor
+
 ## [0.4.1] -- 2020-03-20
 ### Fixed
 - `NameError` in `divvy init`; [#44](https://github.com/pepkit/divvy/issues/44)
