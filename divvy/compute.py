@@ -475,7 +475,7 @@ def main():
         divvy_init(divcfg, DEFAULT_CONFIG_FILEPATH)
         sys.exit(0)      
 
-    _LOGGER.info("Divvy config: {}".format(args.config))
+    _LOGGER.debug("Divvy config: {}".format(args.config))
     divcfg = select_divvy_config(args.config)
     _LOGGER.info("Using divvy config: {}".format(divcfg))
     dcc = ComputingConfiguration(filepath=divcfg)
