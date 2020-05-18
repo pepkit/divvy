@@ -13,6 +13,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Changed
 - Instead of passing extra variables as CLI args, you now must explicitly pass them to the `--compute` arg.
 - The config file is now passed with a positional argument, instead of with `--config`.
+- Made all one-char CLI args lowercase (`-P` to `-p`, `-S` to `-s`).
 
 ## [0.4.1] -- 2020-03-20
 ### Fixed
