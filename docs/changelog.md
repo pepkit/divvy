@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - `select_divvy_config` function
 - `divvy submit` command
 - added new `--compute` CLI argument
+- `divvy write` can now be run without an outfile, which just prints the template to stdout.
 
 ### Changed
 - Instead of passing extra variables as CLI args, you now must explicitly pass them to the `--compute` arg.
