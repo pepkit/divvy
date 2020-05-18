@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - adapters support, see [#47](https://github.com/pepkit/divvy/issues/47) for detailed explanation
 - `select_divvy_config` function
 - `divvy submit` command
+- added new `--compute` CLI argument
 
 ### Changed
 - Instead of passing extra variables as CLI args, you now must explicitly pass them to the `--compute` arg.
