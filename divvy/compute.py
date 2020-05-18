@@ -244,11 +244,17 @@ class ComputingConfiguration(yacman.YacAttMap):
         return adapters
 
     def submit(self, output_path, extra_vars=None):
-        script = self.write_script(output_path, extra_vars)
-        cmd = "{submit_command} {submit_script}".format(submit_command=self.compute.submission_command, 
-            submit_script=script)
-        _LOGGER.info(cmd)
-        os.system(cmd)
+        if not output_path:
+            import tempfile
+            with tempfile.NamedTemporaryFile() as temp:
+                _LOGGER.info("No file provided; using temp file: '{}'".format(temp.name))
+                self.submit(temp.name, extra_vars)
+        else:
+            script = self.write_script(output_path, extra_vars)
+            submission_command = "{submit_command} {submit_script}".format(submit_command=self.compute.submission_command, 
+                submit_script=script)
+            _LOGGER.info(submission_command)
+            os.system(submission_command)
 
     def write_script(self, output_path, extra_vars=None):
         """
@@ -281,6 +287,7 @@ class ComputingConfiguration(yacman.YacAttMap):
 
         from copy import deepcopy
         variables = deepcopy(self.compute)
+        _LOGGER.debug(extra_vars)
         if extra_vars:
             if not isinstance(extra_vars, list):
                 extra_vars = [extra_vars]
@@ -306,8 +313,9 @@ class ComputingConfiguration(yacman.YacAttMap):
                     variables.update(extra_var)
         _LOGGER.debug("Submission template: {}".
                       format(self.compute.submission_template))
-        _LOGGER.info("Writing script to {}".
-                     format(os.path.abspath(output_path)))
+        if output_path:
+            _LOGGER.info("Writing script to {}".
+                         format(os.path.abspath(output_path)))
         return write_submit_script(output_path, self.template(), variables)
 
     def _handle_missing_env_attrs(self, config_file, when_missing):
@@ -406,26 +414,38 @@ def build_argparser():
     sps = {}
     for cmd, desc in subparser_messages.items():
         sps[cmd] = add_subparser(cmd, desc)
-        sps[cmd].add_argument(
-            "-c", "--config", required=(cmd == "init"),
+        # sps[cmd].add_argument(
+        #     "config", nargs="?", default=None,
+        #     help="Divvy configuration file.")
+
+    for sp in [sps["list"], sps["write"], sps["submit"]]:
+        sp.add_argument(
+            "config", nargs="?", default=None,
             help="Divvy configuration file.")
 
+    sps["init"].add_argument(
+            "config", default=None,
+            help="Divvy configuration file.")
 
     for sp in [sps["write"], sps["submit"]]:
         sp.add_argument(
                 "-s", "--settings",
-                help="YAML file with job settings to populate the template.")    
+                help="YAML file with job settings to populate the template")
 
         sp.add_argument(
                 "-p", "--package", default=DEFAULT_COMPUTE_RESOURCES_NAME,
-                help="Select from available compute packages.")
+                help="Select from available compute packages")
+
+        sp.add_argument(
+                "-c", "--compute", nargs="+", default=None,
+                help="Extra key=value variable pairs")
 
         # sp.add_argument(
         #         "-t", "--template",
         #         help="Provide a template file (not yet implemented).")
 
         sp.add_argument(
-                "-o", "--outfile", required=True,
+                "-o", "--outfile", required=False, default=None,
                 help="Output filepath")
 
     return parser
@@ -435,7 +455,9 @@ def main():
     """ Primary workflow """
 
     parser = logmuse.add_logging_options(build_argparser())
-    args, remaining_args = parser.parse_known_args()
+    # args, remaining_args = parser.parse_known_args()
+    args = parser.parse_args()
+
     logger_kwargs = {"level": args.verbosity, "devmode": args.logdev}
     logmuse.init_logger(name="yacman", **logger_kwargs)
     global _LOGGER
@@ -445,10 +467,6 @@ def main():
         parser.print_help()
         _LOGGER.error("No command given")
         sys.exit(1)
-    # Any non-divvy arguments will be passed along as key-value pairs
-    # that can be used to populate the template.
-    keys = [str.replace(x, "--", "") for x in remaining_args[::2]]
-    cli_vars = dict(zip(keys, remaining_args[1::2]))
 
     if args.command == "init":
         divcfg = args.config
@@ -457,9 +475,21 @@ def main():
         divvy_init(divcfg, DEFAULT_CONFIG_FILEPATH)
         sys.exit(0)      
 
+    _LOGGER.info("Divvy config: {}".format(args.config))
     divcfg = select_divvy_config(args.config)
     _LOGGER.info("Using divvy config: {}".format(divcfg))
     dcc = ComputingConfiguration(filepath=divcfg)
+
+
+    # Any non-divvy arguments will be passed along as key-value pairs
+    # that can be used to populate the template.
+    # keys = [str.replace(x, "--", "") for x in remaining_args[::2]]
+    # cli_vars = dict(zip(keys, remaining_args[1::2]))
+    if args.compute:
+        cli_vars = {y[0]:y[1] for y in [x.split("=") for x in args.compute]}
+    else:
+        cli_vars = {}
+
 
     if args.command == "list":
         # Output header via logger and content via print so the user can
@@ -482,6 +512,7 @@ def main():
         else:
             vars_groups = [cli_vars]
 
+        _LOGGER.debug(vars_groups)
         if args.command == "write":
             dcc.write_script(args.outfile, vars_groups)
         elif args.command == "submit":
