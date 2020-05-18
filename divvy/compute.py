@@ -480,6 +480,12 @@ def main():
     _LOGGER.info("Using divvy config: {}".format(divcfg))
     dcc = ComputingConfiguration(filepath=divcfg)
 
+    if args.command == "list":
+        # Output header via logger and content via print so the user can
+        # redirect the list from stdout if desired without the header as clutter
+        _LOGGER.info("Available compute packages:\n")
+        print("{}".format("\n".join(dcc.list_compute_packages())))
+        sys.exit(1)
 
     # Any non-divvy arguments will be passed along as key-value pairs
     # that can be used to populate the template.
@@ -490,13 +496,6 @@ def main():
     else:
         cli_vars = {}
 
-
-    if args.command == "list":
-        # Output header via logger and content via print so the user can
-        # redirect the list from stdout if desired without the header as clutter
-        _LOGGER.info("Available compute packages:\n")
-        print("{}".format("\n".join(dcc.list_compute_packages())))
-        sys.exit(1)
 
     if args.command == "write" or args.command == "submit":
         try:
