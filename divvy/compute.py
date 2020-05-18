@@ -77,6 +77,8 @@ class ComputingConfiguration(yacman.YacAttMap):
             destfile = os.path.join(filedir, os.path.basename(pkg.submission_template))
             shutil.copyfile(pkg.submission_template, destfile)
 
+
+
     @property
     def compute_env_var(self):
         """
@@ -241,6 +243,13 @@ class ComputingConfiguration(yacman.YacAttMap):
             _LOGGER.debug("No adapters determined in divvy configuration file.")
         return adapters
 
+    def submit(self, output_path, extra_vars=None):
+        script = self.write_script(output_path, extra_vars)
+        cmd = "{submit_command} {submit_script}".format(submit_command=self.compute.submission_command, 
+            submit_script=script)
+        _LOGGER.info(cmd)
+        os.system(cmd)
+
     def write_script(self, output_path, extra_vars=None):
         """
         Given currently active settings, populate the active template to write a
@@ -390,7 +399,8 @@ def build_argparser():
     subparser_messages = {
         "init": "Initialize a new divvy config file",
         "list": "List available compute packages",
-        "write": "Write a job script"
+        "write": "Write a job script",
+        "submit": "Write and then submit a job script"
     }
 
     sps = {}
@@ -400,21 +410,23 @@ def build_argparser():
             "-c", "--config", required=(cmd == "init"),
             help="Divvy configuration file.")
 
-    sps["write"].add_argument(
-            "-s", "--settings",
-            help="YAML file with job settings to populate the template.")    
 
-    sps["write"].add_argument(
-            "-p", "--package", default=DEFAULT_COMPUTE_RESOURCES_NAME,
-            help="Select from available compute packages.")
+    for sp in [sps["write"], sps["submit"]]:
+        sp.add_argument(
+                "-s", "--settings",
+                help="YAML file with job settings to populate the template.")    
 
-    # sps["write"].add_argument(
-    #         "-t", "--template",
-    #         help="Provide a template file (not yet implemented).")
+        sp.add_argument(
+                "-p", "--package", default=DEFAULT_COMPUTE_RESOURCES_NAME,
+                help="Select from available compute packages.")
 
-    sps["write"].add_argument(
-            "-o", "--outfile", required=True,
-            help="Output filepath")
+        # sp.add_argument(
+        #         "-t", "--template",
+        #         help="Provide a template file (not yet implemented).")
+
+        sp.add_argument(
+                "-o", "--outfile", required=True,
+                help="Output filepath")
 
     return parser
 
@@ -456,16 +468,21 @@ def main():
         print("{}".format("\n".join(dcc.list_compute_packages())))
         sys.exit(1)
 
-    try:
-        dcc.activate_package(args.package)
-    except AttributeError:
-        parser.print_help(sys.stderr)
-        sys.exit(1)
+    if args.command == "write" or args.command == "submit":
+        try:
+            dcc.activate_package(args.package)
+        except AttributeError:
+            parser.print_help(sys.stderr)
+            sys.exit(1)
 
-    if args.settings:
-        _LOGGER.info("Loading settings file: %s", args.settings)
-        with open(args.settings, 'r') as f:
-            vars_groups = [cli_vars, yaml.load(f, SafeLoader)]
-    else:
-        vars_groups = [cli_vars]
-    dcc.write_script(args.outfile, vars_groups)
+        if args.settings:
+            _LOGGER.info("Loading settings file: %s", args.settings)
+            with open(args.settings, 'r') as f:
+                vars_groups = [cli_vars, yaml.load(f, SafeLoader)]
+        else:
+            vars_groups = [cli_vars]
+
+        if args.command == "write":
+            dcc.write_script(args.outfile, vars_groups)
+        elif args.command == "submit":
+            dcc.submit(args.outfile, vars_groups)
