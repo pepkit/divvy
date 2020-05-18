@@ -64,7 +64,6 @@ def parse_config_file(conf_file):
     return env_settings
 
 
-
 def write_submit_script(fp, content, data):
     """
     Write a submission script by populating a template with data.
@@ -86,12 +85,16 @@ def write_submit_script(fp, content, data):
         _LOGGER.warning("> Warning: %d submission template variables are not "
                         "populated: '%s'", len(keys_left), str(keys_left))
 
-    outdir = os.path.dirname(fp)
-    if outdir and not os.path.isdir(outdir):
-        os.makedirs(outdir)
-    with open(fp, 'w') as f:
-        f.write(content)
-    return fp
+    if not fp:
+        print(content)
+        return content
+    else:
+        outdir = os.path.dirname(fp)
+        if outdir and not os.path.isdir(outdir):
+            os.makedirs(outdir)
+        with open(fp, 'w') as f:
+            f.write(content)
+        return fp
 
 
 def get_first_env_var(ev):

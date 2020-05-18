@@ -13,6 +13,7 @@ nav:
     - "Tutorial: divvy on the command line": cli.md
     - Configuring divvy: configuration.md
     - Configuring containers: containers.md
+    - Configuring connection with client software: adapters.md
   - Reference:
     - Default packages: default_packages.md
     - API: autodoc_build/divvy.md

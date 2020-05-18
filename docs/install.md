@@ -19,7 +19,7 @@ On a fresh install, `divvy` comes pre-loaded with some built-in compute packages
 
 ```{console}
 export DIVCFG="divvy_config.yaml"
-divvy init -c $DIVCFG
+divvy init $DIVCFG
 ```
 
 This `init` command will create a default config file, along with a folder of templates. 

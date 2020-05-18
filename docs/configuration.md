@@ -4,11 +4,11 @@ At the heart of `divvy` is a the *divvy configuration file*, or `DIVCFG` for sho
 
 ## Configuration file priority lookup
 
-When `divvy` starts, it checks a few places for the `DIVCFG` file. First, the user may may specify a `DIVCFG` file when invoking `divvy` either from the command line (with `--config`) or from within python. If the file is not provided, `divvy` will next look file in the `$DIVCFG` environment variable. If it cannot find one there, then it will load a default configuration file with a few basic compute packages. We recommend setting the `DIVCFG` environment variable as the most convenient use case.
+When `divvy` starts, it checks a few places for the `DIVCFG` file. First, the user may may specify a `DIVCFG` file when invoking `divvy` either from the command line or from within python. If the file is not provided, `divvy` will next look file in the `$DIVCFG` environment variable. If it cannot find one there, then it will load a default configuration file with a few basic compute packages. We recommend setting the `DIVCFG` environment variable as the most convenient use case.
 
 ## Customizing your configuration file
 
-The easiest way to customize your computing configuration is to edit the default configuration file. To get a fresh copy of the default configuration, use `divvy init -c custom_divvy_config.yaml`. This will create for you a config file along with a folder containing all the default templates.
+The easiest way to customize your computing configuration is to edit the default configuration file. To get a fresh copy of the default configuration, use `divvy init custom_divvy_config.yaml`. This will create for you a config file along with a folder containing all the default templates.
 
 Here is an example `divvy` configuration file:
 
