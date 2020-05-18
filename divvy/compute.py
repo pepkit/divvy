@@ -228,7 +228,7 @@ class ComputingConfiguration(yacman.YacAttMap):
         Get current adapters, if defined.
 
         Adapters are sourced from the 'adapters' section in the root of the
-        divvy configuration file and updated with a active compute
+        divvy configuration file and updated with an active compute
         package-specific set of adapters, if any defined in 'adapters' section
         under currently active compute package.
 
@@ -287,7 +287,7 @@ class ComputingConfiguration(yacman.YacAttMap):
 
         from copy import deepcopy
         variables = deepcopy(self.compute)
-        _LOGGER.debug(extra_vars)
+        _LOGGER.debug("Extra vars: {}".format(extra_vars))
         if extra_vars:
             if not isinstance(extra_vars, list):
                 extra_vars = [extra_vars]
@@ -300,7 +300,7 @@ class ComputingConfiguration(yacman.YacAttMap):
                     split_v = v.split(".")
                     namespace = split_v[0]
                     for extra_var in reversed(extra_vars):
-                        if namespace in list(extra_var.keys())[0]:
+                        if len(extra_var) > 0 and namespace in list(extra_var.keys())[0]:
                             exclude.add(namespace)
                             var = _get_from_dict(extra_var, split_v)
                             if var is not None:
@@ -309,7 +309,7 @@ class ComputingConfiguration(yacman.YacAttMap):
                                               format(n, ".".join(split_v), var))
             for extra_var in reversed(extra_vars):
                 # then update variables with the rest of the extra_vars
-                if list(extra_var.keys())[0] not in exclude:
+                if len(extra_var) > 0 and list(extra_var.keys())[0] not in exclude:
                     variables.update(extra_var)
         _LOGGER.debug("Submission template: {}".
                       format(self.compute.submission_template))
@@ -459,7 +459,7 @@ def main():
     args = parser.parse_args()
 
     logger_kwargs = {"level": args.verbosity, "devmode": args.logdev}
-    logmuse.init_logger(name="yacman", **logger_kwargs)
+    logmuse.init_logger("yacman", **logger_kwargs)
     global _LOGGER
     _LOGGER = logmuse.logger_via_cli(args)
 
