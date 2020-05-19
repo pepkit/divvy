@@ -2,7 +2,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 # Changelog
 
-## [0.5.0] -- 2020-05-18
+## [0.5.0] -- 2020-05-19
 ### Added
 - adapters support, see [#47](https://github.com/pepkit/divvy/issues/47) for detailed explanation
 - `select_divvy_config` function
@@ -15,6 +15,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - The config file is now passed with a positional argument, instead of with `--config`.
 - Made all one-char CLI args lowercase (`-P` to `-p`, `-S` to `-s`).
 - Renamed default templates subfolder from submit_templates to divvy_templates
+- removed `$PEPENV` from environment variables that may point to divvy computing configuration file. `$DIVCFG` is the only one now.
 
 ### Removed
 - `config_file`, `no_env_error` and `no_compute_exception` from `ComputingConfiguration` class constructor
@@ -28,7 +29,6 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 - improved error message when config format is incompatible
-- removed `$PEPENV` from environment variables that may point to divvy computing configuration file. `$DIVCFG` is the only one now.
 
 ## [0.4.0] -- 2019-07-30
 ### Added
