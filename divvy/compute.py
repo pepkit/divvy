@@ -1,7 +1,5 @@
 """ Computing configuration representation """
 
-
-import argparse
 import logging
 import logmuse
 import os
@@ -11,20 +9,13 @@ import yaml
 from yaml import SafeLoader
 from distutils.dir_util import copy_tree
 
-# from attmap import PathExAttMap
 from ubiquerg import is_writable, VersionInHelpParser
 import yacman
-from collections import OrderedDict
 
 from .const import COMPUTE_SETTINGS_VARNAME, DEFAULT_COMPUTE_RESOURCES_NAME, \
-    NEW_COMPUTE_KEY
-from .utils import parse_config_file, write_submit_script, get_first_env_var
+    NEW_COMPUTE_KEY, DEFAULT_CONFIG_FILEPATH
+from .utils import write_submit_script
 from . import __version__
-
-DEFAULT_CONFIG_FILEPATH = os.path.join(
-        os.path.dirname(__file__),
-        "default_config",
-        "divvy_config.yaml")
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -45,8 +36,7 @@ class ComputingConfiguration(yacman.YacAttMap):
         `DIVCFG` file)
     """
 
-    def __init__(self, entries=None, filepath=None): # for backwards compatibility with peppy 0.22
-
+    def __init__(self, entries=None, filepath=None):
         if not entries and not filepath:
             # Handle the case of an empty one, when we'll use the default
             filepath = select_divvy_config(None)
@@ -74,10 +64,9 @@ class ComputingConfiguration(yacman.YacAttMap):
         # For this object, we *also* have to write the template files
         for pkg_name, pkg in self.compute_packages.items():
             print(pkg)
-            destfile = os.path.join(filedir, os.path.basename(pkg.submission_template))
+            destfile = os.path.join(filedir,
+                                    os.path.basename(pkg.submission_template))
             shutil.copyfile(pkg.submission_template, destfile)
-
-
 
     @property
     def compute_env_var(self):
@@ -117,7 +106,8 @@ class ComputingConfiguration(yacman.YacAttMap):
 
         :return str: path to folder with default submission templates
         """
-        return os.path.join(os.path.dirname(__file__), "default_config", "divvy_templates")
+        return os.path.join(os.path.dirname(__file__), "default_config",
+                            "divvy_templates")
 
     def activate_package(self, package_name):
         """
@@ -139,12 +129,14 @@ class ComputingConfiguration(yacman.YacAttMap):
         else:
             _LOGGER.info(act_msg)
 
-        if package_name and self.compute_packages and package_name in self.compute_packages:
+        if package_name and self.compute_packages \
+                and package_name in self.compute_packages:
             # Augment compute, creating it if needed.
             if self.compute is None:
                 _LOGGER.debug("Creating Project compute")
                 self.compute = yacman.YacAttMap()
-                _LOGGER.debug("Adding entries for package_name '%s'", package_name)
+                _LOGGER.debug("Adding entries for package_name '{}'".
+                              format(package_name))
 
             self.compute.add_entries(self.compute_packages[package_name])
 
@@ -162,15 +154,16 @@ class ComputingConfiguration(yacman.YacAttMap):
                     # set as null-valued attributes, so execution here is an error.
                     _LOGGER.error(str(e))
 
-            _LOGGER.debug("Submit template set to: {}".format(self.compute.submission_template))
-            # _LOGGER.debug("Submit template set to: {}".format(self["compute"]["submission_template"]))
+            _LOGGER.debug("Submit template set to: {}".
+                          format(self.compute.submission_template))
 
             return True
 
         else:
             # Scenario in which environment and environment compute are
             # both present--but don't evaluate to True--is fairly harmless.
-            _LOGGER.debug("Can't activate package. compute_packages = {}".format(self.compute_packages))
+            _LOGGER.debug("Can't activate package. compute_packages = {}".
+                          format(self.compute_packages))
 
         return False
 
@@ -247,12 +240,13 @@ class ComputingConfiguration(yacman.YacAttMap):
         if not output_path:
             import tempfile
             with tempfile.NamedTemporaryFile() as temp:
-                _LOGGER.info("No file provided; using temp file: '{}'".format(temp.name))
+                _LOGGER.info("No file provided; using temp file: '{}'".
+                             format(temp.name))
                 self.submit(temp.name, extra_vars)
         else:
             script = self.write_script(output_path, extra_vars)
-            submission_command = "{submit_command} {submit_script}".format(submit_command=self.compute.submission_command, 
-                submit_script=script)
+            submission_command = "{} {}".\
+                format(self.compute.submission_command, script)
             _LOGGER.info(submission_command)
             os.system(submission_command)
 
@@ -275,7 +269,7 @@ class ComputingConfiguration(yacman.YacAttMap):
 
             :param collections.Mapping map: mapping to retrieve values from
             :param Iterable[str] attrs: a list of attributes
-            :return: value found in the for the requested attribute or
+            :return: value found in the the requested attribute or
                 None if one of the keys does not exist
             """
             for a in attrs:
@@ -300,7 +294,8 @@ class ComputingConfiguration(yacman.YacAttMap):
                     split_v = v.split(".")
                     namespace = split_v[0]
                     for extra_var in reversed(extra_vars):
-                        if len(extra_var) > 0 and namespace in list(extra_var.keys())[0]:
+                        if len(extra_var) > 0 \
+                                and namespace in list(extra_var.keys())[0]:
                             exclude.add(namespace)
                             var = _get_from_dict(extra_var, split_v)
                             if var is not None:
@@ -309,7 +304,8 @@ class ComputingConfiguration(yacman.YacAttMap):
                                               format(n, ".".join(split_v), var))
             for extra_var in reversed(extra_vars):
                 # then update variables with the rest of the extra_vars
-                if len(extra_var) > 0 and list(extra_var.keys())[0] not in exclude:
+                if len(extra_var) > 0 \
+                        and list(extra_var.keys())[0] not in exclude:
                     variables.update(extra_var)
         _LOGGER.debug("Submission template: {}".
                       format(self.compute.submission_template))
@@ -377,12 +373,16 @@ def divvy_init(config_path, template_config_path):
         dest_folder = os.path.dirname(config_path)
         copy_tree(os.path.dirname(template_config_path), dest_folder)
         template_subfolder = os.path.join(dest_folder, "divvy_templates")
-        _LOGGER.info("Wrote divvy templates to folder: {}".format(template_subfolder))
-        new_template = os.path.join(os.path.dirname(config_path), os.path.basename(template_config_path))
+        _LOGGER.info("Wrote divvy templates to folder: {}".
+                     format(template_subfolder))
+        new_template = os.path.join(os.path.dirname(config_path),
+                                    os.path.basename(template_config_path))
         os.rename(new_template, config_path)
-        _LOGGER.info("Wrote new divvy configuration file: {}".format(config_path))
+        _LOGGER.info("Wrote new divvy configuration file: {}".
+                     format(config_path))
     else:
-        _LOGGER.warning("Can't initialize, file exists: {} ".format(config_path))
+        _LOGGER.warning("Can't initialize, file exists: {} ".
+                        format(config_path))
 
 
 def build_argparser():
@@ -494,10 +494,9 @@ def main():
     # keys = [str.replace(x, "--", "") for x in remaining_args[::2]]
     # cli_vars = dict(zip(keys, remaining_args[1::2]))
     if args.compute:
-        cli_vars = {y[0]:y[1] for y in [x.split("=") for x in args.compute]}
+        cli_vars = {y[0]: y[1] for y in [x.split("=") for x in args.compute]}
     else:
         cli_vars = {}
-
 
     if args.command == "write" or args.command == "submit":
         try:

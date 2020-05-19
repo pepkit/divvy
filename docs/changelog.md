@@ -28,6 +28,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 - improved error message when config format is incompatible
+- removed `$PEPENV` from environment variables that may point to divvy computing configuration file. `$DIVCFG` is the only one now.
 
 ## [0.4.0] -- 2019-07-30
 ### Added
