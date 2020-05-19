@@ -4,15 +4,17 @@
 
 ## What is `divvy`?
 
-`Divvy` is a computing resource configuration manager. It organizes your computing resources and populates job submission templates. It makes it easy for users to toggle among any computing resource (laptop, cluster, cloud). `Divvy` provides both an interactive python API and a command-line interface.
+<img src="img/divvy-merge.svg" style="float:right; padding-left: 25px; padding-right: 5px; width:300px">
 
+
+`Divvy` allows you to populate job submission scripts by integrating job-specific settings with separately configured computing environment settings. Divvy *makes software portable*, so users may easily toggle among any computing resource (laptop, cluster, cloud). 
 
 ## What makes `divvy` better?
 
 <img src="img/nodivvy.svg" style="float:left; padding-left: 5px; padding-right: 25px">
-Divvy *makes compute-heavy software portable*, so it works on any computing environment, from laptop to cloud.
 
-Many bioinformatics tools require a particular compute resource setup. For example, one pipeline requires SLURM, another requires AWS, and yet another just runs directly on your laptop. This makes it difficult to transfer to different environments. For tools that can run in multiple environments, each one must be configured separately.
+
+tools require a particular compute resource setup. For example, one pipeline requires SLURM, another requires AWS, and yet another just runs directly on your laptop. This makes it difficult to transfer to different environments. For tools that can run in multiple environments, each one must be configured separately.
 
 <hr>
 
@@ -20,7 +22,7 @@ Many bioinformatics tools require a particular compute resource setup. For examp
 
 Instead, `divvy`-compatible tools can run on any computing resource. **Users configure their computing environment once, and all divvy-compatible tools will use this same configuration.**
 
-Divvy reads a standard configuration file describing available compute resources and then uses a simple Jinja-like template system to write custom job submission scripts. Computing resources are organized as *compute packages*, which users select, populate with values, and build scripts for compute jobs. 
+Divvy reads a standard configuration file describing available compute resources and then uses a simple template system to write custom job submission scripts. Computing resources are organized as *compute packages*, which users select, populate with values, and build scripts for compute jobs. 
 
 <br clear="all"/>
 
@@ -49,14 +51,13 @@ local
 slurm
 ```
 
-<img src="img/divvy-merge.svg" style="float:right; padding-left: 25px; padding-right: 5px">
 
 Divvy will take variables from a file or the command line, merge these with environment settings to create a specific job script. Write a submission script from the command line:
 
 ```{console}
 divvy write --package slurm \
 	--settings myjob.yaml \
-	--sample sample1 \
+	--compute sample=sample1 \
 	--outfile submit_script.txt
 ```
 

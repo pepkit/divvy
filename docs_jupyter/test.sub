@@ -1,14 +1,6 @@
 #!/bin/bash
-#SBATCH --job-name='12345'
-#SBATCH --output='results.log'
-#SBATCH --mem='16G'
-#SBATCH --cpus-per-task='6'
-#SBATCH --time='6-0-0'
-#SBATCH --partition='large_mem'
-#SBATCH -m block
-#SBATCH --ntasks=1
 
 echo 'Compute node:' `hostname`
 echo 'Start time:' `date +'%Y-%m-%d %T'`
 
-run-this-cmd
+ls | tee results.log
