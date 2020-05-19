@@ -117,7 +117,7 @@ class ComputingConfiguration(yacman.YacAttMap):
 
         :return str: path to folder with default submission templates
         """
-        return os.path.join(os.path.dirname(__file__), "default_config", "submit_templates")
+        return os.path.join(os.path.dirname(__file__), "default_config", "divvy_templates")
 
     def activate_package(self, package_name):
         """
@@ -376,6 +376,8 @@ def divvy_init(config_path, template_config_path):
         # Init should *also* write the templates.
         dest_folder = os.path.dirname(config_path)
         copy_tree(os.path.dirname(template_config_path), dest_folder)
+        template_subfolder = os.path.join(dest_folder, "divvy_templates")
+        _LOGGER.info("Wrote divvy templates to folder: {}".format(template_subfolder))
         new_template = os.path.join(os.path.dirname(config_path), os.path.basename(template_config_path))
         os.rename(new_template, config_path)
         _LOGGER.info("Wrote new divvy configuration file: {}".format(config_path))

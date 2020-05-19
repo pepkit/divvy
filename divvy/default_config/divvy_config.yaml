@@ -14,24 +14,24 @@ adapters:
   SINGULARITY_ARGS: compute.singularity_args
 compute_packages:
   default:
-    submission_template: submit_templates/localhost_template.sub
+    submission_template: divvy_templates/localhost_template.sub
     submission_command: sh
   local:
-    submission_template: submit_templates/localhost_template.sub
+    submission_template: divvy_templates/localhost_template.sub
     submission_command: sh
   slurm:
-    submission_template: submit_templates/slurm_template.sub
+    submission_template: divvy_templates/slurm_template.sub
     submission_command: sbatch
   singularity:
-    submission_template: submit_templates/localhost_singularity_template.sub
+    submission_template: divvy_templates/localhost_singularity_template.sub
     submission_command: sh
     singularity_args: ""
   singularity_slurm:
-    submission_template: submit_templates/slurm_singularity_template.sub
+    submission_template: divvy_templates/slurm_singularity_template.sub
     submission_command: sbatch
     singularity_args: ""
   docker:
-    submission_template: submit_templates/localhost_docker_template.sub
+    submission_template: divvy_templates/localhost_docker_template.sub
     submission_command: sh
     docker_args: |
       --user=$(id -u):$(id -g) \
