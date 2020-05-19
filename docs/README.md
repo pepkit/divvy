@@ -57,7 +57,7 @@ Divvy will take variables from a file or the command line, merge these with envi
 ```{console}
 divvy write --package slurm \
 	--settings myjob.yaml \
-	--sample sample1 \
+	--compute sample=sample1 \
 	--outfile submit_script.txt
 ```
 
