@@ -15,16 +15,16 @@ adapters:
 compute_packages:
   default:
     submission_template: divvy_templates/localhost_template.sub
-    submission_command: sh
+    submission_command: .
   local:
     submission_template: divvy_templates/localhost_template.sub
-    submission_command: sh
+    submission_command: .
   slurm:
     submission_template: divvy_templates/slurm_template.sub
     submission_command: sbatch
   singularity:
     submission_template: divvy_templates/localhost_singularity_template.sub
-    submission_command: sh
+    submission_command: .
     singularity_args: ""
   singularity_slurm:
     submission_template: divvy_templates/slurm_singularity_template.sub
@@ -32,7 +32,7 @@ compute_packages:
     singularity_args: ""
   docker:
     submission_template: divvy_templates/localhost_docker_template.sub
-    submission_command: sh
+    submission_command: .
     docker_args: |
       --user=$(id -u):$(id -g) \
       --env="DISPLAY" \
