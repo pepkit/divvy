@@ -48,7 +48,9 @@ class ActivatingTests:
         package = list(dcc.compute_packages.keys())[package_idx]
         assert dcc.activate_package(package)
 
-    @pytest.mark.parametrize(argnames="package", argvalues=["faulty_package", "another_one", 1])
+    @pytest.mark.parametrize(
+        argnames="package", argvalues=["faulty_package", "another_one", 1]
+    )
     def test_not_activating_faulty_package(self, dcc, package):
         """ Test if the function returns False if faulty compute package provided """
         assert not dcc.activate_package(package)
@@ -97,6 +99,3 @@ class UpdatingPackagesTests:
         entries = load_yaml(config_file)
         dcc.update(entries)
         assert dcc.compute_packages != YacAttMap()
-
-
-
