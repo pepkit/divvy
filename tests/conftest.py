@@ -5,7 +5,7 @@ import pytest
 
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(THIS_DIR, "data/pepenv-master")
+DATA_DIR = os.path.join(THIS_DIR, "data/divcfg-master")
 FILES = glob.glob(DATA_DIR + "/*.yaml")
 DCC_ATTRIBUTES = divvy.ComputingConfiguration().keys()
 
@@ -18,8 +18,8 @@ def empty_dcc():
 
 @pytest.fixture(params=FILES)
 def dcc(request):
-    """ Provide ComputingConfiguration objects for all files in pepenv repository """
-    return divvy.ComputingConfiguration(request.param)
+    """ Provide ComputingConfiguration objects for all files in divcfg repository """
+    return divvy.ComputingConfiguration(filepath=request.param)
 
 
 @pytest.fixture

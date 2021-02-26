@@ -26,7 +26,7 @@ class DCCTests:
     """ Tests the divvy.ComputingConfiguration object creation """
 
     def test_object_creation(self, dcc):
-        """ Test object creation for all the available compute files in pepenv repo"""
+        """ Test object creation for all the available compute files in divcfg repo"""
         dcc
 
     @pytest.mark.parametrize(argnames="att", argvalues=DCC_ATTRIBUTES)

@@ -14,7 +14,7 @@ compute_packages:
     submission_template: templates/localhost_docker_template.sub
     submission_command: sh
     docker_args: |
-      --user=$(id -u) \
+      --user=$(id -u):$(id -g) \
       --env="DISPLAY" \
       -e "GENOMES" \
       --volume ${CODEBASE}:${CODEBASE} \
