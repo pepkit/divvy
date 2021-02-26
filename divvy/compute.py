@@ -17,6 +17,7 @@ from .const import (
     DEFAULT_COMPUTE_RESOURCES_NAME,
     NEW_COMPUTE_KEY,
     DEFAULT_CONFIG_FILEPATH,
+    DEFAULT_CONFIG_SCHEMA,
 )
 from .utils import write_submit_script
 from . import __version__
@@ -45,7 +46,12 @@ class ComputingConfiguration(yacman.YacAttMap):
             # Handle the case of an empty one, when we'll use the default
             filepath = select_divvy_config(None)
 
-        super(ComputingConfiguration, self).__init__(entries, filepath)
+        super(ComputingConfiguration, self).__init__(
+            entries=entries,
+            filepath=filepath,
+            schema_source=DEFAULT_CONFIG_SCHEMA,
+            write_validate=True,
+        )
 
         if not hasattr(self, "compute_packages"):
             raise Exception(
@@ -63,7 +69,7 @@ class ComputingConfiguration(yacman.YacAttMap):
         self.config_file = self.file_path
 
     def write(self, filename=None):
-        super(ComputingConfiguration, self).write(filename)
+        super(ComputingConfiguration, self).write(filepath=filename, exclude_case=True)
         filename = filename or getattr(self, yacman.FILEPATH_KEY)
         filedir = os.path.dirname(filename)
         # For this object, we *also* have to write the template files
