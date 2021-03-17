@@ -3,4 +3,6 @@
 echo 'Compute node:' `hostname`
 echo 'Start time:' `date +'%Y-%m-%d %T'`
 
-{CODE} | tee {LOGFILE}
+{
+{CODE}
+} | tee {LOGFILE}
