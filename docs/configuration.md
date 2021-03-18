@@ -63,7 +63,7 @@ echo 'Start time:' `date +'%Y-%m-%d %T'`
 srun {CODE}
 ```
 
-Template files use variables (*e.g.* `{VARIABLE}`), which will be populated independently for each job. If you want to make your own templates, you should check out the default templates (in the [submit_templates](https://github.com/pepkit/divvy/tree/master/divvy/submit_templates) folder). Many users will not need to tweak the template files, but if you need to, you can also create your own templates, giving `divvy` ultimate flexibility to work with any compute infrastructure in any environment. To create a custom template, just follow the examples. Then, point to your custom template in the `submission_template` attribute of a compute package in your `DIVCFG` config file.
+Template files use variables (*e.g.* `{VARIABLE}`), which will be populated independently for each job. If you want to make your own templates, you should check out the default templates (in the [submit_templates](https://github.com/pepkit/divcfg/tree/master/templates) folder). Many users will not need to tweak the template files, but if you need to, you can also create your own templates, giving `divvy` ultimate flexibility to work with any compute infrastructure in any environment. To create a custom template, just follow the examples. Then, point to your custom template in the `submission_template` attribute of a compute package in your `DIVCFG` config file.
 
 
 
