@@ -66,7 +66,7 @@ class ComputingConfiguration(yacman.YacAttMap):
         self.compute = None
         self.setdefault("adapters", None)
         self.activate_package(DEFAULT_COMPUTE_RESOURCES_NAME)
-        self.config_file = self.file_path
+        self.config_file = self["__internal"].file_path
 
     def write(self, filename=None):
         super(ComputingConfiguration, self).write(filepath=filename, exclude_case=True)
@@ -162,7 +162,7 @@ class ComputingConfiguration(yacman.YacAttMap):
             if not os.path.isabs(self.compute.submission_template):
                 try:
                     self.compute.submission_template = os.path.join(
-                        os.path.dirname(self.file_path),
+                        os.path.dirname(self["__internal"].file_path),
                         self.compute.submission_template,
                     )
                 except AttributeError as e:
