@@ -33,9 +33,6 @@ compute_packages:
   bulker_local:
     submission_template: divvy_templates/localhost_bulker_template.sub
     submission_command: sh
-  aws_batch:
-    submission_template: divvy_templates/aws_batch.sub
-    submission_command: "aws batch submit-job --job-definition {compute.aws_batch.submission_command}"
   docker:
     submission_template: divvy_templates/localhost_docker_template.sub
     submission_command: .
