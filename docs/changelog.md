@@ -2,10 +2,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 # Changelog
 
-## [0.6.0] -- unreleased
+## [0.6.0] -- 2021-04-26
 
 ### Added
 - divvy configuration file validation
+- bulker localhost template default
 
 ### Fixed
 - localhost commands to work with newline characters
