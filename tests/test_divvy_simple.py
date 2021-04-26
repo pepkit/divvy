@@ -52,7 +52,7 @@ class TestAdapters:
     )
     @pytest.mark.parametrize("package", ["singularity_slurm", "slurm"])
     def test_write_script_adapters(self, compute, package):
-        """ Test successful adapter sourcing from various Mapping types """
+        """Test successful adapter sourcing from various Mapping types"""
         dcc = divvy.ComputingConfiguration()
         dcc.activate_package(package)
         extra_vars = {"compute": compute}

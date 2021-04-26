@@ -12,13 +12,13 @@ DCC_ATTRIBUTES = divvy.ComputingConfiguration().keys()
 
 @pytest.fixture
 def empty_dcc():
-    """ Provide the empty/default ComputingConfiguration object """
+    """Provide the empty/default ComputingConfiguration object"""
     return divvy.ComputingConfiguration()
 
 
 @pytest.fixture(params=FILES)
 def dcc(request):
-    """ Provide ComputingConfiguration objects for all files in divcfg repository """
+    """Provide ComputingConfiguration objects for all files in divcfg repository"""
     return divvy.ComputingConfiguration(filepath=request.param)
 
 

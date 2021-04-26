@@ -341,7 +341,7 @@ class ComputingConfiguration(yacman.YacAttMap):
         return write_submit_script(output_path, self.template(), variables)
 
     def _handle_missing_env_attrs(self, config_file, when_missing):
-        """ Default environment settings aren't required; warn, though. """
+        """Default environment settings aren't required; warn, though."""
         missing_env_attrs = [
             attr
             for attr in [NEW_COMPUTE_KEY, "config_file"]
@@ -493,7 +493,7 @@ def build_argparser():
 
 
 def main():
-    """ Primary workflow """
+    """Primary workflow"""
 
     parser = logmuse.add_logging_options(build_argparser())
     # args, remaining_args = parser.parse_known_args()
