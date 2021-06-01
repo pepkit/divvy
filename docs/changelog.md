@@ -2,6 +2,16 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 # Changelog
 
+## [0.6.0] -- 2021-04-26
+
+### Added
+- divvy configuration file validation
+- bulker localhost template default
+
+### Fixed
+- localhost commands to work with newline characters
+
+
 ## [0.5.0] -- 2020-05-19
 ### Added
 - adapters support, see [#47](https://github.com/pepkit/divvy/issues/47) for detailed explanation

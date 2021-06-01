@@ -3,6 +3,8 @@
 echo 'Compute node:' `hostname`
 echo 'Start time:' `date +'%Y-%m-%d %T'`
 
+eval "$(bulker activate -e {BULKER_CRATE})"
+
 {
-{CODE}
-} | tee {LOGFILE}
+  {CODE}
+} | tee {LOGFILE} -i
