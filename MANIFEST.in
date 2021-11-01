@@ -1,5 +1,6 @@
 include divvy/default_config/*
 include divvy/default_config/divvy_templates/*
+include divvy/schemas/*
 include requirements/*
 include README.md
 include docs/img/divvy_logo.svg
