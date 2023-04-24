@@ -41,4 +41,5 @@ def write_submit_script(fp, content, data):
             os.makedirs(outdir)
         with open(fp, "w") as f:
             f.write(content)
+        os.chmod(fp, 0o755)  # make executable
         return fp
