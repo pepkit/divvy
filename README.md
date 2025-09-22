@@ -1,3 +1,12 @@
+
+# ⛔️ DEPRECATED 
+
+This repository is no longer actively maintained or supported.
+
+The functionally contained within has been ported to Looper: https://github.com/pepkit/looper
+
+
+
 <img src="https://raw.githubusercontent.com/pepkit/divvy/master/docs/img/divvy_logo.svg?sanitize=true" alt="Divvy" height="70" align="left"/><br>
 
 [![PEP compatible](http://pepkit.github.io/img/PEP-compatible-green.svg)](http://pepkit.github.io)

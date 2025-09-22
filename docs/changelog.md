@@ -2,6 +2,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 # Changelog
 
+## [0.6.1] -- 2025-09-22
+- Functionality has been moved to looper  https://github.com/pepkit/looper
+- Repository is now archived
+
 ## [0.6.0] -- 2021-04-26
 
 ### Added
